@@ -1,0 +1,80 @@
+{
+  "name": "react-relink",
+  "version": "0.0.1",
+  "description": "A React state management library inspired by Recoil.",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "react-native": "dist/native/index.js",
+  "unpkg": "dist/umd/index.js",
+  "files": [
+    "dist",
+    "index.d.ts"
+  ],
+  "types": "index.d.ts",
+  "scripts": {
+    "format": "prettier --write \"**/*.js\"",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "build": "rollup -c rollup.config.js",
+    "debug": "scope=\"debug\" npx jest -c tests/jest.config.js",
+    "test": "npx jest -c tests/jest.config.js",
+    "test-bundled": "scope=\"bundled\" npx jest -c tests/jest.config.js",
+    "all": "npm run lint-fix && npm run format && npm run build && npm test && npm pack"
+  },
+  "keywords": [
+    "react",
+    "recoil",
+    "relink",
+    "state",
+    "set state",
+    "state management"
+  ],
+  "author": "chin98edwin",
+  "readme": "README.md",
+  "license": "MIT",
+  "homepage": "https://github.com/chin98edwin/react-relink",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chin98edwin/react-relink.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chin98edwin/react-relink/issues"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.12.1",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.12.1",
+    "@babel/plugin-transform-react-jsx": "^7.12.1",
+    "@babel/preset-react": "^7.12.1",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "@rollup/plugin-replace": "^2.3.4",
+    "eslint": "^7.12.1",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "jest": "^26.6.3",
+    "prettier": "^2.1.2",
+    "react": "0.0.0-experimental-4ead6b530",
+    "react-dom": "0.0.0-experimental-4ead6b530",
+    "react-native": "^0.63.3",
+    "rollup": "^2.33.1",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "dependencies": {
+    "lodash.clonedeep": "^4.5.0",
+    "react-fast-compare": "^3.2.0"
+  }
+}
