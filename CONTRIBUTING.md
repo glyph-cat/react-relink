@@ -1,44 +1,13 @@
-- [Report a Bug](#report-a-bug)
-  - [Format](#format)
-  - [Example](#example)
-- [Suggest Changes/Features](#suggest-changesfeatures)
-  - [Format](#format-1)
-  - [Example](#example-1)
+- [Bug Report Example](#bug-report-example)
+- [Enhancement Request Example](#enhancement-request-example)
 - [Contributing Changes](#contributing-changes)
 - [List of available commands](#list-of-available-commands)
 - [Playground](#playground)
 
-# Report a Bug
-
-## Format
+# Bug Report Example
 
 ```md
-# Issue description
-. . .
-
-# Steps to reproduce
-. . .
-
-# Expected results
-. . .
-
-# Actual results
-. . .
-
-# [Optional, but recommended] Reproducible Demo
-(Link to reproducible demo)
-
-# [Optional] Build involved
-(Debug/CJS/ES/UMD/React Native)
-
-# [Optional] Additional information
-* . . .
-```
-
-## Example
-
-```md
-# Issue description
+# Description
 Components do not suspend but throws error while hydrating.
 
 # Steps to reproduce
@@ -51,43 +20,23 @@ Components should be suspended and be able to render a fallback UI until hydrati
 # Actual results
 An error is thrown instead - "`y[t.key]._` is not a function".
 
-# [Optional, but recommended] Reproducible Demo
+# System Info
+* All production builds
+* Build version: 0.0.X
+
+# Reproducible Demo
 https://codesandbox.io/path-to-demo
 
-# [Optional] Builds involved
-All production builds
-
-# [Optional] Additional information
+# Additional information
 * This bug does not appear with `npm run debug`
 ```
 
 <br/>
 
-# Suggest Changes/Features
+# Enhancement Request Example
 
-## Format
 ```md
-# Issue Description
-. . .
-
-# Current Situation
-. . .
-
-# Proposed Changes
-. . .
-
-# Consideration of the changes
-
-Pros
-* . . .
-
-Cons
-* . . .
-```
-
-## Example
-```md
-# Issue Description
+# Description
 Allow subsequent hydration other than just the one in `createSource`
 
 # Current Situation
@@ -99,7 +48,7 @@ A workaround would be to `useSetRelinkState`, but that will trigger the `onPersi
 Expose the hydration API so that subsequent hydrations can be made. For example, consider the code below:
 
     function App() {
-      const hydrateState = useHydrateRelinkState(Source)
+      const hydrateState = useHydrateRelinkSource(Source)
       useEffect(() => {
         fetchSomeData.then((data) => {
           hydrateState(data)
@@ -108,12 +57,12 @@ Expose the hydration API so that subsequent hydrations can be made. For example,
       return '...'
     }
 
-# Consideration of the changes
+## Consideration
 
-Pros
+### Pros
 * Allows source to be hydrated without persisting the data (since it's the same data)
 
-Cons
+### Cons
 * There might be rare cases where hydrations are done frequently in a system and cause racing condition
 ```
 
