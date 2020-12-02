@@ -4,7 +4,6 @@ export interface HydrationCommitter<T> {
 
 export interface RelinkSource<T> {
   key: string
-  default: T
 }
 
 export interface RelinkSetter<T> {
@@ -25,7 +24,7 @@ export interface RelinkSourceEntry<T> {
   default: T
   lifecycle: {
     init?: RelinkHydrator<T>
-    didSet?: (state: T) => void
+    didSet?: (details: { state: T }) => void
     didReset: () => void
   }
   options?: {

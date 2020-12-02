@@ -16,9 +16,9 @@
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "build": "rollup -c rollup.config.js",
-    "debug": "scope=\"debug\" npx jest -c tests/jest.config.js",
-    "test": "npx jest -c tests/jest.config.js",
-    "test-bundled": "scope=\"bundled\" npx jest -c tests/jest.config.js",
+    "debug": "scope=\"debug\" npx jest -c jest.config.js",
+    "test": "npx jest -c jest.config.js",
+    "test-bundled": "scope=\"bundled\" npx jest -c jest.config.js",
     "all": "npm run lint-fix && npm run format && npm run build && npm test && npm pack"
   },
   "keywords": [
@@ -32,7 +32,7 @@
   "author": "chin98edwin",
   "readme": "README.md",
   "license": "MIT",
-  "homepage": "https://github.com/chin98edwin/react-relink",
+  "homepage": "https://github.com/chin98edwin/react-relink#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/chin98edwin/react-relink.git"
