@@ -1,6 +1,5 @@
 import React, { Fragment, useLayoutEffect } from 'react';
-import { unstable_createRoot } from 'react-dom';
-import { act } from 'react-dom/test-utils';
+import { act, create } from 'react-test-renderer';
 
 /**
  * @description A wrapper for testing React Hooks by abstracting the DOM container's logic.
@@ -12,199 +11,152 @@ import { act } from 'react-dom/test-utils';
  * @param {Object.<Function>} config.values
  */
 export function createHookInterface({ hook = {}, actions = {}, values = {} }) {
-  let container = null;
-  container = document.createElement('div');
-  document.body.appendChild(container);
-
-  let renderCounter = 0;
+  let renderCount = 0;
+  let dispatchableActions = [];
+  let retrievableValues = [];
 
   const Component = () => {
-    const hooked = hook.method(...hook.props);
+    const providedHook = hook.method(...hook.props);
     useLayoutEffect(() => {
-      renderCounter += 1;
+      renderCount += 1;
     });
 
     const actionKeys = Object.keys(actions);
-    const actionStack = [];
+    dispatchableActions = [];
     for (const actionKey of actionKeys) {
       const callback = actions[actionKey];
-      actionStack.push(
-        <button
-          key={actionKey}
-          data-testid={actionKey}
-          onClick={(e) => {
-            callback({ e, H: hooked });
-          }}
-        />
-      );
+      dispatchableActions[actionKey] = () => {
+        callback({ H: providedHook });
+      };
     }
 
-    const valueKeys = Object.keys(values);
-    const valueStack = [];
-    for (const valueKey of valueKeys) {
-      const valueMapper = values[valueKey];
-      valueStack.push(
-        <span
-          key={valueKey}
-          data-testid={valueKey}
-          children={valueMapper(hooked)}
-        />
-      );
-    }
+    useLayoutEffect(() => {
+      const valueKeys = Object.keys(values);
+      retrievableValues = [];
+      for (const valueKey of valueKeys) {
+        const valueMapper = values[valueKey];
+        // All values should be casted to string
+        retrievableValues[valueKey] = '' + valueMapper(providedHook);
+      }
+    });
 
-    return (
-      <Fragment>
-        {actionStack}
-        {valueStack}
-      </Fragment>
-    );
+    return null;
   };
 
-  const root = unstable_createRoot(container);
+  let root;
   act(() => {
-    root.render(<Component />);
+    root = create(<Component />);
   });
 
-  const getDOM = (key) => {
-    if (!values[key]) {
-      throw new ReferenceError(`Value key "${key}" is undefined`);
-    }
-    return container.querySelector(`[data-testid=${key}]`);
-  };
-
   return {
-    actions: (keyStack) => {
-      if (!Array.isArray(keyStack)) {
+    actions: (actionKeyStack) => {
+      if (!Array.isArray(actionKeyStack)) {
         // This allows multiple actions to be invoked in the same `act()` callback
-        keyStack = [keyStack];
+        actionKeyStack = [actionKeyStack];
       }
       act(() => {
-        for (const key of keyStack) {
-          if (!actions[key]) {
-            throw new ReferenceError(`Action key "${key}" is undefined`);
+        // Array of actions are batched in one `act()`
+        for (const actionKey of actionKeyStack) {
+          if (!dispatchableActions[actionKey]) {
+            throw new ReferenceError(`Action "${actionKey}" is undefined`);
           }
-          const button = container.querySelector(`[data-testid=${key}]`);
-          button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          dispatchableActions[actionKey]();
         }
       });
     },
-    getDOM,
-    get: (key) => getDOM(key).textContent,
-    getRenderCount: () => renderCounter,
+    get: (valueKey) => {
+      if (!retrievableValues[valueKey]) {
+        throw new ReferenceError(`Value "${valueKey}" is undefined`);
+      }
+      return retrievableValues[valueKey];
+    },
+    getRenderCount: () => renderCount,
     cleanup: () => {
-      root.unmount(container);
-      container.remove();
-      container = null;
+      root.unmount();
     },
   };
 }
 
-export function createCompoundHookInterface(collection = {}) {
-  let container = null;
-  container = document.createElement('div');
-  document.body.appendChild(container);
+export function createCompoundHookInterface(channels = {}) {
+  const renderStack = [];
+  const renderCount = {}; // TODO: rename to "renderCount"
+  const outlets = {};
 
-  const renderStack = [],
-    renderCounter = {},
-    keyCache = {};
-  const collectionKeys = Object.keys(collection);
-  for (const collectionKey of collectionKeys) {
-    renderCounter[collectionKey] = 0;
-    const { hook = {}, actions = {}, values = {} } = collection[collectionKey];
+  const channelKeys = Object.keys(channels);
+  for (const channelKey of channelKeys) {
+    renderCount[channelKey] = 0;
+    outlets[channelKey] = {
+      dispatchableActions: {},
+      retrievableValues: {},
+    };
+    const { hook = {}, actions = {}, values = {} } = channels[channelKey];
+
     const ChildComponent = () => {
-      const hooked = hook.method(...hook.props);
+      const providedHook = hook.method(...hook.props);
       useLayoutEffect(() => {
-        renderCounter[collectionKey] += 1;
+        renderCount[channelKey] += 1;
       });
 
       const actionKeys = Object.keys(actions);
-      const actionStack = [];
+      outlets[channelKey].dispatchableActions = {};
       for (const actionKey of actionKeys) {
         const callback = actions[actionKey];
-        actionStack.push(
-          <button
-            key={`${collectionKey}-${actionKey}`}
-            data-testid={`${collectionKey}-${actionKey}`}
-            onClick={(e) => {
-              callback({ e, H: hooked });
-            }}
-          />
-        );
+        outlets[channelKey].dispatchableActions[actionKey] = () => {
+          callback({ H: providedHook });
+        };
       }
 
-      const valueKeys = Object.keys(values);
-      const valueStack = [];
-      for (const valueKey of valueKeys) {
-        const valueMapper = values[valueKey];
-        valueStack.push(
-          <span
-            key={`${collectionKey}-${valueKey}`}
-            data-testid={`${collectionKey}-${valueKey}`}
-            children={valueMapper(hooked)}
-          />
-        );
-      }
+      useLayoutEffect(() => {
+        const valueKeys = Object.keys(values);
+        outlets[channelKey].retrievableValues = {};
+        for (const valueKey of valueKeys) {
+          const valueMapper = values[valueKey];
+          // All values should be casted to string
+          outlets[channelKey].retrievableValues[valueKey] =
+            '' + valueMapper(providedHook);
+        }
+      });
 
-      keyCache[collectionKey] = { actionKeys, valueKeys };
-      return (
-        <Fragment>
-          {actionStack}
-          {valueStack}
-        </Fragment>
-      );
+      return null;
     };
-    renderStack.push(<ChildComponent key={collectionKey} />);
+
+    renderStack.push(<ChildComponent key={channelKey} />);
   }
 
-  const RootComponent = () => <div children={renderStack} />;
-  const root = unstable_createRoot(container);
+  let root;
   act(() => {
-    root.render(<RootComponent />);
+    root = create(<Fragment children={renderStack} />);
   });
 
-  const getDOM = (itemKey, subKey) => {
-    if (!keyCache[itemKey].valueKeys.includes(subKey)) {
-      throw new ReferenceError(
-        `Value key "${subKey}" in item "${itemKey}" is undefined`
-      );
-    }
-    return container.querySelector(`[data-testid=${itemKey}-${subKey}]`);
-  };
-
   return {
-    at: (itemKey) => {
-      if (!collection[itemKey]) {
-        throw new ReferenceError(`Item at key "${itemKey}" is undefined`);
+    at: (channelKey) => {
+      if (!outlets[channelKey]) {
+        throw new ReferenceError(`Channel "${channelKey}" is undefined`);
       }
       return {
-        actions: (subKeyStack) => {
-          if (!Array.isArray(subKeyStack)) {
+        actions: (actionKeyStack) => {
+          if (!Array.isArray(actionKeyStack)) {
             // This allows multiple actions to be invoked in the same `act()` callback
-            subKeyStack = [subKeyStack];
+            actionKeyStack = [actionKeyStack];
           }
           act(() => {
-            for (const subKey of subKeyStack) {
-              if (!keyCache[itemKey].actionKeys.includes(subKey)) {
+            // Array of actions are batched in one `act()`
+            for (const actionKey of actionKeyStack) {
+              if (!outlets[channelKey].dispatchableActions[actionKey]) {
                 throw new ReferenceError(
-                  `Action key "${subKey}" in item "${itemKey}" is undefined`
+                  `Action "${actionKey}" in "${channelKey}" is undefined`
                 );
               }
-              const button = container.querySelector(
-                `[data-testid=${itemKey}-${subKey}]`
-              );
-              button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+              outlets[channelKey].dispatchableActions[actionKey]();
             }
           });
         },
-        getDOM: (subKey) => getDOM(itemKey, subKey),
-        get: (subKey) => getDOM(itemKey, subKey).textContent,
-        getRenderCount: () => renderCounter[itemKey],
+        get: (valueKey) => outlets[channelKey].retrievableValues[valueKey],
+        getRenderCount: () => renderCount[channelKey],
       };
     },
     cleanup: () => {
-      root.unmount(container);
-      container.remove();
-      container = null;
+      root.unmount();
     },
   };
 }
