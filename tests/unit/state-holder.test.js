@@ -1,4 +1,4 @@
-import { act } from 'react-dom/test-utils';
+import { act } from 'react-test-renderer';
 import { createStateHolder } from '../../src/state-holder';
 
 const mockServerResponseTime = 500; // ms

@@ -8,6 +8,7 @@ module.exports = {
       ],
     },
   },
+  // Moved out of `env/test` to support linting
   plugins: [
     ['@babel/plugin-transform-react-jsx', { pragma: 'React.createElement' }],
   ],
