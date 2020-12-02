@@ -9,8 +9,8 @@ With Relink,
 * States can be shared across different React components trees.
 
 Relink is *not* a replacement for Recoil — it can, however serve as an alternative for projects that do not require the full feature-set of Recoil. Relink also has a few downsides as it:
-* Does not support snapshots;
-* Does not provide advanced APIs for scenarios that are hard/impossible to achieve with the currently provided ones;
+* Does not support snapshots or advanced APIs for scenarios that are hard/impossible to achieve with the currently provided ones;
+* Server-side rendering not officially supported
 * (and possibly other unforeseen concerns — Relink is also experimental).
 
 *Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
