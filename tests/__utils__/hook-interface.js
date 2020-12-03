@@ -12,8 +12,8 @@ import { act, create } from 'react-test-renderer';
  */
 export function createHookInterface({ hook = {}, actions = {}, values = {} }) {
   let renderCount = 0;
-  let dispatchableActions = [];
-  let retrievableValues = [];
+  let dispatchableActions = {};
+  let retrievableValues = {};
 
   const Component = () => {
     const providedHook = hook.method(...hook.props);
@@ -22,7 +22,7 @@ export function createHookInterface({ hook = {}, actions = {}, values = {} }) {
     });
 
     const actionKeys = Object.keys(actions);
-    dispatchableActions = [];
+    dispatchableActions = {};
     for (const actionKey of actionKeys) {
       const callback = actions[actionKey];
       dispatchableActions[actionKey] = () => {
@@ -30,15 +30,13 @@ export function createHookInterface({ hook = {}, actions = {}, values = {} }) {
       };
     }
 
-    useLayoutEffect(() => {
-      const valueKeys = Object.keys(values);
-      retrievableValues = [];
-      for (const valueKey of valueKeys) {
-        const valueMapper = values[valueKey];
-        // All values should be casted to string
-        retrievableValues[valueKey] = '' + valueMapper(providedHook);
-      }
-    });
+    const valueKeys = Object.keys(values);
+    retrievableValues = {};
+    for (const valueKey of valueKeys) {
+      const valueMapper = values[valueKey];
+      // All values should be casted to string
+      retrievableValues[valueKey] = '' + valueMapper(providedHook);
+    }
 
     return null;
   };
@@ -71,9 +69,7 @@ export function createHookInterface({ hook = {}, actions = {}, values = {} }) {
       return retrievableValues[valueKey];
     },
     getRenderCount: () => renderCount,
-    cleanup: () => {
-      root.unmount();
-    },
+    cleanup: root.unmount,
   };
 }
 
@@ -106,16 +102,14 @@ export function createCompoundHookInterface(channels = {}) {
         };
       }
 
-      useLayoutEffect(() => {
-        const valueKeys = Object.keys(values);
-        outlets[channelKey].retrievableValues = {};
-        for (const valueKey of valueKeys) {
-          const valueMapper = values[valueKey];
-          // All values should be casted to string
-          outlets[channelKey].retrievableValues[valueKey] =
-            '' + valueMapper(providedHook);
-        }
-      });
+      const valueKeys = Object.keys(values);
+      outlets[channelKey].retrievableValues = {};
+      for (const valueKey of valueKeys) {
+        const valueMapper = values[valueKey];
+        // All values should be casted to string
+        outlets[channelKey].retrievableValues[valueKey] =
+          '' + valueMapper(providedHook);
+      }
 
       return null;
     };
@@ -155,8 +149,77 @@ export function createCompoundHookInterface(channels = {}) {
         getRenderCount: () => renderCount[channelKey],
       };
     },
-    cleanup: () => {
-      root.unmount();
+    cleanup: root.unmount,
+  };
+}
+
+// NOTE: Not yet tested
+export function createHocInterface({ entry, actions = {}, values = {} }) {
+  let renderCount = 0;
+  let dispatchableActions = {};
+  let retrievableValues = {};
+
+  class Component extends React.Component {
+    constructor(props) {
+      super(props);
+
+      const actionKeys = Object.keys(actions);
+      dispatchableActions = {};
+      for (const actionKey of actionKeys) {
+        const callback = actions[actionKey];
+        dispatchableActions[actionKey] = () => {
+          callback({ props });
+        };
+      }
+
+      const valueKeys = Object.keys(values);
+      retrievableValues = {};
+      for (const valueKey of valueKeys) {
+        const valueMapper = values[valueKey];
+        // All values should be casted to string
+        retrievableValues[valueKey] = '' + valueMapper(props);
+      }
+    }
+
+    componentDidMount() {
+      renderCount += 1;
+    }
+
+    render() {
+      return null;
+    }
+  }
+
+  let root;
+  act(() => {
+    // Parameters are first applied then passed in as a component, example
+    // entry: ({ C }) => withHoc(<C />, options)
+    root = create(entry({ C: Component }));
+  });
+
+  return {
+    actions: (actionKeyStack) => {
+      if (!Array.isArray(actionKeyStack)) {
+        // This allows multiple actions to be invoked in the same `act()` callback
+        actionKeyStack = [actionKeyStack];
+      }
+      act(() => {
+        // Array of actions are batched in one `act()`
+        for (const actionKey of actionKeyStack) {
+          if (!dispatchableActions[actionKey]) {
+            throw new ReferenceError(`Action "${actionKey}" is undefined`);
+          }
+          dispatchableActions[actionKey]();
+        }
+      });
     },
+    get: (valueKey) => {
+      if (!retrievableValues[valueKey]) {
+        throw new ReferenceError(`Value "${valueKey}" is undefined`);
+      }
+      return retrievableValues[valueKey];
+    },
+    getRenderCount: () => renderCount,
+    cleanup: root.unmount,
   };
 }
