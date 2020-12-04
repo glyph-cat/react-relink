@@ -1,0 +1,18 @@
+.generic-button {
+  background-color: transparent;
+  border: solid 2px #888888;
+  border-radius: 10px;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14pt;
+  height: 48px;
+  width: 200px;
+}
+
+.generic-button:hover {
+  background-color: #88888822;
+}
+
+.generic-button:active {
+  opacity: 0.5;
+}
