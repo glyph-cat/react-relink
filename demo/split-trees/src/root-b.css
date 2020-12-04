@@ -1,0 +1,25 @@
+.root-b-container {
+  align-items: flex-start;
+  padding: 20px;
+  display: grid;
+}
+
+.root-b-subcontainer {
+  display: grid;
+  gap: 10px;
+}
+
+.root-b-header {
+  align-items: center;
+  display: grid;
+  min-height: 100px;
+}
+
+.root-b-md-display {
+  background-color: #88888811;
+  border: solid 2px #888888;
+  border-radius: 10px;
+  display: grid;
+  min-height: 65vh;
+  padding: 10px;
+}
