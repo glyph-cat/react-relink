@@ -3,7 +3,7 @@ import isEqual from 'react-fast-compare';
 import { createStateHolder } from './state-holder';
 
 // So that eslint sees it as the original useEffect
-import useEffect from './use-renderer-effect';
+import useEffect from './use-isomorphic-layout-effect';
 
 const STORE = {};
 
