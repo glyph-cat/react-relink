@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useDebugValue, useReducer } from 'react';
 import isEqual from 'react-fast-compare';
 import { createStateHolder } from './state-holder';
 
@@ -42,6 +42,17 @@ export function useRelinkValue(source, selector) {
     typeof selector === 'function'
       ? selector(STORE[source.key].M$get())
       : STORE[source.key].M$get();
+
+  useDebugValue(undefined, () =>
+    process.env.NODE_ENV === 'production'
+      ? undefined
+      : {
+        key: source.key,
+        selector,
+        value: currentValue,
+      }
+  );
+
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0);
   useEffect(() => {
     const listenerId = STORE[source.key].M$listener.M$add(() => {
