@@ -36,7 +36,7 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 
 # Installation
 
-```bash
+```sh
 # NPM
 npm i react-relink
 
