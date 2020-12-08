@@ -9,7 +9,7 @@ const DEBUG_BUILDS = [
 const BUNDLED_BUILDS = [
   { tag: 'CJS', src: require('../../dist/cjs/index.js'), debug: true },
   { tag: 'UMD', src: require('../../dist/umd/index.js'), debug: true },
-  { tag: 'UMD (Minified', src: require('../../dist/umd/index.min.js') },
+  { tag: 'UMD (Minified)', src: require('../../dist/umd/index.min.js') },
   { tag: 'ES', src: require('../../dist/es/index.js'), debug: true },
   // --------------------------------------------------
   // // Will fail (unexpected token "import")

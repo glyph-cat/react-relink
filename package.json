@@ -16,9 +16,9 @@
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "build": "rollup -c rollup.config.js",
-    "debug": "scope=\"debug\" npx jest -c jest.config.js",
-    "test": "npx jest -c jest.config.js",
-    "test-bundled": "scope=\"bundled\" npx jest -c jest.config.js",
+    "debug": "scope=\"debug\" jest -c jest.config.js",
+    "test": "jest -c jest.config.js",
+    "test-bundled": "scope=\"bundled\" jest -c jest.config.js",
     "all": "npm run lint-fix && npm run format && npm run build && npm test && npm pack"
   },
   "keywords": [
