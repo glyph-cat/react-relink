@@ -47,10 +47,10 @@ export function useRelinkValue(source, selector) {
     process.env.NODE_ENV === 'production'
       ? undefined
       : {
-        key: source.key,
-        selector,
-        value: currentValue,
-      }
+          key: source.key,
+          selector,
+          value: currentValue,
+        }
   );
 
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0);
