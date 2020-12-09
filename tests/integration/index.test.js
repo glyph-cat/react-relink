@@ -31,13 +31,13 @@ const list = fs.readdirSync('./tests/integration/bases', {
 });
 
 for (const build of buildStack) {
-  const { tag, src: Relink, debug } = build;
+  const { tag, src, debug } = build;
   describe(tag, () => {
     for (const l of list) {
       const requiredTest = require(`./bases/${l}`);
       const executor = requiredTest.default || requiredTest;
       executor({
-        Relink,
+        Relink: src,
         buildEnv: {
           tag,
           IS_DEBUG: debug,
