@@ -11,6 +11,8 @@ const STORE = {};
 // Factory pattern is used throughout the codebase because class method names are not mangled by
 // Terser, this causes problems in production build where variable name mangling takes place
 
+let IS_DUPE_KEY_WARNING_SHOWN = false;
+
 export function createSource(specs) {
   // Leniency: Allow numbers, but they will be treated as strings
   if (typeof specs.key !== 'string' && typeof specs.key !== 'number') {
@@ -23,15 +25,20 @@ export function createSource(specs) {
     if (process.env.NODE_ENV === 'production') {
       throw new Error(2);
     } else {
-      console.error(
-        `Duplicate source key "${specs.key}". This is a FATAL ERROR in production. But it is safe to ignore this warning if it occurred because of hot module replacement.`
-      );
+      console.error(`Duplicate source key "${specs.key}"`);
+      if (!IS_DUPE_KEY_WARNING_SHOWN) {
+        IS_DUPE_KEY_WARNING_SHOWN = true;
+        console.error(
+          'This is a FATAL ERROR in production. But it is safe to ignore this warning if it occurred because of hot module replacement.'
+        );
+      }
     }
   } else {
     // Only create state holder if key is provided and there are no duplicates
     STORE[specs.key] = createStateHolder(specs);
-    return { key: specs.key };
   }
+  // But key must always be returned
+  return { key: specs.key };
 }
 
 const forceUpdateReducer = (c) => c + 1;

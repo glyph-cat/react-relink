@@ -20,12 +20,14 @@ export default function ({ Relink, buildEnv: { IS_DEBUG } }) {
 
     it('Duplicate key', () => {
       if (IS_DEBUG) {
+        let Source;
         expect(() => {
-          Relink.createSource({
+          Source = Relink.createSource({
             key,
             default: { username: 'foo' },
           });
         }).not.toThrow();
+        expect(Source).toStrictEqual({ key });
       } else {
         expect(() => {
           Relink.createSource({
