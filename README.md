@@ -44,7 +44,9 @@ npm i react-relink
 yarn add react-relink
 ```
 ```html
-<!-- Unpkg (Replace {VERSION} an actual version number) -->
+<!-- Unpkg (Replace {VERSION} with an actual version number) -->
+<script src="https://unpkg.com/lodash.clonedeep@4.5.0/index.js" crossorigin></script>
+<script src="https://unpkg.com/react-fast-compare@3.2.0/index.js" crossorigin></script>
 <script src="https://unpkg.com/react-relink@{VERSION}/dist/umd/index.min.js" crossorigin></script>
 ```
 
