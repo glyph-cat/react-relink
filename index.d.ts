@@ -22,10 +22,10 @@ export interface RelinkSelector<T, K> {
 export interface RelinkSourceEntry<T> {
   key: string
   default: T
-  lifecycle: {
+  lifecycle?: {
     init?: RelinkHydrator<T>
     didSet?: (details: { state: T }) => void
-    didReset: () => void
+    didReset?: () => void
   }
   options?: {
     suspense?: boolean
