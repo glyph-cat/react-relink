@@ -11,3 +11,6 @@
 
 # 0.0.4
 * Fixed TypeScript interface for `createSource`. Prior to this, `lifecycle` and `lifecycle.didReset` are optional parameters but were not defined accordingly in TypeScript.
+
+# 0.0.5
+* Fixed incorrect TypeScript definition for `useRelinkValue` and `useRelinkState` when involving selectors.
