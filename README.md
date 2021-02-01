@@ -285,11 +285,10 @@ const Source = createSource({
 })
 ```
 
-| `options`      | Description                                                                                       | Warning                  |
-| -------------- | ------------------------------------------------------------------------------------------------- | ------------------------ |
-| `suspense`     | Components that consume the source will be suspended while hydrating                              | Unstable React feature   |
-| `mutable`      | Allows slight performance improvement by not deep-copying the values returned                     | Makes code hard to debug |
-| `virtualBatch` | Slightly improve performance by coalescing the "setState" calls on top of React's batched updates | Unstable Relink feature  |
+* `suspense?: boolean (Default: false)`<br/>Components that consume the source will be suspended while hydrating.
+
+* `mutable?: boolean (Default: false)`<br/>Allows slight performance improvement by not deep-copying the values returned.
+* `virtualBatch?: boolean (Default: false)`<br/>Slightly improve performance by coalescing the "setState" calls on top of React's batched updates. This is only suitable for sources that have frequent "`setState`" calls but results in little to no immediate UI changes. For example, a huge [virtualized](http://react-window.now.sh) list which its data is realtime and updated through a listener. Virtual batching actually creates a delay in component updating, but it's short enough that it's unnoticeable most of the time. Virtual batching is **not suitable** in UIs that updates frequently and needs to be responsive, such as forms and text fields. If you swipe your fingers across your keyboard quickly or let a cat run across it, you will see the characters appearing one by one, slowly catching up only after you have finished typing.
 
 <br/>
 

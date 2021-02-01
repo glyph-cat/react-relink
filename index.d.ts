@@ -38,15 +38,23 @@ export function createSource<T>(
   specs: RelinkSourceEntry<T>,
 ): RelinkSource<T>
 
+export function useRelinkValue<T>(
+  source: RelinkSource<T>
+): T
+
 export function useRelinkValue<T, K>(
   source: RelinkSource<T>,
   selector?: RelinkSelector<T, K>,
-): T
+): K
+
+export function useRelinkState<T>(
+  source: RelinkSource<T>,
+): [T, RelinkSetter<T>]
 
 export function useRelinkState<T, K>(
   source: RelinkSource<T>,
   selector?: RelinkSelector<T, K>,
-): [T, RelinkSetter<T>]
+): [K, RelinkSetter<T>]
 
 export function useSetRelinkState<T>(
   source: RelinkSource<T>,
