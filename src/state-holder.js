@@ -111,7 +111,7 @@ export function createStateHolder(specs) {
         undefined,
         typeof partialState === 'function'
           ? partialState(copyState(shadowState)) // (Expose)
-          : partialState
+          : copyState(partialState) // (Receive)
       );
     },
     M$reset: () => {
