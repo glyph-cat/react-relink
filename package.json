@@ -1,6 +1,6 @@
 {
   "name": "react-relink",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A React state management library inspired by Recoil.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
