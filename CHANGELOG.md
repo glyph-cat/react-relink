@@ -14,3 +14,6 @@
 
 # 0.0.5
 * Fixed incorrect TypeScript definition for `useRelinkValue` and `useRelinkState` when involving selectors.
+
+# 0.0.6
+* Fixed issue where state values can still be mutated even though `options.mutable` is set to `false`.
