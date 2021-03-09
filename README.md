@@ -197,7 +197,7 @@ const defaultUserState = {
 }
 
 const UserSource = createSource({
-  key: 'user',
+  key: 'user', // Optional, only used for debugging
   default: defaultUserState,
   lifecycle: {
     init: ({ commit }) => {
