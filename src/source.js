@@ -4,7 +4,11 @@ import { createListener } from './listener';
 import { createSuspenseWaiter } from './suspense-waiter';
 import virtualBatch from './virtual-batch';
 
-export function createStateHolder(specs) {
+// NOTE:
+// Factory pattern is used throughout the codebase because class method names are not mangled by
+// Terser, this causes problems in production build where variable name mangling takes place
+
+export function createSource(specs) {
   const { key, default: defaultState, lifecycle = {}, options = {} } = specs;
 
   /**
@@ -94,6 +98,7 @@ export function createStateHolder(specs) {
   }
 
   return {
+    key: '' + key,
     M$listener,
     M$hydrate,
     M$suspenseOnHydration: () => {
