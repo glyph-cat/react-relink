@@ -1,60 +1,21 @@
 import { useDebugValue, useReducer } from 'react';
 import isEqual from 'react-fast-compare';
-import { createStateHolder } from './state-holder';
 
 // So that eslint sees it as the original useEffect
 import useEffect from './use-isomorphic-layout-effect';
 
-const STORE = {};
-
-// NOTE:
-// Factory pattern is used throughout the codebase because class method names are not mangled by
-// Terser, this causes problems in production build where variable name mangling takes place
-
-let IS_DUPE_KEY_WARNING_SHOWN = false;
-
-export function createSource(specs) {
-  // Leniency: Allow numbers, but they will be treated as strings
-  if (typeof specs.key !== 'string' && typeof specs.key !== 'number') {
-    throw new TypeError(
-      process.env.NODE_ENV === 'production'
-        ? 1
-        : 'Key must be a string (or number - will be casted into string)'
-    );
-  } else if (STORE[specs.key]) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(2);
-    } else {
-      console.error(`Duplicate source key "${specs.key}"`);
-      if (!IS_DUPE_KEY_WARNING_SHOWN) {
-        IS_DUPE_KEY_WARNING_SHOWN = true;
-        console.error(
-          'This is a FATAL ERROR in production. But it is safe to ignore this warning if it occurred because of hot module replacement.'
-        );
-      }
-    }
-  } else {
-    // Only create state holder if key is provided and there are no duplicates
-    STORE[specs.key] = createStateHolder(specs);
-  }
-  // But key must always be returned
-  return { key: specs.key };
-}
-
 const forceUpdateReducer = (c) => c + 1;
 
 export function useRelinkValue(source, selector) {
-  STORE[source.key].M$suspenseOnHydration();
+  source.M$suspenseOnHydration();
   const currentValue =
-    typeof selector === 'function'
-      ? selector(STORE[source.key].M$get())
-      : STORE[source.key].M$get();
+    typeof selector === 'function' ? selector(source.M$get()) : source.M$get();
 
   useDebugValue(undefined, () =>
     process.env.NODE_ENV === 'production'
       ? undefined
       : {
-          key: source.key,
+          key: source.key || '(Unnamed)',
           selector,
           value: currentValue,
         }
@@ -62,17 +23,17 @@ export function useRelinkValue(source, selector) {
 
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0);
   useEffect(() => {
-    const listenerId = STORE[source.key].M$listener.M$add(() => {
+    const listenerId = source.M$listener.M$add(() => {
       const nextValue =
         typeof selector === 'function'
-          ? selector(STORE[source.key].M$get())
-          : STORE[source.key].M$get();
+          ? selector(source.M$get())
+          : source.M$get();
       if (!isEqual(currentValue, nextValue)) {
         forceUpdate();
       }
     });
     return () => {
-      STORE[source.key].M$listener.M$remove(listenerId);
+      source.M$listener.M$remove(listenerId);
     };
   }, [currentValue, selector, source.key]);
   return currentValue;
@@ -80,36 +41,38 @@ export function useRelinkValue(source, selector) {
 
 export function useRelinkState(source, selector) {
   const state = useRelinkValue(source, selector);
-  return [state, STORE[source.key].M$set];
+  return [state, source.M$set];
 }
 
 export function useSetRelinkState(source) {
-  STORE[source.key].M$suspenseOnHydration();
-  return STORE[source.key].M$set;
+  source.M$suspenseOnHydration();
+  return source.M$set;
 }
 
 export function useResetRelinkState(source) {
-  STORE[source.key].M$suspenseOnHydration();
-  return STORE[source.key].M$reset;
+  source.M$suspenseOnHydration();
+  return source.M$reset;
 }
 
 export function useRehydrateRelinkSource(source) {
-  STORE[source.key].M$suspenseOnHydration();
-  return STORE[source.key].M$hydrate;
+  source.M$suspenseOnHydration();
+  return source.M$hydrate;
 }
 
 export function dangerouslyGetRelinkValue(source) {
-  return STORE[source.key].M$get();
+  return source.M$get();
 }
 
 export function dangerouslySetRelinkState(source, partialState) {
-  STORE[source.key].M$set(partialState);
+  source.M$set(partialState);
 }
 
 export function dangerouslyResetRelinkState(source) {
-  STORE[source.key].M$reset();
+  source.M$reset();
 }
 
 export function dangerouslyRehydrateRelinkSource(source, callback) {
-  STORE[source.key].M$hydrate(callback);
+  source.M$hydrate(callback);
 }
+
+export { createSource } from './source';
