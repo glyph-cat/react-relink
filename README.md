@@ -59,7 +59,7 @@ Provide a unique key and default state for the source.
 import { createSource } from 'react-relink'
 
 const CounterSource = createSource({
-  key: 'counter',
+  key: 'counter', // Optional, used for debugging with React DevTools
   default: 1,
 })
 ```
@@ -127,7 +127,6 @@ You can use selectors to narrow down the items passed from `useRelinkState` and 
 
 ```js
 const MessagesSource = createSource({
-  key: 'messages',
   default: [
     {
       messageId: 1,
@@ -196,7 +195,6 @@ const defaultUserState = {
 }
 
 const UserSource = createSource({
-  key: 'user', // Optional, only used for debugging
   default: defaultUserState,
   lifecycle: {
     init: ({ commit }) => {
@@ -244,7 +242,6 @@ const defaultUserState = {
 }
 
 const UserSource = createSource({
-  key: 'user',
   default: defaultUserState,
   lifecycle: {
     init: ({ commit }) => {
@@ -274,7 +271,6 @@ There are several options that you can enable when creating a source. The defaul
 
 ```js
 const Source = createSource({
-  key: 'my-source',
   default: { /* . . . */ },
   options: {
     suspense: true | false,
@@ -306,7 +302,6 @@ import {
 } from 'react-relink'
 
 const CounterSource = createSource({
-  key: 'counter',
   default: 1,
 })
 
