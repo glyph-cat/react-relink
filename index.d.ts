@@ -20,7 +20,7 @@ export interface RelinkSelector<T, K> {
 }
 
 export interface RelinkSourceEntry<T> {
-  key: string
+  key?: any
   default: T
   lifecycle?: {
     init?: RelinkHydrator<T>
