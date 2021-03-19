@@ -16,7 +16,7 @@ export interface RelinkHydrator<T> {
 }
 
 export interface RelinkSelector<T, K> {
-  (oldState: T): K
+  (state: T): K
 }
 
 export interface RelinkSourceEntry<T> {
