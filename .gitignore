@@ -23,7 +23,7 @@ node_modules/
 .eslintcache
 
 # Playground
-*playground.*
+*.draft.*
 
 # OS
 .DS_Store
