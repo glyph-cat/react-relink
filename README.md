@@ -24,12 +24,16 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 - [Create a Source](#create-a-source)
 - [Consume a Source](#consume-a-source)
 - [Selectors](#selectors)
+- [Immutability](#immutability)
+  - [Selectors](#selectors-1)
+  - [Setters](#setters)
+  - [What to do about it](#what-to-do-about-it)
 - [Lifecycle](#lifecycle)
   - [Synchronous Example](#synchronous-example)
   - [Asynchronous Example](#asynchronous-example)
 - [Options](#options)
 - [Error Codes](#error-codes)
-- ["dangerously-" methods](#dangerously--methods)
+- [Interacting with Sources outside of React components](#interacting-with-sources-outside-of-react-components)
   - [Examples](#examples)
 
 <br/>
@@ -169,6 +173,40 @@ function App() {
 
 <br/>
 
+# Immutability
+
+All Relink states are immutable by default. Every copy of the state you receive is a new copy so if you modify or tamper with it, only that local copy is affected.
+
+## Selectors
+Take note, however, that for hooks, the state passed into your selector will be the same copy you receive afterwards.
+
+The selector works like this: Relink gives you a new copy of the complete state to your selector, the selector then cherry-picks the values that concerns your component and returns it to Relink to compare. If the currently cherry-picked values is different from that of the previous render, Relink will trigger a component update, otherwise nothing happens. Then, Relink returns the cherry-picked values directly to your component via the hook that you called.
+
+In the next major (1.X.X) update, selectors will be mutable. This means the internal copy of the state will be directly passed to selectors. Since selectors are well, selectors, they should not modify the state in anyway (and this shouldn't concern you if you do not abuse the use of selectors). After a selector returns the cherry-picked values to Relink for comparison, Relink will compare it with the previous set, create a deep copy and return it to your component. This is done out of consideration for performance. Instead of deep-copying the entire state for selection, Relink encourages you to select only what you need, then let Relink create a deep copy of it.
+
+![How selectors work in Relink before v1.x.x](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/how-selectors-work-in-relink-before-1xx.png)]
+
+![How selectors work in Relink after v1.x.x](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/how-selectors-work-in-relink-after-1xx.png)]
+
+## Setters
+This concerns setter functions that uses callbacks.
+```js
+  setState((scopedState) => {
+    ...scopedState,
+    someProperty: 'foo'
+  })
+```
+Relink will pass a new deep-copied state to your callback. We call it `scopedState`, where your callback is the scope. You are free to use and modify that copy as you please. When you return it back to Relink, Relink will deep-copy the return value before assigning the it back to Relink's internal state. This is so that in case of memory leaks or if your code alters the `scopedState` after setter is called, it corrupt the entire app.
+
+![How state setters work in Relink](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/how-state-setters-work-in-relink.png)]
+
+[Sigh, Immutability...](https://i.imgur.com/j6PP6Pz.jpg)
+
+## What to do about it
+If you are concerned about performance, you can set `options.mutability` to `true` See [Options](#-options).
+
+<br/>
+
 # Lifecycle
 Sources can be initialized(hydrated), persisted and reset.
 
@@ -278,7 +316,7 @@ const Source = createSource({
 * `suspense?: boolean (Default: false)`<br/>Components that consume the source will be suspended while hydrating.
 
 * `mutable?: boolean (Default: false)`<br/>Allows slight performance improvement by not deep-copying the values returned.
-* `virtualBatch?: boolean (Default: false)`<br/>Slightly improve performance by coalescing the "setState" calls on top of React's batched updates. This is only suitable for sources that have frequent "`setState`" calls but results in little to no immediate UI changes. For example, a huge [virtualized](http://react-window.now.sh) list which its data is realtime and updated through a listener. Virtual batching actually creates a delay in component updating, but it's short enough that it's unnoticeable most of the time. Virtual batching is **not suitable** in UIs that updates frequently and needs to be responsive, such as forms and text fields. If you swipe your fingers across your keyboard quickly or let a cat run across it, you will see the characters appearing one by one, slowly catching up only after you have finished typing.
+* `virtualBatch?: boolean (Default: false)`<br/>Slightly improve performance by coalescing the "setState" calls on top of React's batched updates. This is only suitable for sources that have frequent "`setState`" calls but results in little to no immediate UI changes. For example, a huge [virtualized](http://react-window.now.sh) list which its data is realtime and updated through a listener. Virtual batching actually creates a delay in component updating, but it's short enough that it's unnoticeable most of the time. Virtual batching is **not suitable** in UIs that updates frequently and needs to be responsive, such as forms and text fields. If you let a cat run across your keyboard, you are very likely to see the characters slowly appearing one by one.
 
 <br/>
 
@@ -291,36 +329,28 @@ Error codes will be thrown instead of messages in production builds to save data
 
 <br/>
 
-# "dangerously-" methods
-
-You can also consume sources outside of a component. Although the hooks mentioned above should be enough for most cases, there are equivalent ordinary functions in case you need them. These APIs have the "dangerously-" prefix as using them might result in hard-to-debug code. They should be used sparingly.
+# Interacting with Sources outside of React components
 
 ## Examples
 ```js
-import {
-  createSource,
-  dangerouslyGetRelinkValue,
-  dangerouslySetRelinkState,
-  dangerouslyResetRelinkState,
-  dangerouslyRehydrateRelinkSource,
-} from 'react-relink'
+import { createSource } from 'react-relink'
 
 const CounterSource = createSource({
   default: 1,
 })
 
 // Getting the value
-const value = dangerouslyGetRelinkValue(CounterSource)
+const value = CounterSource.get()
 
 // Set the state...
-dangerouslySetRelinkState(newValue, CounterSource) // directly
-dangerouslySetRelinkState(c => c + 1, CounterSource) // with a function
+CounterSource.set(newValue) // directly
+CounterSource.set(c => c + 1) // with a function
 
 // Reset the state
-dangerouslyResetRelinkState(Source)
+CounterSource.reset()
 
 // Rehydrate the source
-dangerouslyResetRelinkState(Source, ({ commit }) => {
+CounterSource.hydrate(({ commit }) => {
   commit(newValue)
 })
 ```

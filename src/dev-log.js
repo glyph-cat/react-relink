@@ -9,7 +9,7 @@ if (IS_DEBUG) {
 }
 
 /**
- * @param {'log'|'warn'|'error'} type
+ * @param {'log'|'info'|'warn'|'error'} type
  * @param {string} message
  */
 export function devPrint(type, message) {
@@ -19,7 +19,7 @@ export function devPrint(type, message) {
 }
 
 /**
- * @param {'log'|'warn'|'error'} type
+ * @param {'log'|'info'|'warn'|'error'} type
  * @param {string} key
  * @param {string} message
  */
