@@ -1,12 +1,11 @@
-import { createCompoundHookInterface } from '../../__utils__/hook-interface';
+import { createCompoundHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
   describe('useResetRelinkState', () => {
     it('Normal + no extra re-renders', () => {
       const Source = Relink.createSource({
-        key: 'test/useResetRelinkState',
         default: 1,
-      });
+      })
       const compoundHookInterface = createCompoundHookInterface({
         a1: {
           hook: {
@@ -15,7 +14,7 @@ export default function ({ Relink }) {
           },
           actions: {
             step: ({ H: setState }) => {
-              setState(2);
+              setState(2)
             },
           },
         },
@@ -26,7 +25,7 @@ export default function ({ Relink }) {
           },
           actions: {
             reset: ({ H: resetState }) => {
-              resetState();
+              resetState()
             },
           },
         },
@@ -40,24 +39,24 @@ export default function ({ Relink }) {
             value: (H) => H,
           },
         },
-      });
+      })
 
       // Initial phase
-      expect(compoundHookInterface.at('b').get('value')).toBe('1');
+      expect(compoundHookInterface.at('b').get('value')).toBe('1')
 
       // Update phase
-      compoundHookInterface.at('a1').actions('step');
-      expect(compoundHookInterface.at('b').get('value')).toBe('2');
+      compoundHookInterface.at('a1').actions('step')
+      expect(compoundHookInterface.at('b').get('value')).toBe('2')
 
       // Reset phase
-      compoundHookInterface.at('a2').actions('reset');
-      expect(compoundHookInterface.at('b').get('value')).toBe('1');
+      compoundHookInterface.at('a2').actions('reset')
+      expect(compoundHookInterface.at('b').get('value')).toBe('1')
 
       // Check if A & B, which only uses the setter & resetter, performs extra re-renders
-      expect(compoundHookInterface.at('a1').getRenderCount()).toBe(1);
-      expect(compoundHookInterface.at('a2').getRenderCount()).toBe(1);
+      expect(compoundHookInterface.at('a1').getRenderCount()).toBe(1)
+      expect(compoundHookInterface.at('a2').getRenderCount()).toBe(1)
 
-      compoundHookInterface.cleanup();
-    });
-  });
+      compoundHookInterface.cleanup()
+    })
+  })
 }

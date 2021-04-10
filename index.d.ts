@@ -3,12 +3,17 @@ export interface HydrationCommitter<T> {
 }
 
 export interface RelinkSource<T> {
-  key: string
+  addListener: (callback: (state: T) => void) => number
+  removeListener: (id: number) => void
+  get: () => T
+  set: RelinkSetter<T>
+  reset: () => void
+  hydrate: HydrationCommitter<T>
 }
 
 export interface RelinkSetter<T> {
-  (oldState: T): void
-  (callback: (oldState: T) => T): void
+  (newState: T): void
+  (callback: (scopedState: T) => T): void
 }
 
 export interface RelinkHydrator<T> {
