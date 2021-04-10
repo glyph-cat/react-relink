@@ -3,6 +3,7 @@ import { IS_DEBUG } from './constants'
 if (IS_DEBUG) {
   var onlyOnceCache = {
     log: {},
+    info: {},
     warn: {},
     error: {},
   }
