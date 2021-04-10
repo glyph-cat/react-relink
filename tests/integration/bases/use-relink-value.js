@@ -4,7 +4,6 @@ export default function ({ Relink }) {
   describe('useRelinkValue', () => {
     it('Normal', () => {
       const Source = Relink.createSource({
-        key: 'test/useRelinkValue',
         default: 1,
       });
       const hookInterface = createHookInterface({

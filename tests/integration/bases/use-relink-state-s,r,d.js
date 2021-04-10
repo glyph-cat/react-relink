@@ -4,11 +4,9 @@ export default function ({ Relink }) {
   describe('useRelinkState', () => {
     it('Different sources, no extra re-renders 2', () => {
       const SourceA = Relink.createSource({
-        key: 'test/useRelinkState-dr/a',
         default: 1,
       });
       const SourceB = Relink.createSource({
-        key: 'test/useRelinkState-dr/b',
         default: 2,
       });
 

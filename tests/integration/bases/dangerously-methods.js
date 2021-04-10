@@ -5,7 +5,6 @@ export default function ({ Relink }) {
   it('Dangerously Methods', () => {
     // Create source
     const Source = Relink.createSource({
-      key: 'test/dangerously-methods',
       default: 1,
     });
 

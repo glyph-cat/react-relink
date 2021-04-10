@@ -4,7 +4,6 @@ export default function ({ Relink }) {
   describe('useSetRelinkState', () => {
     it('Normal + no extra re-renders', () => {
       const Source = Relink.createSource({
-        key: 'test/useSetRelinkState',
         default: 1,
       });
       const compoundHookInterface = createCompoundHookInterface({

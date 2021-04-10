@@ -5,6 +5,6 @@ export default function ({ Relink }) {
       key,
       default: { username: 'foo' },
     });
-    expect(Source.key).toBe(key);
+    expect(Object.values(Source).includes(key)).toBe(true);
   });
 }

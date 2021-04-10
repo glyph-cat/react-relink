@@ -7,7 +7,6 @@ export default function ({ Relink }) {
       let didSetCalled = false;
 
       const Source = Relink.createSource({
-        key: 'test/useRehydrateRelinkSource',
         default: 1,
         lifecycle: {
           didSet: () => {

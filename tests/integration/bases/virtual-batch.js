@@ -4,7 +4,6 @@ export default function ({ Relink }) {
   it('With Virtual Batch', () => {
     jest.useFakeTimers();
     const Source = Relink.createSource({
-      key: 'test/with-virtual-batch',
       default: 1,
     });
     const hookInterface = createHookInterface({

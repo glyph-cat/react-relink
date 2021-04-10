@@ -28,6 +28,7 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
   - [Synchronous Example](#synchronous-example)
   - [Asynchronous Example](#asynchronous-example)
 - [Options](#options)
+- [Error Codes](#error-codes)
 - ["dangerously-" methods](#dangerously--methods)
   - [Examples](#examples)
 
@@ -53,7 +54,7 @@ yarn add react-relink
 
 # Create a Source
 
-Provide a unique key and default state for the source.
+Provide a default state for the source.
 
 ```js
 import { createSource } from 'react-relink'
@@ -284,6 +285,15 @@ const Source = createSource({
 
 * `mutable?: boolean (Default: false)`<br/>Allows slight performance improvement by not deep-copying the values returned.
 * `virtualBatch?: boolean (Default: false)`<br/>Slightly improve performance by coalescing the "setState" calls on top of React's batched updates. This is only suitable for sources that have frequent "`setState`" calls but results in little to no immediate UI changes. For example, a huge [virtualized](http://react-window.now.sh) list which its data is realtime and updated through a listener. Virtual batching actually creates a delay in component updating, but it's short enough that it's unnoticeable most of the time. Virtual batching is **not suitable** in UIs that updates frequently and needs to be responsive, such as forms and text fields. If you swipe your fingers across your keyboard quickly or let a cat run across it, you will see the characters appearing one by one, slowly catching up only after you have finished typing.
+
+<br/>
+
+# Error Codes
+Error codes will be thrown instead of messages in production builds to save data.
+
+| Code | Description                                  |
+| ---- | -------------------------------------------- |
+| 1    | Circular source dependencies are not allowed |
 
 <br/>
 
