@@ -1,21 +1,37 @@
 import { IS_DEBUG } from './constants'
 
-export function devLog(message) {
-  if (IS_DEBUG) {
-    console.warn(`[Development] ${message}`)
+if (IS_DEBUG) {
+  var onlyOnceCache = {
+    log: {},
+    warn: {},
+    error: {},
   }
 }
 
-const onlyOnceCache = {}
-export function devLogOnce(key, message) {
+/**
+ * @param {'log'|'warn'|'error'} type
+ * @param {string} message
+ */
+export function devPrint(type, message) {
   if (IS_DEBUG) {
-    if (!onlyOnceCache[key]) {
-      onlyOnceCache[key] = true
-      console.warn(`[Development] ${message}`)
+    console[type](`[Development] ${message}`)
+  }
+}
+
+/**
+ * @param {'log'|'warn'|'error'} type
+ * @param {string} key
+ * @param {string} message
+ */
+export function devPrintOnce(type, key, message) {
+  if (IS_DEBUG) {
+    if (!onlyOnceCache[type][key]) {
+      onlyOnceCache[type][key] = true
+      console[type](`[Development] ${message}`)
     }
   }
 }
 
 export function deprecationWarn(key, message) {
-  devLogOnce(key, `Deprecation warning: ${message}`)
+  devPrintOnce('warn', key, `Deprecation warning: ${message}`)
 }

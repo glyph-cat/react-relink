@@ -70,7 +70,7 @@ export function dangerouslyGetRelinkValue(source) {
 export function dangerouslySetRelinkState(source, partialState) {
   deprecationWarn(
     'dSet',
-    'Prefer `YourSource.set()` over `dangerouslySetRelinkValue(YourSource)`'
+    'Prefer `YourSource.set(...)` over `dangerouslySetRelinkValue(YourSource, ...)`'
   )
   source.set(partialState)
 }
@@ -86,7 +86,7 @@ export function dangerouslyResetRelinkState(source) {
 export function dangerouslyRehydrateRelinkSource(source, callback) {
   deprecationWarn(
     'dHyd',
-    'Prefer `YourSource.hydrate()` over `dangerouslyHydrateRelinkValue(YourSource)`'
+    'Prefer `YourSource.hydrate(...)` over `dangerouslyHydrateRelinkValue(YourSource, ...)`'
   )
   source.hydrate(callback)
 }

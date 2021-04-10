@@ -1,7 +1,6 @@
 import { createSource } from '../../../src/source'
 
 it('Source - Add/Remove Listener', () => {
-
   const sh = createSource({
     default: 1,
   })
@@ -23,5 +22,4 @@ it('Source - Add/Remove Listener', () => {
   sh.removeListener(listenerId)
   sh.set(3)
   expect(receivedState).toBe(2)
-
 })
