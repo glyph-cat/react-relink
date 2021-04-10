@@ -1,5 +1,16 @@
-// @description
-// A wrapper file around 'fast-copy'
 import fastCopy from 'fast-copy'
-const deepCopy = fastCopy
+
+/**
+ * @description Wrapper around 'fast-copy'
+ * @param {any} value
+ * @returns {any}
+ */
+function deepCopy(value) {
+  if (typeof value !== 'object' || value === null) {
+    return value
+  } else {
+    return fastCopy(value)
+  }
+}
+
 export default deepCopy
