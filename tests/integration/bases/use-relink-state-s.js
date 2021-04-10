@@ -4,7 +4,6 @@ export default function ({ Relink }) {
   describe('useRelinkState', () => {
     it('With selector', () => {
       const Source = Relink.createSource({
-        key: 'test/useRelinkState-s',
         default: { a: 1, b: 2 },
       });
 

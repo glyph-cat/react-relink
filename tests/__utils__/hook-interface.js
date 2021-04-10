@@ -75,7 +75,7 @@ export function createHookInterface({ hook = {}, actions = {}, values = {} }) {
 
 export function createCompoundHookInterface(channels = {}) {
   const renderStack = [];
-  const renderCount = {}; // TODO: rename to "renderCount"
+  const renderCount = {};
   const outlets = {};
 
   const channelKeys = Object.keys(channels);

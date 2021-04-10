@@ -1,5 +1,6 @@
 import { useDebugValue, useReducer } from 'react';
 import isEqual from 'react-fast-compare';
+import { IS_DEBUG } from './constants';
 
 // So that eslint sees it as the original useEffect
 import useEffect from './use-isomorphic-layout-effect';
@@ -12,13 +13,13 @@ export function useRelinkValue(source, selector) {
     typeof selector === 'function' ? selector(source.M$get()) : source.M$get();
 
   useDebugValue(undefined, () =>
-    process.env.NODE_ENV === 'production'
-      ? undefined
-      : {
-          key: source.key || '(Unnamed)',
+    IS_DEBUG
+      ? {
+          key: source.M$key || '(Unnamed)',
           selector,
           value: currentValue,
         }
+      : undefined
   );
 
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0);
@@ -35,7 +36,7 @@ export function useRelinkValue(source, selector) {
     return () => {
       source.M$listener.M$remove(listenerId);
     };
-  }, [currentValue, selector, source.key]);
+  }, [currentValue, selector, source]);
   return currentValue;
 }
 
@@ -75,4 +76,4 @@ export function dangerouslyRehydrateRelinkSource(source, callback) {
   source.M$hydrate(callback);
 }
 
-export { createSource } from './source';
+export { createSource, UNSTABLE_createSource } from './source';

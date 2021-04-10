@@ -4,7 +4,6 @@ export default function ({ Relink }) {
   describe('useRelinkState', () => {
     it('With selector, no extra re-renders', () => {
       const Source = Relink.createSource({
-        key: 'test/useRelinkState-sr',
         default: { a: 1, b: 2 },
       });
       const hookInterface = createHookInterface({

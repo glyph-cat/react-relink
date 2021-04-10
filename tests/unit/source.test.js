@@ -7,7 +7,6 @@ const paddingTime = 100; // ms
 describe('Basics', () => {
   it('get', () => {
     const sh = createSource({
-      key: 'source/get',
       default: 1,
     });
     const state = sh.M$get();
@@ -16,7 +15,6 @@ describe('Basics', () => {
 
   it('set', () => {
     const sh = createSource({
-      key: 'source/set',
       default: 1,
     });
     sh.M$set(3);
@@ -31,7 +29,6 @@ describe('Hydration & Persistence', () => {
     const hydrationValue = 2;
 
     const sh = createSource({
-      key: 'source/hydrator-persistor/synchronous',
       default: 1,
       lifecycle: {
         init: ({ commit }) => {
@@ -72,7 +69,6 @@ describe('Hydration & Persistence', () => {
       });
 
     const sh = createSource({
-      key: 'source/hydrator-persistor/promise.then',
       default: 1,
       lifecycle: {
         init: ({ commit }) => {
@@ -125,7 +121,6 @@ describe('Hydration & Persistence', () => {
       });
 
     const sh = createSource({
-      key: 'source/hydrator-persistor/asynchronous',
       default: 1,
       lifecycle: {
         init: async ({ commit }) => {
@@ -169,7 +164,6 @@ describe('Rehydration', () => {
   it('Synchronous', () => {
     let mockStorage = null;
     const sh = createSource({
-      key: 'source/rehydration/synchronous',
       default: 0,
       lifecycle: {
         init: ({ commit }) => {
@@ -215,7 +209,6 @@ describe('Rehydration', () => {
       });
 
     const sh = createSource({
-      key: 'source/rehydration/asynchronous',
       default: 0,
       lifecycle: {
         init: async ({ commit }) => {
@@ -263,7 +256,6 @@ describe('Mutability', () => {
     it('Mutable', () => {
       const defaultValue = { value: 1 };
       const sh = createSource({
-        key: 'source/mutable-create/true',
         default: defaultValue,
         options: {
           mutable: true,
@@ -276,7 +268,6 @@ describe('Mutability', () => {
     it('Immutable', () => {
       const defaultValue = { value: 1 };
       const sh = createSource({
-        key: 'source/mutable-create/false',
         default: defaultValue,
       });
       defaultValue.value = 2;
@@ -295,7 +286,6 @@ describe('Mutability', () => {
     it('Mutable', () => {
       jest.useFakeTimers();
       const sh = createSource({
-        key: 'source/mutable-set/true',
         default: { value: 1 },
         options: {
           mutable: true,
@@ -318,7 +308,6 @@ describe('Mutability', () => {
     it('Immutable', () => {
       jest.useFakeTimers();
       const sh = createSource({
-        key: 'source/mutable-set/false',
         default: { value: 1 },
         options: {
           virtualBatch: true,
@@ -342,7 +331,6 @@ describe('Mutability', () => {
 it('States are carried forward in the batches', () => {
   jest.useFakeTimers();
   const sh = createSource({
-    key: 'source/virtual-batch-cf',
     default: { a: 1, b: 1 },
     options: { virtualBatch: true },
   });
