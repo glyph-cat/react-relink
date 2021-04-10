@@ -12,8 +12,8 @@ export interface RelinkSource<T> {
 }
 
 export interface RelinkSetter<T> {
-  (oldState: T): void
-  (callback: (oldState: T) => T): void
+  (newState: T): void
+  (callback: (scopedState: T) => T): void
 }
 
 export interface RelinkHydrator<T> {
