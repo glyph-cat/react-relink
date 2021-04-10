@@ -5,17 +5,12 @@ import replace from '@rollup/plugin-replace'
 import { terser } from 'rollup-plugin-terser'
 
 const INPUT_FILE = 'src/index.js'
-const EXTERNAL_LIBS = [
-  'react',
-  'react-dom',
-  'lodash.clonedeep',
-  'react-fast-compare',
-]
+const EXTERNAL_LIBS = ['react', 'react-dom', 'fast-copy', 'react-fast-compare']
 
 const UMD_GLOBALS = {
   react: 'React',
   'react-dom': 'ReactDOM',
-  'lodash.clonedeep': 'cloneDeep',
+  'fast-copy': 'fastCopy',
   'react-fast-compare': 'isEqual',
 }
 
