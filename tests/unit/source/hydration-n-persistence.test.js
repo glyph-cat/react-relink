@@ -1,4 +1,4 @@
-import { UNSTABLE_createSource as createSource } from '../../../src/source'
+import { createSource } from '../../../src/source'
 import { MOCK_SERVER_RESPONSE_TIME, PADDING_TIME } from './constants'
 
 describe('Hydration & Persistence', () => {
@@ -22,16 +22,16 @@ describe('Hydration & Persistence', () => {
     })
 
     // Hydration - Get value without waiting
-    const hydratedValue = sh.M$get()
+    const hydratedValue = sh.get()
     expect(hydratedValue).toBe(hydrationValue)
 
     // Persistence
     const newPersistedValue = 3
-    sh.M$set(newPersistedValue)
+    sh.set(newPersistedValue)
     expect(mockStorage).toBe(newPersistedValue)
 
     // Reset
-    sh.M$reset()
+    sh.reset()
     expect(mockStorage).toBe(null)
   })
 
@@ -69,16 +69,16 @@ describe('Hydration & Persistence', () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hydration - Wait for "server" to return value
-        const hydratedValue = sh.M$get()
+        const hydratedValue = sh.get()
         expect(hydratedValue).toBe(hydrationValue)
         // Persistence
         const newPersistedValue = 3
-        sh.M$set(newPersistedValue)
+        sh.set(newPersistedValue)
         setTimeout(() => {
           expect(mockStorage).toBe(newPersistedValue)
           // Reset
           setTimeout(() => {
-            sh.M$reset()
+            sh.reset()
             expect(mockStorage).toBe(null)
             resolve()
           }, PADDING_TIME)
@@ -120,15 +120,15 @@ describe('Hydration & Persistence', () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hydration - Wait for "server" to return value
-        const hydratedValue = sh.M$get()
+        const hydratedValue = sh.get()
         expect(hydratedValue).toBe(hydrationValue)
         // Persistence
         const newPersistedValue = 3
-        sh.M$set(newPersistedValue)
+        sh.set(newPersistedValue)
         setTimeout(() => {
           expect(mockStorage).toBe(newPersistedValue)
           setTimeout(() => {
-            sh.M$reset()
+            sh.reset()
             expect(mockStorage).toBe(null)
             resolve()
           }, PADDING_TIME)

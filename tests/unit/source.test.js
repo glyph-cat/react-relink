@@ -1,24 +1,24 @@
 import { act } from 'react-test-renderer'
-import { createSource } from '../../src/source'
+import { UNSAFE_createSource } from '../../src/source'
 
 const mockServerResponseTime = 500 // ms
 const paddingTime = 100 // ms
 
 describe('Basics', () => {
   it('get', () => {
-    const sh = createSource({
+    const sh = UNSAFE_createSource({
       default: 1,
     })
-    const state = sh.M$get()
+    const state = sh.get()
     expect(state).toBe(1)
   })
 
   it('set', () => {
-    const sh = createSource({
+    const sh = UNSAFE_createSource({
       default: 1,
     })
-    sh.M$set(3)
-    const state = sh.M$get()
+    sh.set(3)
+    const state = sh.get()
     expect(state).toBe(3)
   })
 })
@@ -28,7 +28,7 @@ describe('Hydration & Persistence', () => {
     let mockStorage = null
     const hydrationValue = 2
 
-    const sh = createSource({
+    const sh = UNSAFE_createSource({
       default: 1,
       lifecycle: {
         init: ({ commit }) => {
@@ -44,16 +44,16 @@ describe('Hydration & Persistence', () => {
     })
 
     // Hydration - Get value without waiting
-    const hydratedValue = sh.M$get()
+    const hydratedValue = sh.get()
     expect(hydratedValue).toBe(hydrationValue)
 
     // Persistence
     const newPersistedValue = 3
-    sh.M$set(newPersistedValue)
+    sh.set(newPersistedValue)
     expect(mockStorage).toBe(newPersistedValue)
 
     // Reset
-    sh.M$reset()
+    sh.reset()
     expect(mockStorage).toBe(null)
   })
 
@@ -68,7 +68,7 @@ describe('Hydration & Persistence', () => {
         }, mockServerResponseTime)
       })
 
-    const sh = createSource({
+    const sh = UNSAFE_createSource({
       default: 1,
       lifecycle: {
         init: ({ commit }) => {
@@ -91,16 +91,16 @@ describe('Hydration & Persistence', () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hydration - Wait for "server" to return value
-        const hydratedValue = sh.M$get()
+        const hydratedValue = sh.get()
         expect(hydratedValue).toBe(hydrationValue)
         // Persistence
         const newPersistedValue = 3
-        sh.M$set(newPersistedValue)
+        sh.set(newPersistedValue)
         setTimeout(() => {
           expect(mockStorage).toBe(newPersistedValue)
           // Reset
           setTimeout(() => {
-            sh.M$reset()
+            sh.reset()
             expect(mockStorage).toBe(null)
             resolve()
           }, paddingTime)
@@ -120,7 +120,7 @@ describe('Hydration & Persistence', () => {
         }, mockServerResponseTime)
       })
 
-    const sh = createSource({
+    const sh = UNSAFE_createSource({
       default: 1,
       lifecycle: {
         init: async ({ commit }) => {
@@ -142,15 +142,15 @@ describe('Hydration & Persistence', () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hydration - Wait for "server" to return value
-        const hydratedValue = sh.M$get()
+        const hydratedValue = sh.get()
         expect(hydratedValue).toBe(hydrationValue)
         // Persistence
         const newPersistedValue = 3
-        sh.M$set(newPersistedValue)
+        sh.set(newPersistedValue)
         setTimeout(() => {
           expect(mockStorage).toBe(newPersistedValue)
           setTimeout(() => {
-            sh.M$reset()
+            sh.reset()
             expect(mockStorage).toBe(null)
             resolve()
           }, paddingTime)
@@ -163,7 +163,7 @@ describe('Hydration & Persistence', () => {
 describe('Rehydration', () => {
   it('Synchronous', () => {
     let mockStorage = null
-    const sh = createSource({
+    const sh = UNSAFE_createSource({
       default: 0,
       lifecycle: {
         init: ({ commit }) => {
@@ -184,18 +184,18 @@ describe('Rehydration', () => {
 
     act(() => {
       // Expect hydration to use this value...
-      sh.M$hydrate(async ({ commit }) => {
+      sh.hydrate(async ({ commit }) => {
         const data = 2
         commit(data)
       })
       // ...then use this, since it is synchronous
-      sh.M$hydrate(async ({ commit }) => {
+      sh.hydrate(async ({ commit }) => {
         const data = 3
         commit(data)
       })
     })
 
-    expect(sh.M$get()).toBe(3)
+    expect(sh.get()).toBe(3)
     expect(mockStorage).toBe(null) // Since it's just hydration
   })
 
@@ -208,7 +208,7 @@ describe('Rehydration', () => {
         }, mockTimeout)
       })
 
-    const sh = createSource({
+    const sh = UNSAFE_createSource({
       default: 0,
       lifecycle: {
         init: async ({ commit }) => {
@@ -231,18 +231,18 @@ describe('Rehydration', () => {
       setTimeout(() => {
         act(() => {
           // Expect hydration to use this value...
-          sh.M$hydrate(async ({ commit }) => {
+          sh.hydrate(async ({ commit }) => {
             const data = await getValueFromMockServer(2, paddingTime * 2)
             commit(data)
           })
           // ...while this one is blocked
-          sh.M$hydrate(async ({ commit }) => {
+          sh.hydrate(async ({ commit }) => {
             const data = await getValueFromMockServer(3, paddingTime)
             commit(data)
           })
         })
         setTimeout(() => {
-          expect(sh.M$get()).toBe(2)
+          expect(sh.get()).toBe(2)
           expect(mockStorage).toBe(null) // Since it's just hydration
           resolve()
         }, paddingTime * 3)
@@ -255,23 +255,23 @@ describe('Mutability', () => {
   describe('Create', () => {
     it('Mutable', () => {
       const defaultValue = { value: 1 }
-      const sh = createSource({
+      const sh = UNSAFE_createSource({
         default: defaultValue,
         options: {
           mutable: true,
         },
       })
       defaultValue.value = 2
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
     })
 
     it('Immutable', () => {
       const defaultValue = { value: 1 }
-      const sh = createSource({
+      const sh = UNSAFE_createSource({
         default: defaultValue,
       })
       defaultValue.value = 2
-      expect(sh.M$get().value).toBe(1)
+      expect(sh.get().value).toBe(1)
     })
   })
 
@@ -285,58 +285,58 @@ describe('Mutability', () => {
   describe('Set', () => {
     it('Mutable', () => {
       jest.useFakeTimers()
-      const sh = createSource({
+      const sh = UNSAFE_createSource({
         default: { value: 1 },
         options: {
           mutable: true,
           virtualBatch: true,
         },
       })
-      sh.M$set((oldState) => {
+      sh.set((oldState) => {
         oldState.value = 2
         return oldState
       })
 
       // Before update
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
       jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
     })
 
     it('Immutable', () => {
       jest.useFakeTimers()
-      const sh = createSource({
+      const sh = UNSAFE_createSource({
         default: { value: 1 },
         options: {
           virtualBatch: true,
         },
       })
-      sh.M$set((oldState) => {
+      sh.set((oldState) => {
         oldState.value = 2
         return oldState
       })
 
       // Before update
-      expect(sh.M$get().value).toBe(1)
+      expect(sh.get().value).toBe(1)
       jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
     })
   })
 })
 
 it('States are carried forward in the batches', () => {
   jest.useFakeTimers()
-  const sh = createSource({
+  const sh = UNSAFE_createSource({
     default: { a: 1, b: 1 },
     options: { virtualBatch: true },
   })
-  sh.M$set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
-  sh.M$set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
+  sh.set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
+  sh.set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
   jest.advanceTimersByTime()
-  const state = sh.M$get()
+  const state = sh.get()
   expect(state).toStrictEqual({ a: 2, b: 2 })
 })

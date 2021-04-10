@@ -1,6 +1,7 @@
 import { useDebugValue, useReducer } from 'react'
 import isEqual from 'react-fast-compare'
 import { IS_DEBUG } from './constants'
+import { deprecationWarn } from './dev-log'
 
 // So that eslint sees it as the original useEffect
 import useEffect from './use-isomorphic-layout-effect'
@@ -10,7 +11,7 @@ const forceUpdateReducer = (c) => c + 1
 export function useRelinkValue(source, selector) {
   source.M$suspenseOnHydration()
   const currentValue =
-    typeof selector === 'function' ? selector(source.M$get()) : source.M$get()
+    typeof selector === 'function' ? selector(source.get()) : source.get()
 
   useDebugValue(undefined, () =>
     IS_DEBUG
@@ -26,9 +27,7 @@ export function useRelinkValue(source, selector) {
   useEffect(() => {
     const listenerId = source.M$listener.M$add(() => {
       const nextValue =
-        typeof selector === 'function'
-          ? selector(source.M$get())
-          : source.M$get()
+        typeof selector === 'function' ? selector(source.get()) : source.get()
       if (!isEqual(currentValue, nextValue)) {
         forceUpdate()
       }
@@ -42,38 +41,54 @@ export function useRelinkValue(source, selector) {
 
 export function useRelinkState(source, selector) {
   const state = useRelinkValue(source, selector)
-  return [state, source.M$set]
+  return [state, source.set]
 }
 
 export function useSetRelinkState(source) {
   source.M$suspenseOnHydration()
-  return source.M$set
+  return source.set
 }
 
 export function useResetRelinkState(source) {
   source.M$suspenseOnHydration()
-  return source.M$reset
+  return source.reset
 }
 
 export function useRehydrateRelinkSource(source) {
   source.M$suspenseOnHydration()
-  return source.M$hydrate
+  return source.hydrate
 }
 
 export function dangerouslyGetRelinkValue(source) {
-  return source.M$get()
+  deprecationWarn(
+    'dGet',
+    'Prefer `YourSource.get()` over `dangerouslyGetRelinkValue(YourSource)`'
+  )
+  return source.get()
 }
 
 export function dangerouslySetRelinkState(source, partialState) {
-  source.M$set(partialState)
+  deprecationWarn(
+    'dSet',
+    'Prefer `YourSource.set()` over `dangerouslySetRelinkValue(YourSource)`'
+  )
+  source.set(partialState)
 }
 
 export function dangerouslyResetRelinkState(source) {
-  source.M$reset()
+  deprecationWarn(
+    'dReset',
+    'Prefer `YourSource.reset()` over `dangerouslyResetRelinkValue(YourSource)`'
+  )
+  source.reset()
 }
 
 export function dangerouslyRehydrateRelinkSource(source, callback) {
-  source.M$hydrate(callback)
+  deprecationWarn(
+    'dHyd',
+    'Prefer `YourSource.hydrate()` over `dangerouslyHydrateRelinkValue(YourSource)`'
+  )
+  source.hydrate(callback)
 }
 
-export { createSource, UNSTABLE_createSource } from './source'
+export { createSource } from './source'
