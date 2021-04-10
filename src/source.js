@@ -45,10 +45,10 @@ export function createSource(specs) {
 
   const internalBatch = options.virtualBatch
     ? (callback) => {
-        virtualBatch(() => {
-          batchedUpdates(callback)
-        })
-      }
+      virtualBatch(() => {
+        batchedUpdates(callback)
+      })
+    }
     : batchedUpdates
 
   const performUpdate = (type, newState) => {
@@ -87,7 +87,7 @@ export function createSource(specs) {
       if (IS_DEBUG) {
         console.error(
           'Cannot hydrate source during a hydration' +
-            (key ? `(in "${key}")` : '')
+          (key ? `(in "${key}")` : '')
         )
       }
       return
@@ -200,13 +200,19 @@ export function createSource(specs) {
     })
   }
 
+  const addListener = (callback) => {
+    return M$listener.M$add(() => {
+      callback(get())
+    })
+  }
+
   return {
     M$internalId,
     M$key: key,
     M$deps: deps,
     M$addInitListener: initListener.M$add,
     M$listener,
-    addListener: M$listener.M$add,
+    addListener,
     removeListener: M$listener.M$remove,
     hydrate,
     M$getIsReadyStatus: () => !isHydrating,
