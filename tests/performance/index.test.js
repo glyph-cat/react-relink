@@ -18,5 +18,5 @@
 // }
 
 it('Skipping performance tests for th time being...', () => {
-  expect().toBe();
-});
+  expect().toBe()
+})

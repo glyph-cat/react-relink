@@ -1,279 +1,279 @@
-import { act } from 'react-test-renderer';
-import { createSource } from '../../src/source';
+import { act } from 'react-test-renderer'
+import { createSource } from '../../src/source'
 
-const mockServerResponseTime = 500; // ms
-const paddingTime = 100; // ms
+const mockServerResponseTime = 500 // ms
+const paddingTime = 100 // ms
 
 describe('Basics', () => {
   it('get', () => {
     const sh = createSource({
       default: 1,
-    });
-    const state = sh.M$get();
-    expect(state).toBe(1);
-  });
+    })
+    const state = sh.M$get()
+    expect(state).toBe(1)
+  })
 
   it('set', () => {
     const sh = createSource({
       default: 1,
-    });
-    sh.M$set(3);
-    const state = sh.M$get();
-    expect(state).toBe(3);
-  });
-});
+    })
+    sh.M$set(3)
+    const state = sh.M$get()
+    expect(state).toBe(3)
+  })
+})
 
 describe('Hydration & Persistence', () => {
   it('Synchronous', () => {
-    let mockStorage = null;
-    const hydrationValue = 2;
+    let mockStorage = null
+    const hydrationValue = 2
 
     const sh = createSource({
       default: 1,
       lifecycle: {
         init: ({ commit }) => {
-          commit(hydrationValue);
+          commit(hydrationValue)
         },
         didSet: ({ state }) => {
-          mockStorage = state;
+          mockStorage = state
         },
         didReset: () => {
-          mockStorage = null;
+          mockStorage = null
         },
       },
-    });
+    })
 
     // Hydration - Get value without waiting
-    const hydratedValue = sh.M$get();
-    expect(hydratedValue).toBe(hydrationValue);
+    const hydratedValue = sh.M$get()
+    expect(hydratedValue).toBe(hydrationValue)
 
     // Persistence
-    const newPersistedValue = 3;
-    sh.M$set(newPersistedValue);
-    expect(mockStorage).toBe(newPersistedValue);
+    const newPersistedValue = 3
+    sh.M$set(newPersistedValue)
+    expect(mockStorage).toBe(newPersistedValue)
 
     // Reset
-    sh.M$reset();
-    expect(mockStorage).toBe(null);
-  });
+    sh.M$reset()
+    expect(mockStorage).toBe(null)
+  })
 
   it('Promise.then', () => {
-    let mockStorage = null;
-    const hydrationValue = 2;
+    let mockStorage = null
+    const hydrationValue = 2
 
     const getValueFromMockServer = () =>
       new Promise((resolve) => {
         setTimeout(() => {
-          resolve(hydrationValue);
-        }, mockServerResponseTime);
-      });
+          resolve(hydrationValue)
+        }, mockServerResponseTime)
+      })
 
     const sh = createSource({
       default: 1,
       lifecycle: {
         init: ({ commit }) => {
           getValueFromMockServer().then((data) => {
-            commit(data);
-          });
+            commit(data)
+          })
         },
         didSet: ({ state }) => {
-          mockStorage = state;
+          mockStorage = state
         },
         didReset: () => {
-          mockStorage = null;
+          mockStorage = null
         },
       },
       options: {
         suspense: true,
       },
-    });
+    })
 
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hydration - Wait for "server" to return value
-        const hydratedValue = sh.M$get();
-        expect(hydratedValue).toBe(hydrationValue);
+        const hydratedValue = sh.M$get()
+        expect(hydratedValue).toBe(hydrationValue)
         // Persistence
-        const newPersistedValue = 3;
-        sh.M$set(newPersistedValue);
+        const newPersistedValue = 3
+        sh.M$set(newPersistedValue)
         setTimeout(() => {
-          expect(mockStorage).toBe(newPersistedValue);
+          expect(mockStorage).toBe(newPersistedValue)
           // Reset
           setTimeout(() => {
-            sh.M$reset();
-            expect(mockStorage).toBe(null);
-            resolve();
-          }, paddingTime);
-        }, paddingTime);
-      }, mockServerResponseTime + paddingTime);
-    });
-  });
+            sh.M$reset()
+            expect(mockStorage).toBe(null)
+            resolve()
+          }, paddingTime)
+        }, paddingTime)
+      }, mockServerResponseTime + paddingTime)
+    })
+  })
 
   it('Asynchronous', () => {
-    let mockStorage = null;
-    const hydrationValue = 2;
+    let mockStorage = null
+    const hydrationValue = 2
 
     const getValueFromMockServer = () =>
       new Promise((resolve) => {
         setTimeout(() => {
-          resolve(hydrationValue);
-        }, mockServerResponseTime);
-      });
+          resolve(hydrationValue)
+        }, mockServerResponseTime)
+      })
 
     const sh = createSource({
       default: 1,
       lifecycle: {
         init: async ({ commit }) => {
-          const data = await getValueFromMockServer();
-          commit(data);
+          const data = await getValueFromMockServer()
+          commit(data)
         },
         didSet: ({ state }) => {
-          mockStorage = state;
+          mockStorage = state
         },
         didReset: () => {
-          mockStorage = null;
+          mockStorage = null
         },
       },
       options: {
         suspense: true,
       },
-    });
+    })
 
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hydration - Wait for "server" to return value
-        const hydratedValue = sh.M$get();
-        expect(hydratedValue).toBe(hydrationValue);
+        const hydratedValue = sh.M$get()
+        expect(hydratedValue).toBe(hydrationValue)
         // Persistence
-        const newPersistedValue = 3;
-        sh.M$set(newPersistedValue);
+        const newPersistedValue = 3
+        sh.M$set(newPersistedValue)
         setTimeout(() => {
-          expect(mockStorage).toBe(newPersistedValue);
+          expect(mockStorage).toBe(newPersistedValue)
           setTimeout(() => {
-            sh.M$reset();
-            expect(mockStorage).toBe(null);
-            resolve();
-          }, paddingTime);
-        }, paddingTime);
-      }, mockServerResponseTime + paddingTime);
-    });
-  });
-});
+            sh.M$reset()
+            expect(mockStorage).toBe(null)
+            resolve()
+          }, paddingTime)
+        }, paddingTime)
+      }, mockServerResponseTime + paddingTime)
+    })
+  })
+})
 
 describe('Rehydration', () => {
   it('Synchronous', () => {
-    let mockStorage = null;
+    let mockStorage = null
     const sh = createSource({
       default: 0,
       lifecycle: {
         init: ({ commit }) => {
-          const data = 1;
-          commit(data);
+          const data = 1
+          commit(data)
         },
         didSet: ({ state }) => {
-          mockStorage = state;
+          mockStorage = state
         },
         didReset: () => {
-          mockStorage = null;
+          mockStorage = null
         },
       },
       options: {
         suspense: true,
       },
-    });
+    })
 
     act(() => {
       // Expect hydration to use this value...
       sh.M$hydrate(async ({ commit }) => {
-        const data = 2;
-        commit(data);
-      });
+        const data = 2
+        commit(data)
+      })
       // ...then use this, since it is synchronous
       sh.M$hydrate(async ({ commit }) => {
-        const data = 3;
-        commit(data);
-      });
-    });
+        const data = 3
+        commit(data)
+      })
+    })
 
-    expect(sh.M$get()).toBe(3);
-    expect(mockStorage).toBe(null); // Since it's just hydration
-  });
+    expect(sh.M$get()).toBe(3)
+    expect(mockStorage).toBe(null) // Since it's just hydration
+  })
 
   it('Asynchronous', () => {
-    let mockStorage = null;
+    let mockStorage = null
     const getValueFromMockServer = (mockValue, mockTimeout) =>
       new Promise((resolve) => {
         setTimeout(() => {
-          resolve(mockValue);
-        }, mockTimeout);
-      });
+          resolve(mockValue)
+        }, mockTimeout)
+      })
 
     const sh = createSource({
       default: 0,
       lifecycle: {
         init: async ({ commit }) => {
-          const data = await getValueFromMockServer(1, 0);
-          commit(data);
+          const data = await getValueFromMockServer(1, 0)
+          commit(data)
         },
         didSet: ({ state }) => {
-          mockStorage = state;
+          mockStorage = state
         },
         didReset: () => {
-          mockStorage = null;
+          mockStorage = null
         },
       },
       options: {
         suspense: true,
       },
-    });
+    })
 
     return new Promise((resolve) => {
       setTimeout(() => {
         act(() => {
           // Expect hydration to use this value...
           sh.M$hydrate(async ({ commit }) => {
-            const data = await getValueFromMockServer(2, paddingTime * 2);
-            commit(data);
-          });
+            const data = await getValueFromMockServer(2, paddingTime * 2)
+            commit(data)
+          })
           // ...while this one is blocked
           sh.M$hydrate(async ({ commit }) => {
-            const data = await getValueFromMockServer(3, paddingTime);
-            commit(data);
-          });
-        });
+            const data = await getValueFromMockServer(3, paddingTime)
+            commit(data)
+          })
+        })
         setTimeout(() => {
-          expect(sh.M$get()).toBe(2);
-          expect(mockStorage).toBe(null); // Since it's just hydration
-          resolve();
-        }, paddingTime * 3);
-      }, paddingTime);
-    });
-  });
-});
+          expect(sh.M$get()).toBe(2)
+          expect(mockStorage).toBe(null) // Since it's just hydration
+          resolve()
+        }, paddingTime * 3)
+      }, paddingTime)
+    })
+  })
+})
 
 describe('Mutability', () => {
   describe('Create', () => {
     it('Mutable', () => {
-      const defaultValue = { value: 1 };
+      const defaultValue = { value: 1 }
       const sh = createSource({
         default: defaultValue,
         options: {
           mutable: true,
         },
-      });
-      defaultValue.value = 2;
-      expect(sh.M$get().value).toBe(2);
-    });
+      })
+      defaultValue.value = 2
+      expect(sh.M$get().value).toBe(2)
+    })
 
     it('Immutable', () => {
-      const defaultValue = { value: 1 };
+      const defaultValue = { value: 1 }
       const sh = createSource({
         default: defaultValue,
-      });
-      defaultValue.value = 2;
-      expect(sh.M$get().value).toBe(1);
-    });
-  });
+      })
+      defaultValue.value = 2
+      expect(sh.M$get().value).toBe(1)
+    })
+  })
 
   // NOTE
   // Virtual batching is set to true so that we can check the state in between the updates
@@ -284,59 +284,59 @@ describe('Mutability', () => {
 
   describe('Set', () => {
     it('Mutable', () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
       const sh = createSource({
         default: { value: 1 },
         options: {
           mutable: true,
           virtualBatch: true,
         },
-      });
+      })
       sh.M$set((oldState) => {
-        oldState.value = 2;
-        return oldState;
-      });
+        oldState.value = 2
+        return oldState
+      })
 
       // Before update
-      expect(sh.M$get().value).toBe(2);
-      jest.advanceTimersByTime();
+      expect(sh.M$get().value).toBe(2)
+      jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2);
-    });
+      expect(sh.M$get().value).toBe(2)
+    })
 
     it('Immutable', () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
       const sh = createSource({
         default: { value: 1 },
         options: {
           virtualBatch: true,
         },
-      });
+      })
       sh.M$set((oldState) => {
-        oldState.value = 2;
-        return oldState;
-      });
+        oldState.value = 2
+        return oldState
+      })
 
       // Before update
-      expect(sh.M$get().value).toBe(1);
-      jest.advanceTimersByTime();
+      expect(sh.M$get().value).toBe(1)
+      jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2);
-    });
-  });
-});
+      expect(sh.M$get().value).toBe(2)
+    })
+  })
+})
 
 it('States are carried forward in the batches', () => {
-  jest.useFakeTimers();
+  jest.useFakeTimers()
   const sh = createSource({
     default: { a: 1, b: 1 },
     options: { virtualBatch: true },
-  });
-  sh.M$set((oldState) => ({ ...oldState, a: oldState.a + 1 }));
-  sh.M$set((oldState) => ({ ...oldState, b: oldState.b + 1 }));
-  jest.advanceTimersByTime();
-  const state = sh.M$get();
-  expect(state).toStrictEqual({ a: 2, b: 2 });
-});
+  })
+  sh.M$set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
+  sh.M$set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
+  jest.advanceTimersByTime()
+  const state = sh.M$get()
+  expect(state).toStrictEqual({ a: 2, b: 2 })
+})

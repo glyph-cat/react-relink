@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash.clonedeep'
 
 /**
  * @description Wrapper around Lodash's `cloneDeep` method.
@@ -7,10 +7,10 @@ import cloneDeep from 'lodash.clonedeep';
  */
 function deepCopy(value) {
   if (typeof value !== 'object' || value === null) {
-    return value;
+    return value
   } else {
-    return cloneDeep(value);
+    return cloneDeep(value)
   }
 }
 
-export default deepCopy;
+export default deepCopy
