@@ -1,7 +1,7 @@
 import batchedUpdates from './batch'
 import { checkForCircularDepsAndGetKeyStack } from './circular-deps'
-import { IS_DEBUG } from './constants'
 import deepCopy from './deep-copy'
+import { devPrint } from './dev-log'
 import { createGatedQueue } from './gated-queue'
 import { createListener } from './listener'
 import { createSuspenseWaiter } from './suspense-waiter'
@@ -45,10 +45,10 @@ export function createSource(specs) {
 
   const internalBatch = options.virtualBatch
     ? (callback) => {
-      virtualBatch(() => {
-        batchedUpdates(callback)
-      })
-    }
+        virtualBatch(() => {
+          batchedUpdates(callback)
+        })
+      }
     : batchedUpdates
 
   const performUpdate = (type, newState) => {
@@ -84,12 +84,11 @@ export function createSource(specs) {
   let isHydrating = false
   const hydrate = (callback) => {
     if (isHydrating) {
-      if (IS_DEBUG) {
-        console.error(
-          'Cannot hydrate source during a hydration' +
+      devPrint(
+        'error',
+        'Cannot hydrate source when it is already hydrating' +
           (key ? `(in "${key}")` : '')
-        )
-      }
+      )
       return
     } // Early exit
     isHydrating = true

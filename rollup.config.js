@@ -30,7 +30,12 @@ function getPlugins({ overrides = {}, mode }) {
     }),
     nodeResolve: nodeResolve(),
     commonjs: commonjs(),
-    replace: replace({ 'process.env.NODE_ENV': JSON.stringify(mode) }),
+    replace: replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(mode),
+      },
+    }),
   }
   for (const overrideKey in overrides) {
     basePlugins[overrideKey] = overrides[overrideKey]
