@@ -27,6 +27,7 @@ export interface RelinkSelector<T, K> {
 export interface RelinkSourceEntry<T> {
   key?: any
   default: T
+  deps?: Record<string, RelinkSourceEntry<unknown>>,
   lifecycle?: {
     init?: RelinkHydrator<T>
     didSet?: (details: { state: T }) => void
