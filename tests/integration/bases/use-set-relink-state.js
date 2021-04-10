@@ -1,12 +1,11 @@
-import { createCompoundHookInterface } from '../../__utils__/hook-interface';
+import { createCompoundHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
   describe('useSetRelinkState', () => {
     it('Normal + no extra re-renders', () => {
       const Source = Relink.createSource({
-        key: 'test/useSetRelinkState',
         default: 1,
-      });
+      })
       const compoundHookInterface = createCompoundHookInterface({
         a: {
           hook: {
@@ -15,10 +14,10 @@ export default function ({ Relink }) {
           },
           actions: {
             step: ({ H: setState }) => {
-              setState((c) => c + 1);
+              setState((c) => c + 1)
             },
             replace: ({ H: setState }) => {
-              setState(5);
+              setState(5)
             },
           },
         },
@@ -31,23 +30,23 @@ export default function ({ Relink }) {
             value: (H) => H,
           },
         },
-      });
+      })
 
       // Initial phase
-      expect(compoundHookInterface.at('b').get('value')).toBe('1');
+      expect(compoundHookInterface.at('b').get('value')).toBe('1')
 
       // Update phase - callback
-      compoundHookInterface.at('a').actions('step');
-      expect(compoundHookInterface.at('b').get('value')).toBe('2');
+      compoundHookInterface.at('a').actions('step')
+      expect(compoundHookInterface.at('b').get('value')).toBe('2')
 
       // Update phase - replace value
-      compoundHookInterface.at('a').actions('replace');
-      expect(compoundHookInterface.at('b').get('value')).toBe('5');
+      compoundHookInterface.at('a').actions('replace')
+      expect(compoundHookInterface.at('b').get('value')).toBe('5')
 
       // Check if A, which only uses the setter, performs extra re-renders
-      expect(compoundHookInterface.at('a').getRenderCount()).toBe(1);
+      expect(compoundHookInterface.at('a').getRenderCount()).toBe(1)
 
-      compoundHookInterface.cleanup();
-    });
-  });
+      compoundHookInterface.cleanup()
+    })
+  })
 }

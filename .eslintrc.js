@@ -24,7 +24,7 @@ module.exports = {
   },
   rules: {
     quotes: ['error', 'single'],
-    semi: ['error', 'always'],
+    semi: ['error', 'never'],
     'no-irregular-whitespace': [
       'error',
       {
@@ -44,4 +44,4 @@ module.exports = {
       version: 'detect',
     },
   },
-};
+}

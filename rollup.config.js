@@ -1,23 +1,18 @@
-import nodeResolve from '@rollup/plugin-node-resolve';
-import babel from '@rollup/plugin-babel';
-import commonjs from '@rollup/plugin-commonjs';
-import replace from '@rollup/plugin-replace';
-import { terser } from 'rollup-plugin-terser';
+import nodeResolve from '@rollup/plugin-node-resolve'
+import babel from '@rollup/plugin-babel'
+import commonjs from '@rollup/plugin-commonjs'
+import replace from '@rollup/plugin-replace'
+import { terser } from 'rollup-plugin-terser'
 
-const INPUT_FILE = 'src/index.js';
-const EXTERNAL_LIBS = [
-  'react',
-  'react-dom',
-  'lodash.clonedeep',
-  'react-fast-compare',
-];
+const INPUT_FILE = 'src/index.js'
+const EXTERNAL_LIBS = ['react', 'react-dom', 'fast-copy', 'react-fast-compare']
 
 const UMD_GLOBALS = {
   react: 'React',
   'react-dom': 'ReactDOM',
-  'lodash.clonedeep': 'cloneDeep',
+  'fast-copy': 'fastCopy',
   'react-fast-compare': 'isEqual',
-};
+}
 
 /**
  * @param {object} config
@@ -35,20 +30,25 @@ function getPlugins({ overrides = {}, mode }) {
     }),
     nodeResolve: nodeResolve(),
     commonjs: commonjs(),
-    replace: replace({ 'process.env.NODE_ENV': JSON.stringify(mode) }),
-  };
-  for (const overrideKey in overrides) {
-    basePlugins[overrideKey] = overrides[overrideKey];
+    replace: replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(mode),
+      },
+    }),
   }
-  const pluginStack = [];
+  for (const overrideKey in overrides) {
+    basePlugins[overrideKey] = overrides[overrideKey]
+  }
+  const pluginStack = []
   for (const i in basePlugins) {
-    pluginStack.push(basePlugins[i]);
+    pluginStack.push(basePlugins[i])
   }
   if (mode === 'production') {
-    const terserPlugin = terser({ mangle: { properties: { regex: /^M\$/ } } });
-    pluginStack.push(terserPlugin);
+    const terserPlugin = terser({ mangle: { properties: { regex: /^M\$/ } } })
+    pluginStack.push(terserPlugin)
   }
-  return pluginStack;
+  return pluginStack
 }
 
 const config = [
@@ -129,6 +129,6 @@ const config = [
     external: EXTERNAL_LIBS,
     plugins: getPlugins({ mode: 'production' }),
   },
-];
+]
 
-export default config;
+export default config

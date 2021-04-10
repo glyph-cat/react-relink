@@ -1,16 +1,16 @@
-import cloneDeep from 'lodash.clonedeep';
+import fastCopy from 'fast-copy'
 
 /**
- * @description Wrapper around Lodash's `cloneDeep` method.
+ * @description Wrapper around 'fast-copy'
  * @param {any} value
  * @returns {any}
  */
 function deepCopy(value) {
   if (typeof value !== 'object' || value === null) {
-    return value;
+    return value
   } else {
-    return cloneDeep(value);
+    return fastCopy(value)
   }
 }
 
-export default deepCopy;
+export default deepCopy

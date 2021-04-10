@@ -1,12 +1,11 @@
-import { createHookInterface } from '../../__utils__/hook-interface';
+import { createHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
   it('With Virtual Batch', () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers()
     const Source = Relink.createSource({
-      key: 'test/with-virtual-batch',
       default: 1,
-    });
+    })
     const hookInterface = createHookInterface({
       hook: {
         method: Relink.useRelinkState,
@@ -14,29 +13,29 @@ export default function ({ Relink }) {
       },
       actions: {
         step: ({ H }) => {
-          const [, setCounter] = H;
-          setCounter((c) => c + 1);
+          const [, setCounter] = H
+          setCounter((c) => c + 1)
         },
       },
       values: {
         value: (H) => {
-          const [counter] = H;
-          return counter;
+          const [counter] = H
+          return counter
         },
       },
-    });
+    })
 
     // Initial phase
-    expect(hookInterface.getRenderCount()).toBe(1);
+    expect(hookInterface.getRenderCount()).toBe(1)
 
     // Update (Invoke 'step' twice in the same `act()` callback)
-    hookInterface.actions(['step', 'step']);
-    jest.advanceTimersByTime();
-    expect(hookInterface.get('value')).toBe('3');
+    hookInterface.actions(['step', 'step'])
+    jest.advanceTimersByTime()
+    expect(hookInterface.get('value')).toBe('3')
 
     // Check for unnecessary renders
-    expect(hookInterface.getRenderCount()).toBe(2);
+    expect(hookInterface.getRenderCount()).toBe(2)
 
-    hookInterface.cleanup();
-  });
+    hookInterface.cleanup()
+  })
 }
