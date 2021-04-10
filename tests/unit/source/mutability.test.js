@@ -1,28 +1,28 @@
-import { UNSTABLE_createSource as createSource } from '../../../src/source';
+import { UNSTABLE_createSource as createSource } from '../../../src/source'
 
 describe('Mutability', () => {
   describe('Create', () => {
     it('Mutable', () => {
-      const defaultValue = { value: 1 };
+      const defaultValue = { value: 1 }
       const sh = createSource({
         default: defaultValue,
         options: {
           mutable: true,
         },
-      });
-      defaultValue.value = 2;
-      expect(sh.M$get().value).toBe(2);
-    });
+      })
+      defaultValue.value = 2
+      expect(sh.M$get().value).toBe(2)
+    })
 
     it('Immutable', () => {
-      const defaultValue = { value: 1 };
+      const defaultValue = { value: 1 }
       const sh = createSource({
         default: defaultValue,
-      });
-      defaultValue.value = 2;
-      expect(sh.M$get().value).toBe(1);
-    });
-  });
+      })
+      defaultValue.value = 2
+      expect(sh.M$get().value).toBe(1)
+    })
+  })
 
   // NOTE
   // Virtual batching is set to true so that we can check the state in between the updates
@@ -33,46 +33,46 @@ describe('Mutability', () => {
 
   describe('Set', () => {
     it('Mutable', () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
       const sh = createSource({
         default: { value: 1 },
         options: {
           mutable: true,
           virtualBatch: true,
         },
-      });
+      })
       sh.M$set((oldState) => {
-        oldState.value = 2;
-        return oldState;
-      });
+        oldState.value = 2
+        return oldState
+      })
 
       // Before update
-      expect(sh.M$get().value).toBe(2);
-      jest.advanceTimersByTime();
+      expect(sh.M$get().value).toBe(2)
+      jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2);
-    });
+      expect(sh.M$get().value).toBe(2)
+    })
 
     it('Immutable', () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
       const sh = createSource({
         default: { value: 1 },
         options: {
           virtualBatch: true,
         },
-      });
+      })
       sh.M$set((oldState) => {
-        oldState.value = 2;
-        return oldState;
-      });
+        oldState.value = 2
+        return oldState
+      })
 
       // Before update
-      expect(sh.M$get().value).toBe(1);
-      jest.advanceTimersByTime();
+      expect(sh.M$get().value).toBe(1)
+      jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2);
-    });
-  });
-});
+      expect(sh.M$get().value).toBe(2)
+    })
+  })
+})

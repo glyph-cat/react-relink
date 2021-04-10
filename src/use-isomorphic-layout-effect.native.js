@@ -1,2 +1,2 @@
-import { useLayoutEffect } from 'react';
-export default useLayoutEffect;
+import { useLayoutEffect } from 'react'
+export default useLayoutEffect

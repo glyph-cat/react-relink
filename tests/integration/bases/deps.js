@@ -1,12 +1,12 @@
-import { act } from 'react-test-renderer';
-import { createCompoundHookInterface } from '../../__utils__/hook-interface';
+import { act } from 'react-test-renderer'
+import { createCompoundHookInterface } from '../../__utils__/hook-interface'
 
-const timeInterval = 1000; // ms
+const timeInterval = 1000 // ms
 
 export default function ({ Relink }) {
   describe('deps', () => {
     it('Synchronous', () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
 
       const SourceA = Relink.UNSTABLE_createSource({
         key: 'Source A',
@@ -14,11 +14,11 @@ export default function ({ Relink }) {
         lifecycle: {
           init: ({ commit }) => {
             setTimeout(() => {
-              commit(2);
-            }, timeInterval);
+              commit(2)
+            }, timeInterval)
           },
         },
-      });
+      })
 
       const SourceB = Relink.UNSTABLE_createSource({
         key: 'Source B',
@@ -27,12 +27,12 @@ export default function ({ Relink }) {
         lifecycle: {
           init: ({ commit }) => {
             setTimeout(() => {
-              const sourceAValue = Relink.dangerouslyGetRelinkValue(SourceA);
-              commit(sourceAValue + 1);
-            }, timeInterval);
+              const sourceAValue = Relink.dangerouslyGetRelinkValue(SourceA)
+              commit(sourceAValue + 1)
+            }, timeInterval)
           },
         },
-      });
+      })
 
       const SourceC = Relink.UNSTABLE_createSource({
         key: 'Source C',
@@ -40,11 +40,11 @@ export default function ({ Relink }) {
         deps: { SourceB },
         lifecycle: {
           init: ({ commit }) => {
-            const sourceBValue = Relink.dangerouslyGetRelinkValue(SourceB);
-            commit(sourceBValue + 1);
+            const sourceBValue = Relink.dangerouslyGetRelinkValue(SourceB)
+            commit(sourceBValue + 1)
           },
         },
-      });
+      })
 
       const compoundHookInterface = createCompoundHookInterface({
         a: {
@@ -74,29 +74,29 @@ export default function ({ Relink }) {
             value: (H) => H,
           },
         },
-      });
+      })
 
-      expect(compoundHookInterface.at('a').get('value')).toBe('0');
-      expect(compoundHookInterface.at('b').get('value')).toBe('0');
-      expect(compoundHookInterface.at('c').get('value')).toBe('0');
-
-      act(() => {
-        jest.advanceTimersByTime(timeInterval);
-      });
-
-      expect(compoundHookInterface.at('a').get('value')).toBe('2');
-      expect(compoundHookInterface.at('b').get('value')).toBe('0');
-      expect(compoundHookInterface.at('c').get('value')).toBe('0');
+      expect(compoundHookInterface.at('a').get('value')).toBe('0')
+      expect(compoundHookInterface.at('b').get('value')).toBe('0')
+      expect(compoundHookInterface.at('c').get('value')).toBe('0')
 
       act(() => {
-        jest.advanceTimersByTime(timeInterval);
-      });
+        jest.advanceTimersByTime(timeInterval)
+      })
 
-      expect(compoundHookInterface.at('a').get('value')).toBe('2');
-      expect(compoundHookInterface.at('b').get('value')).toBe('3');
-      expect(compoundHookInterface.at('c').get('value')).toBe('4');
+      expect(compoundHookInterface.at('a').get('value')).toBe('2')
+      expect(compoundHookInterface.at('b').get('value')).toBe('0')
+      expect(compoundHookInterface.at('c').get('value')).toBe('0')
 
-      compoundHookInterface.cleanup();
-    });
-  });
+      act(() => {
+        jest.advanceTimersByTime(timeInterval)
+      })
+
+      expect(compoundHookInterface.at('a').get('value')).toBe('2')
+      expect(compoundHookInterface.at('b').get('value')).toBe('3')
+      expect(compoundHookInterface.at('c').get('value')).toBe('4')
+
+      compoundHookInterface.cleanup()
+    })
+  })
 }

@@ -1,11 +1,11 @@
-import { createHookInterface } from '../../__utils__/hook-interface';
+import { createHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
   describe('useRelinkState', () => {
     it('With selector, no extra re-renders', () => {
       const Source = Relink.createSource({
         default: { a: 1, b: 2 },
-      });
+      })
       const hookInterface = createHookInterface({
         hook: {
           method: Relink.useRelinkState,
@@ -13,20 +13,20 @@ export default function ({ Relink }) {
         },
         actions: {
           step: ({ H }) => {
-            const [, setState] = H;
-            setState((oldState) => ({ ...oldState, b: oldState.b + 1 }));
+            const [, setState] = H
+            setState((oldState) => ({ ...oldState, b: oldState.b + 1 }))
           },
         },
         values: {
           value: (H) => {
-            const [filteredState] = H;
-            return filteredState;
+            const [filteredState] = H
+            return filteredState
           },
         },
-      });
-      hookInterface.actions('step');
-      expect(hookInterface.getRenderCount()).toBe(1);
-      hookInterface.cleanup();
-    });
-  });
+      })
+      hookInterface.actions('step')
+      expect(hookInterface.getRenderCount()).toBe(1)
+      hookInterface.cleanup()
+    })
+  })
 }
