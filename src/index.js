@@ -6,7 +6,41 @@ import { deprecationWarn, devPrintOnce } from './dev-log'
 // So that eslint sees it as the original useEffect
 import useEffect from './use-isomorphic-layout-effect'
 
-devPrintOnce('info','selector','State values passed into selectors will be directly referenced from Relink\'s internal state in the next major version. See: https://github.com/chin98edwin/react-relink#immutability')
+devPrintOnce(
+  'info',
+  'selector',
+  'State values passed into selectors will be directly referenced from Relink\'s internal state in the next major version. See: https://github.com/chin98edwin/react-relink#immutability'
+)
+
+function updateReducer(selector, source) {
+  // Returns a factory
+  return () => (selector ? selector(source.get()) : source.get())
+}
+
+export function useRelinkValue_EXPERIMENTAL(source, selector) {
+  source.M$suspenseOnHydration()
+  const [value, update] = useReducer(
+    updateReducer(selector, source),
+    null,
+    updateReducer(selector, source)
+  )
+  useDebugValue(undefined, () =>
+    IS_DEBUG
+      ? {
+          key: source.M$key || '(Unnamed)',
+          selector,
+          value,
+        }
+      : undefined
+  )
+  useEffect(() => {
+    const listenerId = source.M$listener.M$add(update)
+    return () => {
+      source.M$listener.M$remove(listenerId)
+    }
+  }, [source])
+  return value
+}
 
 const forceUpdateReducer = (c) => c + 1
 
