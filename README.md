@@ -184,9 +184,9 @@ The selector works like this: Relink gives you a new copy of the complete state 
 
 In the next major (1.X.X) update, selectors will be mutable. This means the internal copy of the state will be directly passed to selectors. Since selectors are well, selectors, they should not modify the state in anyway (and this shouldn't concern you if you do not abuse the use of selectors). After a selector returns the cherry-picked values to Relink for comparison, Relink will compare it with the previous set, create a deep copy and return it to your component. This is done out of consideration for performance. Instead of deep-copying the entire state for selection, Relink encourages you to select only what you need, then let Relink create a deep copy of it.
 
-![How selectors work in Relink before v1.x.x](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/how-selectors-work-in-relink-before-1xx.png)]
+![How selectors work in Relink before v1.x.x](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/how-selectors-work-in-relink-before-1xx.png)
 
-![How selectors work in Relink after v1.x.x](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/how-selectors-work-in-relink-after-1xx.png)]
+![How selectors work in Relink after v1.x.x](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/how-selectors-work-in-relink-after-1xx.png)
 
 ## Setters
 This concerns setter functions that uses callbacks.
