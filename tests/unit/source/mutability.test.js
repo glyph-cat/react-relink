@@ -1,4 +1,4 @@
-import { UNSTABLE_createSource as createSource } from '../../../src/source'
+import { createSource } from '../../../src/source'
 
 describe('Mutability', () => {
   describe('Create', () => {
@@ -11,7 +11,7 @@ describe('Mutability', () => {
         },
       })
       defaultValue.value = 2
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
     })
 
     it('Immutable', () => {
@@ -20,7 +20,7 @@ describe('Mutability', () => {
         default: defaultValue,
       })
       defaultValue.value = 2
-      expect(sh.M$get().value).toBe(1)
+      expect(sh.get().value).toBe(1)
     })
   })
 
@@ -41,17 +41,17 @@ describe('Mutability', () => {
           virtualBatch: true,
         },
       })
-      sh.M$set((oldState) => {
+      sh.set((oldState) => {
         oldState.value = 2
         return oldState
       })
 
       // Before update
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
       jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
     })
 
     it('Immutable', () => {
@@ -62,17 +62,17 @@ describe('Mutability', () => {
           virtualBatch: true,
         },
       })
-      sh.M$set((oldState) => {
+      sh.set((oldState) => {
         oldState.value = 2
         return oldState
       })
 
       // Before update
-      expect(sh.M$get().value).toBe(1)
+      expect(sh.get().value).toBe(1)
       jest.advanceTimersByTime()
 
       // After update
-      expect(sh.M$get().value).toBe(2)
+      expect(sh.get().value).toBe(2)
     })
   })
 })

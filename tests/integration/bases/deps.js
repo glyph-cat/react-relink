@@ -8,7 +8,7 @@ export default function ({ Relink }) {
     it('Synchronous', () => {
       jest.useFakeTimers()
 
-      const SourceA = Relink.UNSTABLE_createSource({
+      const SourceA = Relink.createSource({
         key: 'Source A',
         default: 0,
         lifecycle: {
@@ -20,7 +20,7 @@ export default function ({ Relink }) {
         },
       })
 
-      const SourceB = Relink.UNSTABLE_createSource({
+      const SourceB = Relink.createSource({
         key: 'Source B',
         default: 0,
         deps: { SourceA },
@@ -34,7 +34,7 @@ export default function ({ Relink }) {
         },
       })
 
-      const SourceC = Relink.UNSTABLE_createSource({
+      const SourceC = Relink.createSource({
         key: 'Source C',
         default: 0,
         deps: { SourceB },

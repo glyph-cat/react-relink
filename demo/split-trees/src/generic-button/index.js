@@ -1,5 +1,5 @@
-import React from 'react';
-import './index.css';
+import React from 'react'
+import './index.css'
 
 export default function GenericButton({ label, onClick }) {
   return (
@@ -9,5 +9,5 @@ export default function GenericButton({ label, onClick }) {
       onClick={onClick}
       tabIndex={0}
     />
-  );
+  )
 }

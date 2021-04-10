@@ -1,7 +1,7 @@
-import React, { useLayoutEffect } from 'react';
-import GenericButton from './generic-button';
-import { useEditorState, useResetEditorState } from './editor-source';
-import './root-a.css';
+import React, { useLayoutEffect } from 'react'
+import GenericButton from './generic-button'
+import { useEditorState, useResetEditorState } from './editor-source'
+import './root-a.css'
 
 const AUTO_VALUE = [
   '# Hello world',
@@ -11,26 +11,26 @@ const AUTO_VALUE = [
   "* Check out this [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet) if you're new to Markdown.",
   '',
   'In `src/index.js`, you can see that the **Markdown Editor** and **Preview Area** are rendered in 2 separate roots without any providers but the code and output stays in sync.',
-].join('\n');
+].join('\n')
 
 export default function RootA() {
-  const [editorState, setEditorState] = useEditorState();
-  const resetEditorState = useResetEditorState();
+  const [editorState, setEditorState] = useEditorState()
+  const resetEditorState = useResetEditorState()
 
   // Auto-fills the editor
   useLayoutEffect(() => {
-    let length = 0;
+    let length = 0
     const intervalRef = setInterval(() => {
-      length += 2 + Math.ceil(Math.random() * 10);
-      setEditorState(AUTO_VALUE.substr(0, Math.min(AUTO_VALUE.length, length)));
+      length += 2 + Math.ceil(Math.random() * 10)
+      setEditorState(AUTO_VALUE.substr(0, Math.min(AUTO_VALUE.length, length)))
       if (length >= AUTO_VALUE.length) {
-        clearInterval(intervalRef);
+        clearInterval(intervalRef)
       }
-    }, 25);
+    }, 25)
     return () => {
-      clearInterval(intervalRef);
-    };
-  }, [setEditorState]);
+      clearInterval(intervalRef)
+    }
+  }, [setEditorState])
 
   return (
     <div className='root-a-container'>
@@ -46,7 +46,7 @@ export default function RootA() {
           autoFocus={true}
           className='root-a-md-editor code'
           onChange={(e) => {
-            setEditorState(e.target.value);
+            setEditorState(e.target.value)
           }}
           value={editorState}
           placeholder='Type something here'
@@ -54,5 +54,5 @@ export default function RootA() {
         />
       </div>
     </div>
-  );
+  )
 }

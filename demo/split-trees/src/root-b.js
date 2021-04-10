@@ -1,10 +1,10 @@
-import Markdown from 'markdown-to-jsx';
-import React from 'react';
-import { useEditorValue } from './editor-source';
-import './root-b.css';
+import Markdown from 'markdown-to-jsx'
+import React from 'react'
+import { useEditorValue } from './editor-source'
+import './root-b.css'
 
 function RootB() {
-  const editorValue = useEditorValue();
+  const editorValue = useEditorValue()
   return (
     <div className='root-b-container'>
       <div className='root-b-subcontainer'>
@@ -16,7 +16,7 @@ function RootB() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default RootB;
+export default RootB

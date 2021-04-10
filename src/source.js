@@ -13,7 +13,7 @@ import virtualBatch from './virtual-batch'
 
 let internalIdCounter = 1
 
-export function UNSTABLE_createSource(specs) {
+export function createSource(specs) {
   const {
     key,
     deps = {},
@@ -82,7 +82,7 @@ export function UNSTABLE_createSource(specs) {
 
   let suspenseWaiter
   let isHydrating = false
-  const M$hydrate = (callback) => {
+  const hydrate = (callback) => {
     if (isHydrating) {
       if (IS_DEBUG) {
         console.error(
@@ -124,7 +124,7 @@ export function UNSTABLE_createSource(specs) {
   const gateExecHydration = () => {
     gate.M$exec(() => {
       if (typeof lifecycle.init === 'function') {
-        M$hydrate(lifecycle.init)
+        hydrate(lifecycle.init)
       }
     })
   }
@@ -175,9 +175,9 @@ export function UNSTABLE_createSource(specs) {
     }
   }
 
-  const M$get = () => copyState(state) // (Expose)
+  const get = () => copyState(state) // (Expose)
 
-  const M$set = (partialState) => {
+  const set = (partialState) => {
     gate.M$exec(() => {
       if (!isFirstSetOccured) {
         shadowState = copyState(state) // (Receive)
@@ -194,7 +194,7 @@ export function UNSTABLE_createSource(specs) {
     })
   }
 
-  const M$reset = () => {
+  const reset = () => {
     gate.M$exec(() => {
       performUpdate(1, initialState)
     })
@@ -206,16 +206,18 @@ export function UNSTABLE_createSource(specs) {
     M$deps: deps,
     M$addInitListener: initListener.M$add,
     M$listener,
-    M$hydrate,
+    addListener: M$listener.M$add,
+    removeListener: M$listener.M$remove,
+    hydrate,
     M$getIsReadyStatus: () => !isHydrating,
     M$suspenseOnHydration,
-    M$get,
-    M$set,
-    M$reset,
+    get,
+    set,
+    reset,
   }
 }
 
-export function createSource(specs) {
+export function UNSAFE_createSource(specs) {
   const { key, default: defaultState, lifecycle = {}, options = {} } = specs
 
   /**
@@ -270,10 +272,13 @@ export function createSource(specs) {
   const M$listener = createListener()
   let suspenseWaiter
   let hydrating = false
-  const M$hydrate = (callback) => {
+  const hydrate = (callback) => {
     if (hydrating) {
       if (IS_DEBUG) {
-        console.error(`Cannot hydrate source during a hydration (in "${key}")`)
+        console.error(
+          'Cannot hydrate source during a hydration' +
+            (key ? `(in "${key}")` : '')
+        )
       }
       return
     } // Early exit
@@ -303,20 +308,20 @@ export function createSource(specs) {
   }
 
   if (typeof lifecycle.init === 'function') {
-    M$hydrate(lifecycle.init)
+    hydrate(lifecycle.init)
   }
 
   return {
     M$key: '' + key,
     M$listener,
-    M$hydrate,
+    hydrate,
     M$suspenseOnHydration: () => {
       if (suspenseWaiter) {
         suspenseWaiter()
       }
     },
-    M$get: () => copyState(state), // (Expose)
-    M$set: (partialState) => {
+    get: () => copyState(state), // (Expose)
+    set: (partialState) => {
       if (!isFirstSetOccured) {
         shadowState = copyState(state) // (Receive)
         isFirstSetOccured = true
@@ -330,7 +335,7 @@ export function createSource(specs) {
         ) // (Receive)
       )
     },
-    M$reset: () => {
+    reset: () => {
       performUpdate(1, initialState)
     },
   }

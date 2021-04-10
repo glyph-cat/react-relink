@@ -1,4 +1,4 @@
-import { UNSTABLE_createSource as createSource } from '../../../src/source'
+import { createSource } from '../../../src/source'
 
 it('States are carried forward in the batches', () => {
   jest.useFakeTimers()
@@ -6,9 +6,9 @@ it('States are carried forward in the batches', () => {
     default: { a: 1, b: 1 },
     options: { virtualBatch: true },
   })
-  sh.M$set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
-  sh.M$set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
+  sh.set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
+  sh.set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
   jest.advanceTimersByTime()
-  const state = sh.M$get()
+  const state = sh.get()
   expect(state).toStrictEqual({ a: 2, b: 2 })
 })
