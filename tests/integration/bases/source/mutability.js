@@ -1,5 +1,4 @@
 export default function ({ Relink }) {
-
   const { createSource } = Relink
 
   describe('Mutability', () => {

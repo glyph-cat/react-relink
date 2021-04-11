@@ -1,7 +1,6 @@
 export default function ({ Relink }) {
   const { createSource } = Relink
   describe('Basics', () => {
-
     it('createSource', () => {
       const key = 'test/createSource'
       const Source = createSource({
