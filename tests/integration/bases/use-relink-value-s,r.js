@@ -1,15 +1,16 @@
 import { createCompoundHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
+  const { createSource, useRelinkValue, useSetRelinkState } = Relink
   describe('useRelinkValue', () => {
     it('With selector, no extra re-renders', () => {
-      const Source = Relink.createSource({
+      const Source = createSource({
         default: { a: 1, b: 2 },
       })
       const compoundHookInterface = createCompoundHookInterface({
         a: {
           hook: {
-            method: Relink.useRelinkValue,
+            method: useRelinkValue,
             props: [Source, ({ b }) => b],
           },
           values: {
@@ -18,7 +19,7 @@ export default function ({ Relink }) {
         },
         b: {
           hook: {
-            method: Relink.useSetRelinkState,
+            method: useSetRelinkState,
             props: [Source],
           },
           actions: {
