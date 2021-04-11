@@ -4,7 +4,7 @@ export default function ({ Relink }) {
 
     it('createSource', () => {
       const key = 'test/createSource'
-      const Source = Relink.createSource({
+      const Source = createSource({
         key,
         default: { username: 'foo' },
       })

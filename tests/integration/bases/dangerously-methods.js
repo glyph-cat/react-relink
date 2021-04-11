@@ -2,15 +2,25 @@ import { act } from 'react-test-renderer'
 import { createHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
+
+  const {
+    createSource,
+    dangerouslyGetRelinkValue,
+    dangerouslySetRelinkState,
+    dangerouslyResetRelinkState,
+    dangerouslyRehydrateRelinkSource,
+    useRelinkValue,
+  } = Relink
+
   it('Dangerously Methods', () => {
     // Create source
-    const Source = Relink.createSource({
+    const Source = createSource({
       default: 1,
     })
 
     const hookInterface = createHookInterface({
       hook: {
-        method: Relink.useRelinkValue,
+        method: useRelinkValue,
         props: [Source],
       },
       values: {
@@ -19,30 +29,30 @@ export default function ({ Relink }) {
     })
 
     // Test get
-    expect(Relink.dangerouslyGetRelinkValue(Source)).toBe(1)
+    expect(dangerouslyGetRelinkValue(Source)).toBe(1)
     expect(hookInterface.get('value')).toBe('1')
 
     // Test set & get
     act(() => {
-      Relink.dangerouslySetRelinkState(Source, 2)
+      dangerouslySetRelinkState(Source, 2)
     })
-    expect(Relink.dangerouslyGetRelinkValue(Source)).toBe(2)
+    expect(dangerouslyGetRelinkValue(Source)).toBe(2)
     expect(hookInterface.get('value')).toBe('2')
 
     // Test reset & get
     act(() => {
-      Relink.dangerouslyResetRelinkState(Source)
+      dangerouslyResetRelinkState(Source)
     })
-    expect(Relink.dangerouslyGetRelinkValue(Source)).toBe(1)
+    expect(dangerouslyGetRelinkValue(Source)).toBe(1)
     expect(hookInterface.get('value')).toBe('1')
 
     // Test rehydrate
     act(() => {
-      Relink.dangerouslyRehydrateRelinkSource(Source, ({ commit }) => {
+      dangerouslyRehydrateRelinkSource(Source, ({ commit }) => {
         commit(5)
       })
     })
-    expect(Relink.dangerouslyGetRelinkValue(Source)).toBe(5)
+    expect(dangerouslyGetRelinkValue(Source)).toBe(5)
     expect(hookInterface.get('value')).toBe('5')
 
     hookInterface.cleanup()

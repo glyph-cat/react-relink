@@ -2,11 +2,12 @@ import { act } from 'react-test-renderer'
 import { createCompoundHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
+  const { createSource, useRehydrateRelinkSource, useRelinkValue } = Relink
   describe('useRehydrateRelinkSource', () => {
     it('Normal', () => {
       let didSetCalled = false
 
-      const Source = Relink.createSource({
+      const Source = createSource({
         default: 1,
         lifecycle: {
           didSet: () => {
@@ -17,7 +18,7 @@ export default function ({ Relink }) {
       const compoundHookInterface = createCompoundHookInterface({
         a: {
           hook: {
-            method: Relink.useRehydrateRelinkSource,
+            method: useRehydrateRelinkSource,
             props: [Source],
           },
           actions: {
@@ -30,7 +31,7 @@ export default function ({ Relink }) {
         },
         b: {
           hook: {
-            method: Relink.useRelinkValue,
+            method: useRelinkValue,
             props: [Source],
           },
           values: {

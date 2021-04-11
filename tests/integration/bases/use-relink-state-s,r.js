@@ -1,14 +1,15 @@
 import { createHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
+  const { createSource, useRelinkState } = Relink
   describe('useRelinkState', () => {
     it('With selector, no extra re-renders', () => {
-      const Source = Relink.createSource({
+      const Source = createSource({
         default: { a: 1, b: 2 },
       })
       const hookInterface = createHookInterface({
         hook: {
-          method: Relink.useRelinkState,
+          method: useRelinkState,
           props: [Source, ({ a }) => a],
         },
         actions: {

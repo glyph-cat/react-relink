@@ -4,11 +4,12 @@ import { createCompoundHookInterface } from '../../__utils__/hook-interface'
 const timeInterval = 1000 // ms
 
 export default function ({ Relink }) {
+  const { createSource, useRelinkValue } = Relink
   describe('deps', () => {
     it('Synchronous', () => {
       jest.useFakeTimers()
 
-      const SourceA = Relink.createSource({
+      const SourceA = createSource({
         key: 'Source A',
         default: 0,
         lifecycle: {
@@ -20,27 +21,27 @@ export default function ({ Relink }) {
         },
       })
 
-      const SourceB = Relink.createSource({
+      const SourceB = createSource({
         key: 'Source B',
         default: 0,
         deps: { SourceA },
         lifecycle: {
           init: ({ commit }) => {
             setTimeout(() => {
-              const sourceAValue = Relink.dangerouslyGetRelinkValue(SourceA)
+              const sourceAValue = SourceA.get()
               commit(sourceAValue + 1)
             }, timeInterval)
           },
         },
       })
 
-      const SourceC = Relink.createSource({
+      const SourceC = createSource({
         key: 'Source C',
         default: 0,
         deps: { SourceB },
         lifecycle: {
           init: ({ commit }) => {
-            const sourceBValue = Relink.dangerouslyGetRelinkValue(SourceB)
+            const sourceBValue = SourceB.get()
             commit(sourceBValue + 1)
           },
         },
@@ -49,7 +50,7 @@ export default function ({ Relink }) {
       const compoundHookInterface = createCompoundHookInterface({
         a: {
           hook: {
-            method: Relink.useRelinkValue,
+            method: useRelinkValue,
             props: [SourceA],
           },
           values: {
@@ -58,7 +59,7 @@ export default function ({ Relink }) {
         },
         b: {
           hook: {
-            method: Relink.useRelinkValue,
+            method: useRelinkValue,
             props: [SourceB],
           },
           values: {
@@ -67,7 +68,7 @@ export default function ({ Relink }) {
         },
         c: {
           hook: {
-            method: Relink.useRelinkValue,
+            method: useRelinkValue,
             props: [SourceC],
           },
           values: {
