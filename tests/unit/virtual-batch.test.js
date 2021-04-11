@@ -1,8 +1,7 @@
 import virtualBatch from '../../src/virtual-batch'
 
-jest.useFakeTimers()
-
 it('Callbacks are batched', () => {
+  jest.useFakeTimers()
   let debouncedCallCount = 0,
     debouncedExecuteCount = 0
   let debounceRef = null
@@ -24,6 +23,7 @@ it('Callbacks are batched', () => {
 })
 
 it('Callbacks are called in First-in, First-out order', () => {
+  jest.useFakeTimers()
   const normalStack = [],
     batchedStack = []
   for (let i = 0; i < 10; i++) {

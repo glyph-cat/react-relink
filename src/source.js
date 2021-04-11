@@ -216,6 +216,7 @@ export function createSource(specs) {
     hydrate,
     M$getIsReadyStatus: () => !isHydrating,
     M$suspenseOnHydration,
+    M$getDirectState: () => state,
     get,
     set,
     reset,
