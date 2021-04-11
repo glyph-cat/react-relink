@@ -15,9 +15,10 @@ devPrintOnce(
 
 function updateReducer(selector, source) {
   // Returns a factory
-  return () => (selector ? selector(source.M$getDirectState()) : source.M$getDirectState())
+  return () =>
+    selector ? selector(source.M$getDirectState()) : source.M$getDirectState()
 }
-  
+
 // NOTE: For experimental version of `useRelinkValue`
 // Because React uses Object.is comparison, it will be exhausive to compare
 // deep copies of the states, hence direct references are used for selectors

@@ -1,16 +1,22 @@
 import { checkForCircularDepsAndGetKeyStack } from '../../src/circular-deps'
 
+let mockId = 0
+function createMockSource({ deps }) {
+  return {
+    M$internalId: ++mockId,
+    M$deps: deps,
+  }
+}
+
 describe('checkForCircularDepsAndGetKeyStack', () => {
   it('with circular deps', () => {
     const callback = () => {
-      const MockSourceA = {
-        M$internalId: 1,
-        M$deps: {},
-      }
-      const MockSourceB = {
-        M$internalId: 2,
-        M$deps: { MockSourceA },
-      }
+      const MockSourceA = createMockSource({
+        deps: {},
+      })
+      const MockSourceB = createMockSource({
+        deps: { MockSourceA },
+      })
       MockSourceA.M$deps = { MockSourceB }
       checkForCircularDepsAndGetKeyStack(
         MockSourceA.M$internalId,
@@ -22,18 +28,15 @@ describe('checkForCircularDepsAndGetKeyStack', () => {
 
   it('without circular deps', () => {
     const callback = () => {
-      const MockSourceA = {
-        M$internalId: 1,
-        M$deps: {},
-      }
-      const MockSourceB = {
-        M$internalId: 2,
-        M$deps: { MockSourceA },
-      }
-      const MockSourceC = {
-        M$internalId: 2,
-        M$deps: { MockSourceB },
-      }
+      const MockSourceA = createMockSource({
+        deps: {},
+      })
+      const MockSourceB = createMockSource({
+        deps: { MockSourceA },
+      })
+      const MockSourceC = createMockSource({
+        deps: { MockSourceB },
+      })
       checkForCircularDepsAndGetKeyStack(
         MockSourceC.M$internalId,
         MockSourceC.M$deps
