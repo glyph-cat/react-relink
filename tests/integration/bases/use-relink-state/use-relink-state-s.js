@@ -1,46 +1,46 @@
-import { createHookInterface } from '../../__utils__/hook-interface'
+import { createHookInterface } from '../../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
   const { createSource, useRelinkState } = Relink
   describe('useRelinkState', () => {
-    it('Normal', () => {
+    it('With selector', () => {
       const Source = createSource({
-        default: 1,
+        default: { a: 1, b: 2 },
       })
 
       const hookInterface = createHookInterface({
         hook: {
           method: useRelinkState,
-          props: [Source],
+          props: [Source, ({ b }) => b],
         },
         actions: {
           step: ({ H }) => {
             const [, setState] = H
-            setState((c) => c + 1)
+            setState((oldState) => ({ ...oldState, b: oldState.b + 1 }))
           },
           replace: ({ H }) => {
             const [, setState] = H
-            setState(5)
+            setState({ a: 1, b: 5 })
           },
         },
         values: {
-          counter: (H) => {
-            const [state] = H
-            return state
+          b: (H) => {
+            const [value] = H
+            return value
           },
         },
       })
 
       // Initial phase
-      expect(hookInterface.get('counter')).toBe('1')
+      expect(hookInterface.get('b')).toBe('2')
 
       // Update phase - callback
       hookInterface.actions('step')
-      expect(hookInterface.get('counter')).toBe('2')
+      expect(hookInterface.get('b')).toBe('3')
 
       // Update phase - replace value
       hookInterface.actions('replace')
-      expect(hookInterface.get('counter')).toBe('5')
+      expect(hookInterface.get('b')).toBe('5')
 
       hookInterface.cleanup()
     })
