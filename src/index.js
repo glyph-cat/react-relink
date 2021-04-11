@@ -1,6 +1,7 @@
 import { useDebugValue, useReducer } from 'react'
 import isEqual from 'react-fast-compare'
 import { IS_DEBUG } from './constants'
+import deepCopy from './deep-copy'
 import { deprecationWarn, devPrintOnce } from './dev-log'
 
 // So that eslint sees it as the original useEffect
@@ -14,8 +15,16 @@ devPrintOnce(
 
 function updateReducer(selector, source) {
   // Returns a factory
-  return () => (selector ? selector(source.get()) : source.get())
+  return () => (selector ? selector(source.M$getDirectState()) : source.M$getDirectState())
 }
+  
+// NOTE: For experimental version of `useRelinkValue`
+// Because React uses Object.is comparison, it will be exhausive to compare
+// deep copies of the states, hence direct references are used for selectors
+// when the selected value is finally going to be returned, it is only deep
+// copied as a safeguard...
+// `deepCopy` is still called on every render, by deep-copying the selected
+// values, we can gain some performance boost
 
 export function useRelinkValue_EXPERIMENTAL(source, selector) {
   source.M$suspenseOnHydration()
@@ -39,7 +48,7 @@ export function useRelinkValue_EXPERIMENTAL(source, selector) {
       source.M$listener.M$remove(listenerId)
     }
   }, [source])
-  return value
+  return deepCopy(value)
 }
 
 const forceUpdateReducer = (c) => c + 1
