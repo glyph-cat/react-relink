@@ -11,7 +11,7 @@ export default function ({ Relink }) {
     useRelinkValue,
   } = Relink
 
-  it('Dangerously Methods', () => {
+  describe('Dangerously Methods', () => {
     // Create source
     const Source = createSource({
       default: 1,
@@ -27,25 +27,26 @@ export default function ({ Relink }) {
       },
     })
 
-    // Test get
+    // Get
     expect(dangerouslyGetRelinkValue(Source)).toBe(1)
     expect(hookInterface.get('value')).toBe('1')
 
-    // Test set & get
+    // Set
     act(() => {
       dangerouslySetRelinkState(Source, 2)
     })
     expect(dangerouslyGetRelinkValue(Source)).toBe(2)
     expect(hookInterface.get('value')).toBe('2')
 
-    // Test reset & get
+    // Reset
     act(() => {
       dangerouslyResetRelinkState(Source)
     })
     expect(dangerouslyGetRelinkValue(Source)).toBe(1)
     expect(hookInterface.get('value')).toBe('1')
+    // })
 
-    // Test rehydrate
+    // Rehydrate
     act(() => {
       dangerouslyRehydrateRelinkSource(Source, ({ commit }) => {
         commit(5)

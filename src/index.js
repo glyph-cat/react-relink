@@ -1,7 +1,6 @@
 import { useDebugValue, useReducer } from 'react'
 import isEqual from 'react-fast-compare'
 import { IS_DEBUG } from './constants'
-import deepCopy from './deep-copy'
 import { deprecationWarn, devPrintOnce } from './dev-log'
 
 // So that eslint sees it as the original useEffect
@@ -13,51 +12,24 @@ devPrintOnce(
   'State values passed into selectors will be directly referenced from Relink\'s internal state in the next major version. See: https://github.com/chin98edwin/react-relink#immutability'
 )
 
-function updateReducer(selector, source) {
-  // Returns a factory
-  return () =>
-    selector ? selector(source.M$getDirectState()) : source.M$getDirectState()
-}
-
-// NOTE: For experimental version of `useRelinkValue`
-// Because React uses Object.is comparison, it will be exhausive to compare
-// deep copies of the states, hence direct references are used for selectors
-// when the selected value is finally going to be returned, it is only deep
-// copied as a safeguard...
-// `deepCopy` is still called on every render, by deep-copying the selected
-// values, we can gain some performance boost
-
-export function useRelinkValue_EXPERIMENTAL(source, selector) {
-  source.M$suspenseOnHydration()
-  const [value, update] = useReducer(
-    updateReducer(selector, source),
-    null,
-    updateReducer(selector, source)
-  )
-  useDebugValue(undefined, () =>
-    IS_DEBUG
-      ? {
-          key: source.M$key || '(Unnamed)',
-          selector,
-          value,
-        }
-      : undefined
-  )
-  useEffect(() => {
-    const listenerId = source.M$listener.M$add(update)
-    return () => {
-      source.M$listener.M$remove(listenerId)
-    }
-  }, [source])
-  return deepCopy(value)
-}
+// NOTE: For selector behavior >= 1.X.X
+// Since React uses Object.is comparison, it will be exhausive to compare deep copies
+// of the states, hence direct references are used for selectors.
+// When the selected value is finally going to be returned from the hook, only then
+// it is deep copied. Although this means deep copy still takes place on every render,
+// but by deep-copying only the selected values, we can gain some performance boost
 
 const forceUpdateReducer = (c) => c + 1
 
-export function useRelinkValue(source, selector) {
-  source.M$suspenseOnHydration()
+function getCurrentValue(source, selector) {
   const currentValue =
     typeof selector === 'function' ? selector(source.get()) : source.get()
+  return currentValue
+}
+
+export function useRelinkValue(source, selector) {
+  source.M$suspenseOnHydration()
+  const currentValue = getCurrentValue(source, selector)
 
   useDebugValue(undefined, () =>
     IS_DEBUG
@@ -72,8 +44,7 @@ export function useRelinkValue(source, selector) {
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
   useEffect(() => {
     const listenerId = source.M$listener.M$add(() => {
-      const nextValue =
-        typeof selector === 'function' ? selector(source.get()) : source.get()
+      const nextValue = getCurrentValue(source, selector)
       if (!isEqual(currentValue, nextValue)) {
         forceUpdate()
       }

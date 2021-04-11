@@ -8,7 +8,7 @@ export default function ({ Relink }) {
     useRelinkValue,
   } = Relink
   describe('useResetRelinkState', () => {
-    it('Normal + no extra re-renders', () => {
+    it('Normal + No unnecessary re-rendering', () => {
       const Source = createSource({
         default: 1,
       })
