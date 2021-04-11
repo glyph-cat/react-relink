@@ -2,7 +2,6 @@ import { act } from 'react-test-renderer'
 import { createHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
-
   const {
     createSource,
     dangerouslyGetRelinkValue,

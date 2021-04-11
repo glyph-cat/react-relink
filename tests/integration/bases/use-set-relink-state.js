@@ -1,7 +1,6 @@
 import { createCompoundHookInterface } from '../../__utils__/hook-interface'
 
 export default function ({ Relink }) {
-
   const { createSource, useSetRelinkState, useRelinkValue } = Relink
 
   describe('useSetRelinkState', () => {
