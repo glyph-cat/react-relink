@@ -1,5 +1,5 @@
 import { useDebugValue, useReducer } from 'react'
-import isEqual from 'react-fast-compare'
+import reactFastCompare from 'react-fast-compare'
 import { IS_DEBUG } from './constants'
 import { deprecationWarn, devPrintOnce } from './dev-log'
 
@@ -11,6 +11,10 @@ devPrintOnce(
   'selector',
   'State values passed into selectors will be directly referenced from Relink\'s internal state in the next major version. See: https://github.com/chin98edwin/react-relink#immutability'
 )
+
+function isEqual(mutable, a, b) {
+  return mutable ? Object.is(a, b) : reactFastCompare(a, b)
+}
 
 // NOTE: For selector behavior >= 1.X.X
 // Since React uses Object.is comparison, it will be exhausive to compare deep copies
@@ -45,7 +49,7 @@ export function useRelinkValue(source, selector) {
   useEffect(() => {
     const listenerId = source.M$listener.M$add(() => {
       const nextValue = getCurrentValue(source, selector)
-      if (!isEqual(currentValue, nextValue)) {
+      if (!isEqual(source.M$isMutable, currentValue, nextValue)) {
         forceUpdate()
       }
     })
