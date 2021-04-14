@@ -2,7 +2,7 @@
 - [Enhancement Request Example](#enhancement-request-example)
 - [Contributing Changes](#contributing-changes)
 - [List of available commands](#list-of-available-commands)
-- [Playground](#playground)
+- [Drafts](#drafts)
 
 # Bug Report Example
 
@@ -99,7 +99,7 @@ These commands will be available after you run `npm install` upon first cloning 
 
 <br/>
 
-# Playground
-You can create temporary files such as `'index.playground.js'` or `notes.playground.md` for your own purposes like writing drafts. They will be ignored by git in case you forget to remove them at the end of your workflow.
+# Drafts
+You can create temporary files such as `'index.draft.js'` or `notes.draft.md` for your own purposes like writing drafts. They will be ignored by git in case you forget to remove them at the end of your workflow.
 
 <br/>
