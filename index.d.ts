@@ -24,20 +24,24 @@ export interface RelinkSelector<T, K> {
   (state: T): K
 }
 
+export interface RelinkLifecycleConfig<T> {
+  init?: RelinkHydrator<T>
+  didSet?: (details: { state: T }) => void
+  didReset?: () => void
+}
+
+export interface RelinkSourceOptions {
+  suspense?: boolean
+  mutable?: boolean
+  virtualBatch?: boolean
+}
+
 export interface RelinkSourceEntry<T> {
   key?: any
   default: T
   deps?: Record<string, RelinkSourceEntry<unknown>>,
-  lifecycle?: {
-    init?: RelinkHydrator<T>
-    didSet?: (details: { state: T }) => void
-    didReset?: () => void
-  }
-  options?: {
-    suspense?: boolean
-    mutable?: boolean
-    virtualBatch?: boolean
-  }
+  lifecycle?: RelinkLifecycleConfig<T>
+  options?: RelinkSourceOptions
 }
 
 export function createSource<T>(
