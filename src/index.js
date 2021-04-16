@@ -113,3 +113,4 @@ export function dangerouslyRehydrateRelinkSource(source, callback) {
 }
 
 export { createSource } from './source'
+export { waitForAll } from './wait-for'
