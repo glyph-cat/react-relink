@@ -1,7 +1,7 @@
 [![Relink banner](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/banner.png)](https://github.com/chin98edwin/react-relink)
 [![NPM](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)
 
-Relink is a React state management library inspired by [Recoil](https://recoiljs.org). Relink provides some APIs that are similar to Recoil to minimize the learning gap.
+Relink is a React state management library inspired by [Recoil](https://recoiljs.org). Because of that, Relink has some API names that are similar to Recoil's, however their usage pattern may be completely different. Keep on reading to learn more.
 
 With Relink,
 * There will be less boilerplate code, just like Recoil;
@@ -14,6 +14,10 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 * (and possibly other unforeseen concerns — Relink is also experimental).
 
 *Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
+
+<br/>
+
+[**💖 Support me on Patreon**](https://patreon.com/chin98edwin_dev)
 
 <br/>
 
@@ -327,6 +331,23 @@ const GameRoomSource = createSource({
 ```
 
 You can specify as many depencies as you like for a source or chain as many as you like, as long as there are no [circular dependencies](https://en.wikipedia.org/wiki/Circular_dependency). Also note that preferences are specified as objects, not arrays.
+
+To wait for all sources to hydrate before doing something, you can use the `waitForAll` method.
+
+```js
+import { waitForAll } from 'react-relink'
+
+// With a callback
+waitForAll([SourceA, SourceB, SourceC, SourceD, SourceE], () => {
+  // Do something here
+})
+
+// Or asynchonously
+async function asyncMethod() {
+  await waitForAll([SourceA, SourceB, SourceC, SourceD, SourceE])
+  // Do something here
+}
+```
 
 <br/>
 

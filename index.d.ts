@@ -95,3 +95,12 @@ export function dangerouslyRehydrateRelinkSource<T>(
   source: RelinkSource<T>,
   config: RelinkHydrator<T>
 ): void
+
+export function waitForAll<T>(
+  sources: Array<RelinkSource<T>>,
+  callback: () => void
+): void
+
+export function waitForAll<T>(
+  sources: Array<RelinkSource<T>>
+): Promise<void>

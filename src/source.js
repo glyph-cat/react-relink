@@ -103,7 +103,7 @@ export function createSource(specs) {
             resolve()
             suspenseWaiter = undefined
             isHydrating = false
-            initListener.M$refresh()
+            initListener.M$refresh(0)
           }
           initListener.M$refresh(1)
           callback({ commit })
@@ -113,7 +113,7 @@ export function createSource(specs) {
       const commit = (payload) => {
         performUpdate(2, payload)
         isHydrating = false
-        initListener.M$refresh()
+        initListener.M$refresh(0)
       }
       initListener.M$refresh(1)
       callback({ commit })
@@ -210,6 +210,7 @@ export function createSource(specs) {
     M$key: key,
     M$deps: deps,
     M$addInitListener: initListener.M$add,
+    M$removeInitListener: initListener.M$remove,
     M$listener,
     addListener,
     removeListener: M$listener.M$remove,
