@@ -98,7 +98,8 @@ export function dangerouslyRehydrateRelinkSource<T>(
 
 export function waitForAll<T>(
   sources: Array<RelinkSource<T>>,
-  callback: () => void
+  callback: () => void,
+  onError: (e: Error) => void
 ): void
 
 export function waitForAll<T>(

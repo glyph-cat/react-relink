@@ -73,6 +73,44 @@ export default function ({ Relink }) {
       },
       expectedWaitTime + gracePeriod
     )
+
+    describe('Error handling', () => {
+      it('Callback', () => {
+        jest.useRealTimers()
+        return new Promise((resolve) => {
+          let errObj
+          const CorruptedSource = {}
+          waitForAll(
+            [CorruptedSource],
+            () => {},
+            (e) => {
+              errObj = e
+            }
+          )
+          setTimeout(() => {
+            expect(errObj instanceof Error).toBe(true)
+            resolve()
+          })
+        })
+      })
+
+      it('Async', () => {
+        jest.useRealTimers()
+        return new Promise((resolve) => {
+          (async () => {
+            let errObj
+            const CorruptedSource = {}
+            await waitForAll([CorruptedSource]).catch((e) => {
+              errObj = e
+            })
+            setTimeout(() => {
+              expect(errObj instanceof Error).toBe(true)
+              resolve()
+            })
+          })()
+        })
+      })
+    })
   })
 
   function generateSources() {
