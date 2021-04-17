@@ -25,6 +25,16 @@ export function createSource(specs) {
   const M$internalId = internalIdCounter++
   const depsKeyStack = checkForCircularDepsAndGetKeyStack(M$internalId, deps)
 
+  const allDepsAreReady = () => {
+    for (const depKey of depsKeyStack) {
+      const dep = deps[depKey]
+      if (!dep.M$getIsReadyStatus()) {
+        return false // Early exit
+      }
+    }
+    return true
+  }
+
   /**
    * @description State should be wrapped in this function whenever
    * it is received from or exposed to code outside of this library
@@ -41,6 +51,8 @@ export function createSource(specs) {
   let isFirstSetOccured = false
 
   // Open the gate right away if there are no dependencies
+  // NOTE: Gate open ≠ dependencies are ready, it simply means that
+  // the current source can finally hydrate itself
   const gate = createGatedQueue(depsKeyStack.length <= 0)
 
   const internalBatch = options.virtualBatch
@@ -133,17 +145,6 @@ export function createSource(specs) {
 
   // If there are deps, add listeners so that we know when to hydrate this source again
   if (depsKeyStack.length > 0) {
-    const allDepsAreReady = () => {
-      for (const depKey of depsKeyStack) {
-        const dep = deps[depKey]
-        // TOFIX: Need an `isReady()` method, gate open does not mean dep is ready it just means dep can finally hydrate itself
-        if (!dep.M$getIsReadyStatus()) {
-          return false // Early exit
-        }
-      }
-      return true
-    }
-
     for (const depKey of depsKeyStack) {
       const dep = deps[depKey]
       dep.M$addInitListener((type) => {
@@ -217,7 +218,10 @@ export function createSource(specs) {
     hydrate,
     M$suspenseOnHydration,
     M$isMutable: options.mutable,
-    M$getIsReadyStatus: () => !isHydrating,
+    /**
+     * Self is not hydrating && Deps are not hydrating
+     */
+    M$getIsReadyStatus: () => !isHydrating && allDepsAreReady(),
     M$getDirectState: () => state,
     get,
     set,
