@@ -97,11 +97,11 @@ export function dangerouslyRehydrateRelinkSource<T>(
 ): void
 
 export function waitForAll<T>(
+  sources: Array<RelinkSource<T>>
+): Promise<void>
+
+export function waitForAll<T>(
   sources: Array<RelinkSource<T>>,
   callback: () => void,
   onError: (e: Error) => void
 ): void
-
-export function waitForAll<T>(
-  sources: Array<RelinkSource<T>>
-): Promise<void>

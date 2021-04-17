@@ -16,22 +16,23 @@ export default function ({ Relink }) {
             SourceC,
             SourceD,
             SourceE,
+            getArraySnapshot,
           } = generateSources()
-          expect([
-            SourceA.get().inited,
-            SourceB.get().inited,
-            SourceC.get().inited,
-            SourceD.get().inited,
-            SourceE.get().inited,
-          ]).toStrictEqual([false, false, false, false, false])
+          expect(getArraySnapshot()).toStrictEqual([
+            false,
+            false,
+            false,
+            false,
+            true,
+          ])
           waitForAll([SourceA, SourceB, SourceC, SourceD, SourceE], () => {
-            expect([
-              SourceA.get().inited,
-              SourceB.get().inited,
-              SourceC.get().inited,
-              SourceD.get().inited,
-              SourceE.get().inited,
-            ]).toStrictEqual([true, true, true, true, true])
+            expect(getArraySnapshot()).toStrictEqual([
+              true,
+              true,
+              true,
+              true,
+              true,
+            ])
             resolve()
           })
         })
@@ -51,22 +52,23 @@ export default function ({ Relink }) {
               SourceC,
               SourceD,
               SourceE,
+              getArraySnapshot,
             } = generateSources()
-            expect([
-              SourceA.get().inited,
-              SourceB.get().inited,
-              SourceC.get().inited,
-              SourceD.get().inited,
-              SourceE.get().inited,
-            ]).toStrictEqual([false, false, false, false, false])
+            expect(getArraySnapshot()).toStrictEqual([
+              false,
+              false,
+              false,
+              false,
+              true,
+            ])
             await waitForAll([SourceA, SourceB, SourceC, SourceD, SourceE])
-            expect([
-              SourceA.get().inited,
-              SourceB.get().inited,
-              SourceC.get().inited,
-              SourceD.get().inited,
-              SourceE.get().inited,
-            ]).toStrictEqual([true, true, true, true, true])
+            expect(getArraySnapshot()).toStrictEqual([
+              true,
+              true,
+              true,
+              true,
+              true,
+            ])
             resolve()
           })()
         })
@@ -115,63 +117,66 @@ export default function ({ Relink }) {
 
   function generateSources() {
     const SourceA = createSource({
-      // Total wait time: 500ms
+      // Total wait time: 100ms
       default: { inited: false },
       lifecycle: {
         init: ({ commit }) => {
           setTimeout(() => {
             commit({ inited: true })
-          }, 500)
+          }, 100)
         },
       },
     })
     const SourceB = createSource({
-      // Total wait time: 1500ms (because it depends on A)
+      // Total wait time: 200ms (because it depends on A)
       deps: { SourceA },
       default: { inited: false },
       lifecycle: {
         init: async ({ commit }) => {
           setTimeout(() => {
             commit({ inited: true })
-          }, 1000)
+          }, 100)
         },
       },
     })
     const SourceC = createSource({
-      // Total wait time: 3000ms (because it depends on A and B)
+      // Total wait time: 300ms (because it depends on A and B)
       deps: { SourceB },
       default: { inited: false },
       lifecycle: {
         init: ({ commit }) => {
           setTimeout(() => {
             commit({ inited: true })
-          }, 1500)
+          }, 1000)
         },
       },
     })
     const SourceD = createSource({
-      // Total wait time: 500ms
+      // Total wait time: 100ms
       default: { inited: false },
       lifecycle: {
         init: async ({ commit }) => {
           setTimeout(() => {
             commit({ inited: true })
-          }, 500)
+          }, 100)
         },
       },
     })
     const SourceE = createSource({
-      // Total wait time: 1000ms
-      default: { inited: false },
-      lifecycle: {
-        init: ({ commit }) => {
-          setTimeout(() => {
-            commit({ inited: true })
-          }, 1000)
-        },
-      },
+      // Total wait time: (Should be) 0ms
+      // This allows us to test if the function will dumbly attach a listener
+      // to a source that is already hydrated, because if that's the case,
+      // it will result in waiting forever as the listener callback won't be fired.
+      default: { inited: true },
     })
-    // NOTE: Max wait time is 3000ms
-    return { SourceA, SourceB, SourceC, SourceD, SourceE }
+    // NOTE: Max wait time is 300ms
+    const getArraySnapshot = () => [
+      SourceA.get().inited,
+      SourceB.get().inited,
+      SourceC.get().inited,
+      SourceD.get().inited,
+      SourceE.get().inited,
+    ]
+    return { SourceA, SourceB, SourceC, SourceD, SourceE, getArraySnapshot }
   }
 }
