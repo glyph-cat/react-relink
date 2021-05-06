@@ -78,19 +78,31 @@ export function useRehydrateRelinkSource<T>(
   source: RelinkSource<T>,
 ): RelinkHydrator<T>
 
+/**
+ * @deprecated Prefer `YourSource.get()` over `dangerouslyGetRelinkValue(YourSource)`
+ */
 export function dangerouslyGetRelinkValue<T>(
   source: RelinkSource<T>
 ): T
 
+/**
+ * @deprecated Prefer `YourSource.set(...)` over `dangerouslySetRelinkValue(YourSource, ...)`
+ */
 export function dangerouslySetRelinkState<T>(
   source: RelinkSource<T>,
   partialState: RelinkSetter<T>,
 ): void
 
+/**
+ * @deprecated YourSource.reset()` over `dangerouslyResetRelinkValue(YourSource)`
+ */
 export function dangerouslyResetRelinkState<T>(
   source: RelinkSource<T>,
 ): void
 
+/**
+ * @deprecated Prefer `YourSource.hydrate(...)` over `dangerouslyHydrateRelinkValue(YourSource, ...)`
+ */
 export function dangerouslyRehydrateRelinkSource<T>(
   source: RelinkSource<T>,
   config: RelinkHydrator<T>
