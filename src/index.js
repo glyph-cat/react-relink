@@ -1,6 +1,6 @@
 import { useDebugValue, useReducer } from 'react'
 import reactFastCompare from 'react-fast-compare'
-import { IS_DEBUG } from './constants'
+import { IS_DEBUG_ENV } from './constants'
 import { deprecationWarn } from './dev'
 
 // So that eslint sees it as the original useEffect
@@ -30,7 +30,7 @@ export function useRelinkValue(source, selector) {
   const currentValue = getCurrentValue(source, selector)
 
   useDebugValue(undefined, () =>
-    IS_DEBUG
+    IS_DEBUG_ENV
       ? {
         key: source.M$key || '(Unnamed)',
         selector,

@@ -22,7 +22,7 @@ const UMD_GLOBALS = {
  * @param {'development'|'production'} config.mode
  * @returns {Array}
  */
-function getPlugins({ overrides = {}, mode }) {
+function getPlugins({ overrides = {}, mode } = {}) {
   const basePlugins = {
     babel: babel({
       presets: ['@babel/preset-react'],
@@ -32,17 +32,19 @@ function getPlugins({ overrides = {}, mode }) {
     }),
     nodeResolve: nodeResolve(),
     commonjs: commonjs(),
-    replace: replace({
-      preventAssignment: true,
-      values: {
-        'process.env.NODE_ENV': JSON.stringify(mode),
-      },
-    }),
   }
   for (const overrideKey in overrides) {
     basePlugins[overrideKey] = overrides[overrideKey]
   }
   const pluginStack = []
+  if (mode) {
+    pluginStack.push(replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(mode),
+      },
+    }))
+  }
   for (const i in basePlugins) {
     // Allows plugins to be excluded by replacing them with falsey values
     if (basePlugins[i]) {
@@ -66,7 +68,7 @@ const config = [
       exports: 'named',
     },
     external: EXTERNAL_LIBS_DOM,
-    plugins: getPlugins({ mode: 'development' }),
+    plugins: getPlugins(),
   },
   {
     // EcmaScript
@@ -77,10 +79,10 @@ const config = [
       exports: 'named',
     },
     external: EXTERNAL_LIBS_DOM,
-    plugins: getPlugins({ mode: 'development' }),
+    plugins: getPlugins(),
   },
   {
-    // EcmaScript (Production)
+    // EcmaScript for browsers
     input: INPUT_FILE,
     output: {
       file: 'dist/es/index.mjs',
@@ -100,7 +102,6 @@ const config = [
     },
     external: [...EXTERNAL_LIBS_RN, 'react-native'],
     plugins: getPlugins({
-      mode: 'development',
       overrides: {
         nodeResolve: nodeResolve({
           extensions: ['.native.js', '.js'],
