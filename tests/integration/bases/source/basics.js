@@ -1,5 +1,7 @@
 export default function ({ Relink }) {
-  const { createSource } = Relink
+
+  const { createSource, isRelinkSource } = Relink
+
   describe('Basics', () => {
     it('createSource', () => {
       const key = 'test/createSource'
@@ -40,4 +42,24 @@ export default function ({ Relink }) {
       expect(state).toStrictEqual({ a: 2, b: 2 })
     })
   })
+
+  describe('isRelinkSource', () => {
+
+    it('Should be true', () => {
+      const key = 'test/isRelinkSource'
+      const Source = createSource({
+        key,
+        default: { username: 'foo' },
+      })
+      const output = isRelinkSource(Source)
+      expect(output).toBe(true)
+    })
+
+    it('Should be false', () => {
+      const output = isRelinkSource(42)
+      expect(output).toBe(false)
+    })
+
+  })
+
 }
