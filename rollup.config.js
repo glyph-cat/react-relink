@@ -5,7 +5,9 @@ import replace from '@rollup/plugin-replace'
 import { terser } from 'rollup-plugin-terser'
 
 const INPUT_FILE = 'src/index.js'
-const EXTERNAL_LIBS = ['react', 'react-dom', 'fast-copy', 'react-fast-compare']
+const EXTERNAL_LIBS_BASE = ['react', 'fast-copy', 'react-fast-compare']
+const EXTERNAL_LIBS_DOM = [...EXTERNAL_LIBS_BASE, 'react-dom']
+const EXTERNAL_LIBS_RN = [...EXTERNAL_LIBS_BASE, 'react-native']
 
 const UMD_GLOBALS = {
   react: 'React',
@@ -63,7 +65,7 @@ const config = [
       format: 'cjs',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS,
+    external: EXTERNAL_LIBS_DOM,
     plugins: getPlugins({ mode: 'development' }),
   },
   {
@@ -74,7 +76,7 @@ const config = [
       format: 'es',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS,
+    external: EXTERNAL_LIBS_DOM,
     plugins: getPlugins({ mode: 'development' }),
   },
   {
@@ -85,7 +87,7 @@ const config = [
       format: 'es',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS,
+    external: EXTERNAL_LIBS_DOM,
     plugins: getPlugins({ mode: 'production' }),
   },
   {
@@ -96,7 +98,7 @@ const config = [
       format: 'es',
       exports: 'named',
     },
-    external: [...EXTERNAL_LIBS, 'react-native'],
+    external: [...EXTERNAL_LIBS_RN, 'react-native'],
     plugins: getPlugins({
       mode: 'development',
       overrides: {
@@ -119,7 +121,7 @@ const config = [
       exports: 'named',
       globals: UMD_GLOBALS,
     },
-    external: EXTERNAL_LIBS,
+    external: EXTERNAL_LIBS_DOM,
     plugins: getPlugins({ mode: 'development' }),
   },
   {
@@ -132,7 +134,7 @@ const config = [
       exports: 'named',
       globals: UMD_GLOBALS,
     },
-    external: EXTERNAL_LIBS,
+    external: EXTERNAL_LIBS_DOM,
     plugins: getPlugins({ mode: 'production' }),
   },
 ]
