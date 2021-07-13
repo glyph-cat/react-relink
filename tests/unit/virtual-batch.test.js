@@ -1,24 +1,23 @@
 import virtualBatch from '../../src/virtual-batch'
 
 it('Callbacks are batched', () => {
+
   jest.useFakeTimers()
-  let debouncedCallCount = 0,
-    debouncedExecuteCount = 0
+  let debouncedExecuteCount = 0
   let debounceRef = null
-  const debouncedCallback = () => {
+
+  const debouncedCallback = jest.fn(() => {
     clearTimeout(debounceRef)
-    debouncedCallCount += 1
     debounceRef = setTimeout(() => {
       debouncedExecuteCount += 1
     })
-  }
+  })
 
   virtualBatch(debouncedCallback)
   virtualBatch(debouncedCallback)
-  jest.advanceTimersByTime()
+  jest.advanceTimersByTime(10)
 
-  // The debounced callback should be called twice but only fired once
-  expect(debouncedCallCount).toBe(2)
+  expect(debouncedCallback).toBeCalledTimes(2)
   expect(debouncedExecuteCount).toBe(1)
 })
 

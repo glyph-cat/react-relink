@@ -1,13 +1,13 @@
 # List of available commands
-These commands will be available after you run `npm install` upon first cloning the repository.
+These commands will be available after you run `yarn install` upon first cloning the repository.
 
-* `npm run debug` Run a test on the unbundled code only
-* `npm test-bundled` Run tests on the builds for CJS, ES and UMD only
-* `npm test` Run tests on the unbundled code and builds for CJS, ES and UMD
-* `npm run build` Bundles the code into several builds: CJS, ES, React Native and UMD
-* `npm run lint` Checks the code style
-* `npm run lint:fix` Checks the code style and automatically fixes it
-* `npm run all` Equivalent of `npm run lint:fix` && `npm run build` && `npm test` && `npm pack`
+* `yarn debug` Run a test on the unbundled code only
+* `yarn test:bundled` Run tests on the builds for CJS, ES and UMD only
+* `yarn test` Run tests on the unbundled code and builds for CJS, ES and UMD
+* `yarn build` Bundles the code into several builds: CJS, ES, React Native and UMD
+* `yarn lint` Checks the code style
+* `yarn lint:fix` Checks the code style and automatically fixes it
+* `yarn all` Equivalent of `yarn lint:fix` && `yarn build` && `yarn test` && `yarn pack`
 
 <br/>
 
