@@ -47,14 +47,14 @@ export function useRelinkValue(source, selector) {
 
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
   useEffect(() => {
-    const listenerId = source.M$listener.M$add(() => {
+    const unwatch = source.watch(() => {
       const nextValue = getCurrentValue(source, selector)
       if (!isEqual(source.M$isMutable, currentValue, nextValue)) {
         forceUpdate()
       }
     })
     return () => {
-      source.M$listener.M$remove(listenerId)
+      unwatch()
     }
   }, [currentValue, selector, source])
   return currentValue

@@ -2,6 +2,9 @@
 // but ended up cancelling another valid listener
 let counter = 0
 
+/**
+ * @deprecated
+ */
 export function createListener() {
   const subscribers = {}
   return {
