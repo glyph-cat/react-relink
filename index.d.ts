@@ -134,3 +134,5 @@ export function waitForAll<T>(
   callback: () => void,
   onError: (e: Error) => void
 ): void
+
+export function isRelinkSource(value: unknown): boolean
