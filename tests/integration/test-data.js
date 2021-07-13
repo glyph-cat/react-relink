@@ -1,13 +1,9 @@
-import moment from 'moment'
-
-// https://www.bestrandoms.com/random-address-in-my
-
 export function getFreshTestData() {
   return {
     userStack: [
       {
         username: 'Adam',
-        dob: moment('19970503'),
+        dob: new Date('1997/05/03'),
         address: {
           street1: 'G Hentian Puduraya',
           street2: 'Jln Pudu',
@@ -19,7 +15,7 @@ export function getFreshTestData() {
       },
       {
         username: 'Bob',
-        dob: moment('20000719'),
+        dob: new Date('2000/07/19'),
         address: {
           street1: 'Jalan Tasek Timur',
           street2: 'Taman Tasek Indra',
@@ -31,7 +27,7 @@ export function getFreshTestData() {
       },
       {
         username: 'Caitlyn',
-        dob: moment('20030105'),
+        dob: new Date('2003/01/05'),
         address: {
           street1: '28 Maxwell Road',
           street2: '#01-02 Red Dot Traffic Building',
@@ -42,3 +38,5 @@ export function getFreshTestData() {
     ],
   }
 }
+
+// Data generated from https://www.bestrandoms.com/random-address-in-my
