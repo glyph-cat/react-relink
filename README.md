@@ -66,7 +66,7 @@ const CounterSource = createSource({
 
 # Consume a Source
 
-In Relink, you can work with the sources right away without needing to wrap your app inside any provider components. This makes accessing them across different React component trees easy, such as when [registerering screen components](https://wix.github.io/react-native-navigation/docs/third-party-react-context#register-the-screen) in React Native Navigation.
+In Relink, you can work with the sources right away without needing to wrap your app inside any provider components. This makes accessing them across different React component trees easy, such as when [registering screen components](https://wix.github.io/react-native-navigation/docs/third-party-react-context#register-the-screen) in React Native Navigation.
 
 To consume a source, pass it as a parameter into any of the following Relink hooks:
 * `useRelinkState` - returns the state value and a setter function like React's [`useState`](https://reactjs.org/docs/hooks-state.html)
@@ -127,6 +127,6 @@ rehydrateCounter(({ commit }) => {
 * [Immutability In Setters](https://github.com/chin98edwin/react-relink/blob/main/docs/immutability-in-setters.md)
 * [Options](https://github.com/chin98edwin/react-relink/blob/main/docs/options.md)
 * [Error Codes](https://github.com/chin98edwin/react-relink/blob/main/docs/error-codes.md)
-* [Interacting with Sources outside of React components](https://github.com/chin98edwin/react-relink/blob/main/docs/interacting-with-sources-outside-of-react-components.md)
+* [Interacting with Sources Outside of React Tree](https://github.com/chin98edwin/react-relink/blob/main/docs/interacting-with-sources-outside-of-react-tree.md)
 
 <br/>
