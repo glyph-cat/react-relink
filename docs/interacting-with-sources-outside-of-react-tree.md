@@ -1,4 +1,4 @@
-# Interacting with Sources outside of React components
+# Interacting with Sources Outside of React Tree
 
 ## Examples
 ```js
