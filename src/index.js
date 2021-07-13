@@ -1,16 +1,10 @@
 import { useDebugValue, useReducer } from 'react'
 import reactFastCompare from 'react-fast-compare'
 import { IS_DEBUG } from './constants'
-import { deprecationWarn, devPrintOnce } from './dev-log'
+import { deprecationWarn } from './dev'
 
 // So that eslint sees it as the original useEffect
 import useEffect from './use-isomorphic-layout-effect'
-
-devPrintOnce(
-  'info',
-  'selector',
-  'State values passed into selectors will be directly referenced from Relink\'s internal state in the next major version. See: https://github.com/chin98edwin/react-relink#immutability'
-)
 
 function isEqual(mutable, a, b) {
   return mutable ? Object.is(a, b) : reactFastCompare(a, b)
