@@ -1,6 +1,6 @@
-import { IS_DEBUG } from './constants'
+import { IS_DEBUG_ENV } from './constants'
 
-if (IS_DEBUG) {
+if (IS_DEBUG_ENV) {
   var onlyOnceCache = {
     log: {},
     info: {},
@@ -14,7 +14,7 @@ if (IS_DEBUG) {
  * @param {string} message
  */
 export function devPrint(type, message) {
-  if (IS_DEBUG) {
+  if (IS_DEBUG_ENV) {
     console[type](`[Development] ${message}`)
   }
 }
@@ -25,7 +25,7 @@ export function devPrint(type, message) {
  * @param {string} message
  */
 export function devPrintOnce(type, key, message) {
-  if (IS_DEBUG) {
+  if (IS_DEBUG_ENV) {
     if (!onlyOnceCache[type][key]) {
       onlyOnceCache[type][key] = true
       console[type](`[Development] ${message}`)

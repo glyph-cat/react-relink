@@ -40,7 +40,7 @@ for (const build of buildStack) {
         Relink: src,
         buildEnv: {
           tag,
-          IS_DEBUG: debug,
+          IS_DEBUG_ENV: debug,
         },
       })
     }

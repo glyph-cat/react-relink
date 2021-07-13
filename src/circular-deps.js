@@ -1,4 +1,4 @@
-import { IS_DEBUG } from './constants'
+import { IS_DEBUG_ENV } from './constants'
 
 export function checkForCircularDepsAndGetKeyStack(...args) {
   const keyCache = {}
@@ -21,7 +21,7 @@ export function checkForCircularDepsAndGetKeyStack(...args) {
       // Check with previous idStack so that current one is not compared against itself
       if (idStack.includes(dep.M$internalId)) {
         throw new Error(
-          IS_DEBUG
+          IS_DEBUG_ENV
             ? `Circular source dependencies are not allowed (In: ${mapIdsToKeys(
                 [...currentIdStack, dep.M$internalId]
               ).join(' > ')})`
