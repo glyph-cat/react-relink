@@ -5,7 +5,6 @@ These commands will be available after you run `npm install` upon first cloning 
 * `npm test-bundled` Run tests on the builds for CJS, ES and UMD only
 * `npm test` Run tests on the unbundled code and builds for CJS, ES and UMD
 * `npm run build` Bundles the code into several builds: CJS, ES, React Native and UMD
-* `npm run format` Format the code with Prettier
 * `npm run lint` Checks the code style
 * `npm run lint:fix` Checks the code style and automatically fixes it
 * `npm run code` Equivalent of `npm run format` && `npm run lint:fix`
