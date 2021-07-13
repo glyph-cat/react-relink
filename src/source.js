@@ -1,7 +1,7 @@
 import batchedUpdates from './batch'
 import { checkForCircularDepsAndGetKeyStack } from './circular-deps'
 import deepCopy from './deep-copy'
-import { deprecationWarn, devPrint } from './dev-log'
+import { deprecationWarn, devPrint } from './dev'
 import { createGatedQueue } from './gated-queue'
 import { createListener } from './listener'
 import { createSuspenseWaiter } from './suspense-waiter'
