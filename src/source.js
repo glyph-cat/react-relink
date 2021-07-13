@@ -1,7 +1,7 @@
 import batchedUpdates from './batch'
 import { checkForCircularDepsAndGetKeyStack } from './circular-deps'
 import deepCopy from './deep-copy'
-import { devPrint } from './dev-log'
+import { deprecationWarn, devPrint } from './dev-log'
 import { createGatedQueue } from './gated-queue'
 import { createListener } from './listener'
 import { createSuspenseWaiter } from './suspense-waiter'
@@ -201,9 +201,19 @@ export function createSource(specs) {
   }
 
   const addListener = (callback) => {
+    deprecationWarn('listener', 'Use `.watch` instead of `.addListener`')
     return M$listener.M$add(() => {
       callback(get())
     })
+  }
+
+  const watch = (callback) => {
+    const id = M$listener.M$add(() => {
+      callback(get())
+    })
+    return () => {
+      M$listener.M$remove(id)
+    }
   }
 
   return {
@@ -215,6 +225,7 @@ export function createSource(specs) {
     M$listener,
     addListener,
     removeListener: M$listener.M$remove,
+    watch,
     hydrate,
     M$suspenseOnHydration,
     M$isMutable: options.mutable,

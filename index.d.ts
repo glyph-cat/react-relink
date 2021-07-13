@@ -3,8 +3,25 @@ export interface HydrationCommitter<T> {
 }
 
 export interface RelinkSource<T> {
+  /**
+   * @deprecated `addListener` and `removeListener` are deprecated.
+   * Use `.watch()` instead.
+   * ```
+   * const unwatchSource = Source.watch() // Start watching
+   * unwatchSource() // Stop watching
+   * ```
+   */
   addListener: (callback: (state: T) => void) => number
+  /**
+   * @deprecated `addListener` and `removeListener` are deprecated.
+   * Use `.watch()` instead.
+   * ```
+   * const unwatchSource = Source.watch() // Start watching
+   * unwatchSource() // Stop watching
+   * ```
+   */
   removeListener: (id: number) => void
+  watch: (callback: (state: T) => void) => (() => void)
   get: () => T
   set: RelinkSetter<T>
   reset: () => void

@@ -42,7 +42,10 @@ function getPlugins({ overrides = {}, mode }) {
   }
   const pluginStack = []
   for (const i in basePlugins) {
-    pluginStack.push(basePlugins[i])
+    // Allows plugins to be excluded by replacing them with falsey values
+    if (basePlugins[i]) {
+      pluginStack.push(basePlugins[i])
+    }
   }
   if (mode === 'production') {
     const terserPlugin = terser({ mangle: { properties: { regex: /^M\$/ } } })
@@ -100,6 +103,9 @@ const config = [
         nodeResolve: nodeResolve({
           extensions: ['.native.js', '.js'],
         }),
+        // Here, we leave `process.env.NODE_ENV` as is and let RN's bundler
+        // handle it
+        replace: null,
       },
     }),
   },
