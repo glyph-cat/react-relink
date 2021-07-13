@@ -38,10 +38,10 @@ export function useRelinkValue(source, selector) {
   useDebugValue(undefined, () =>
     IS_DEBUG
       ? {
-          key: source.M$key || '(Unnamed)',
-          selector,
-          value: currentValue,
-        }
+        key: source.M$key || '(Unnamed)',
+        selector,
+        value: currentValue,
+      }
       : undefined
   )
 
@@ -112,5 +112,5 @@ export function dangerouslyRehydrateRelinkSource(source, callback) {
   source.hydrate(callback)
 }
 
-export { createSource } from './source'
+export { createSource, isRelinkSource } from './source'
 export { waitForAll } from './wait-for'

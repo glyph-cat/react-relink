@@ -11,6 +11,8 @@ import virtualBatch from './virtual-batch'
 // Factory pattern is used throughout the codebase because class method names are not mangled by
 // Terser, this causes problems in production build where variable name mangling takes place
 
+const RELINK_SOURCE_SIGNATURE = {}
+
 let internalIdCounter = 1
 
 export function createSource(specs) {
@@ -57,10 +59,10 @@ export function createSource(specs) {
 
   const internalBatch = options.virtualBatch
     ? (callback) => {
-        virtualBatch(() => {
-          batchedUpdates(callback)
-        })
-      }
+      virtualBatch(() => {
+        batchedUpdates(callback)
+      })
+    }
     : batchedUpdates
 
   const performUpdate = (type, newState) => {
@@ -99,7 +101,7 @@ export function createSource(specs) {
       devPrint(
         'error',
         'Cannot hydrate source when it is already hydrating' +
-          (key ? `(in "${key}")` : '')
+        (key ? `(in "${key}")` : '')
       )
       return
     } // Early exit
@@ -216,7 +218,9 @@ export function createSource(specs) {
     }
   }
 
+  // TODO: Hide internals with a Symbol
   return {
+    M$signature: RELINK_SOURCE_SIGNATURE,
     M$internalId,
     M$key: key,
     M$deps: deps,
@@ -237,5 +241,13 @@ export function createSource(specs) {
     get,
     set,
     reset,
+  }
+}
+
+export function isRelinkSource(value) {
+  if (!value) {
+    return false
+  } else {
+    return value.M$signature === RELINK_SOURCE_SIGNATURE
   }
 }

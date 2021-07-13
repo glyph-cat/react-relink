@@ -7,8 +7,7 @@ These commands will be available after you run `npm install` upon first cloning 
 * `npm run build` Bundles the code into several builds: CJS, ES, React Native and UMD
 * `npm run lint` Checks the code style
 * `npm run lint:fix` Checks the code style and automatically fixes it
-* `npm run code` Equivalent of `npm run format` && `npm run lint:fix`
-* `npm run all` Equivalent of `npm run code` && `npm run build` && `npm test` && `npm pack`
+* `npm run all` Equivalent of `npm run lint:fix` && `npm run build` && `npm test` && `npm pack`
 
 <br/>
 
