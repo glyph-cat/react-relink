@@ -1,5 +1,6 @@
 [![Relink banner](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/banner.png)](https://github.com/chin98edwin/react-relink)
-[![NPM](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)
+
+[![NPM](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)　
 
 <br/>
 
@@ -19,11 +20,13 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 * Server-side rendering is not officially supported;
 * Relink is also experimental — there might be some unforeseen issues.
 
-*Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
+<br/>
+
+*☕️　Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
 
 <br/>
 
-[**💚　Support me on Patreon　💚**](https://patreon.com/chin98edwin_dev)
+[![Become a Patreon](./assets/become-a-patron-button.svg)](https://www.patreon.com/bePatron?u=27931751)
 
 <br/>
 
