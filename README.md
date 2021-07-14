@@ -42,11 +42,13 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 
 # Installation
 
+With NPM:
 ```sh
-# NPM
 npm i react-relink
+```
 
-# Yarn
+With Yarn:
+```sh
 yarn add react-relink
 ```
 
