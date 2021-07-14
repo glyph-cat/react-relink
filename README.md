@@ -22,7 +22,7 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 
 <br/>
 
-*☕️　Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
+*☕️ Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
 
 <br/>
 

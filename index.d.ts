@@ -7,7 +7,7 @@ export interface RelinkSource<T> {
    * @deprecated `addListener` and `removeListener` are deprecated.
    * Use `.watch()` instead.
    * ```
-   * const unwatchSource = Source.watch() // Start watching
+   * const unwatchSource = Source.watch(selfDefinedCallback) // Start watching
    * unwatchSource() // Stop watching
    * ```
    */
@@ -16,11 +16,16 @@ export interface RelinkSource<T> {
    * @deprecated `addListener` and `removeListener` are deprecated.
    * Use `.watch()` instead.
    * ```
-   * const unwatchSource = Source.watch() // Start watching
+   * const unwatchSource = Source.watch(selfDefinedCallback) // Start watching
    * unwatchSource() // Stop watching
    * ```
    */
   removeListener: (id: number) => void
+  /**
+   * @example
+   * const unwatchSource = Source.watch(selfDefinedCallback) // Start watching
+   * unwatchSource() // Stop watching
+   */
   watch: (callback: (state: T) => void) => (() => void)
   get: () => T
   set: RelinkSetter<T>
