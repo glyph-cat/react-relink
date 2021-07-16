@@ -1,3 +1,7 @@
+const OFF = 0
+// const WARN = 1
+const ERROR = 2
+
 module.exports = {
   env: {
     browser: true,
@@ -23,10 +27,10 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
-    quotes: ['error', 'single'],
-    semi: ['error', 'never'],
+    quotes: [ERROR, 'single'],
+    semi: [ERROR, 'never'],
     'no-irregular-whitespace': [
-      'error',
+      ERROR,
       {
         skipStrings: true,
         skipComments: true,
@@ -34,8 +38,8 @@ module.exports = {
         skipTemplates: true,
       },
     ],
-    'react/prop-types': 0,
-    'react/no-children-prop': 0,
+    'react/prop-types': OFF,
+    'react/no-children-prop': OFF,
   },
   settings: {
     react: {

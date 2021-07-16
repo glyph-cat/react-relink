@@ -1,4 +1,4 @@
-import deepCopy from '../../src/deep-copy'
+import deepCopy from '.'
 
 it('Primitive types', () => {
   let a = 1

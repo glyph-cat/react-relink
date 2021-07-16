@@ -1,4 +1,4 @@
-import { createListener } from '../../src/listener'
+import { createListener } from '.'
 
 it('createListener', () => {
   const listener = createListener()
