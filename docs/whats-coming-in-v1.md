@@ -8,6 +8,7 @@
   - [Removal of Event Listeners](#removal-of-event-listeners)
   - [Removal of "Dangerously" Methods](#removal-of-dangerously-methods)
   - [Complete Rewrite In TypeScript](#complete-rewrite-in-typescript)
+  - [Consideration for Server-side Rendering.](#consideration-for-server-side-rendering)
 
 Relink is finally entering V1 and here are some important (breaking) changes to take note. For now, it is planned what V1 will be released some time in September 2021.
 
@@ -70,5 +71,13 @@ Source.hydrate(/* state or callback as you would do in `lifecycle.init` */)
 Relink will be re-written in TypeScript to take advantage of type checking and reduce the chances of a bug making its way into its releases. Although the APIs will mostly remain unchanged, there's still a chance for edge-case solutions that used to work in the past might stop working suddenly.
 
 It is also highly advised to re-read the [README]() file and the [documentations]() once V1 is released as if it's a new library that you have never used before. While notices and deprecation warnings have been added and there, there's also a chance for changes that are too small to point out to go unannounced, resulting in an app to break after upgrading to V1.
+
+<br/>
+
+## Consideration for Server-side Rendering.
+
+Compatibility for *server-side rendering* (SSR) will be considered starting from V1. However, take note that this is not guaranteed to be stable — the related APIs' names, required parameters, and usage pattern might change between versions without notice.
+
+Note from author: In fact, I've tried using V0 in [Next.js](https://nextjs.org) and [Gatsby](https://www.gatsbyjs.com) projects. So far they worked just fine, but they covered my own needs and nothing more. Hence, I am not confident that Relink can also serve the public well in terms of SSR compatibility, even if it's just at a very basic level.
 
 <br/>
