@@ -7,7 +7,7 @@ const Source = createSource({
   options: {
     suspense: true | false,
     mutable: true | false,
-    virtualbatch: true | false,
+    virtualBatch: true | false,
   }
 })
 ```
@@ -26,7 +26,9 @@ Components that consume the source will be suspended while hydrating.
 * Type: `boolean`
 * Default: `false`
 
-Allows slight performance improvement by not deep-copying the values returned.
+Setting the value to `true` can slightly improve performance by not deep-copying the returned state values.
+
+***NOTE: The default value will be `true` starting from V1.***
 
 <br/>
 

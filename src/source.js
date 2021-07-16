@@ -8,8 +8,9 @@ import { createSuspenseWaiter } from './suspense-waiter'
 import virtualBatch from './virtual-batch'
 
 // NOTE:
-// Factory pattern is used throughout the codebase because class method names are not mangled by
-// Terser, this causes problems in production build where variable name mangling takes place
+// Factory pattern is used throughout the codebase because class method names
+// are not mangled by Terser, this causes problems in production build where
+// variable name mangling takes place
 
 const RELINK_SOURCE_SIGNATURE = {}
 
@@ -23,6 +24,15 @@ export function createSource(specs) {
     lifecycle = {},
     options = {},
   } = specs
+
+  if (typeof options.mutable === 'undefined') {
+    deprecationWarn(
+      'mutable',
+      'Starting from V1, mutability will be disabled by default. To opt out ' +
+      'of this change, you need to set `mutable: false` under options in ' +
+      '`createSource` starting from this version. How-to: https://git.io/JWfDY'
+    )
+  }
 
   const M$internalId = internalIdCounter++
   const depsKeyStack = checkForCircularDepsAndGetKeyStack(M$internalId, deps)
