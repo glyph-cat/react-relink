@@ -1,4 +1,4 @@
-import { createGatedQueue } from '../../src/gated-queue'
+import { createGatedQueue } from '.'
 
 describe('createGatedQueue', () => {
   it('initialStatus = false', () => {

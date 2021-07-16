@@ -1,4 +1,4 @@
-import { checkForCircularDepsAndGetKeyStack } from '../../src/circular-deps'
+import { checkForCircularDepsAndGetKeyStack } from '.'
 
 let mockId = 0
 function createMockSource({ deps }) {

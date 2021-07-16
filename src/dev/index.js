@@ -1,4 +1,4 @@
-import { IS_DEBUG_ENV } from './constants'
+import { IS_DEBUG_ENV } from '../constants'
 
 if (IS_DEBUG_ENV) {
   var onlyOnceCache = {

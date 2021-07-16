@@ -1,11 +1,11 @@
-import batchedUpdates from './batch'
-import { checkForCircularDepsAndGetKeyStack } from './circular-deps'
-import deepCopy from './deep-copy'
-import { deprecationWarn, devPrint } from './dev'
-import { createGatedQueue } from './gated-queue'
-import { createListener } from './listener'
-import { createSuspenseWaiter } from './suspense-waiter'
-import virtualBatch from './virtual-batch'
+import batchedUpdates from '../batch'
+import { checkForCircularDepsAndGetKeyStack } from '../circular-deps'
+import deepCopy from '../deep-copy'
+import { deprecationWarn, devPrint } from '../dev'
+import { createGatedQueue } from '../gated-queue'
+import { createListener } from '../listener'
+import { createSuspenseWaiter } from '../suspense-waiter'
+import virtualBatch from '../virtual-batch'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names

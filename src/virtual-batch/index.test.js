@@ -1,4 +1,4 @@
-import virtualBatch from '../../src/virtual-batch'
+import virtualBatch from '.'
 
 it('Callbacks are batched', () => {
 
