@@ -1,6 +1,18 @@
+<div align="center">
+
 [![Relink banner](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/banner.png)](https://github.com/chin98edwin/react-relink)
 
-[![NPM](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)　
+[![NPM](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)
+![Bundle size](https://img.shields.io/bundlephobia/min/react-relink)
+![Downloads](https://img.shields.io/npm/dt/react-relink)
+[![License](https://img.shields.io/npm/l/react-relink)](https://github.com/chin98edwin/react-relink/blob/main/LICENSE)
+
+![Designed for React](https://img.shields.io/static/v1?label&logo=react&logoColor=61DBFB&message=Designed%20for%20React&color=4a4a4a)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/chin98edwin/react-relink)
+[![Become a Patron](https://img.shields.io/static/v1?label&logo=patreon&logoColor=ffffff&message=Become%20a%20Patron&color=ff424d)](https://www.patreon.com/bePatron?u=27931751)
+
+
+</div>
 
 <br/>
 
@@ -24,9 +36,7 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 
 *☕️ Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
 
-<br/>
-
-[![Become a Patreon](./assets/become-a-patron-button.svg)](https://www.patreon.com/bePatron?u=27931751)
+*🌀 Miscellaneous: Looking for a specialized package to handle localizations? Check out [Langutil](https://github.com/chin98edwin/langutil).*
 
 <br/>
 
