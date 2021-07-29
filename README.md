@@ -52,15 +52,25 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 
 # Installation
 
-With NPM:
+With [NPM](https://www.npmjs.com/package/react-relink):
 ```sh
 npm i react-relink
 ```
 
-With Yarn:
+<br/>
+
+With [Yarn](https://yarnpkg.com/package/react-relink):
 ```sh
 yarn add react-relink
 ```
+
+<br/>
+
+With UNPKG:
+```html
+<script src="https://unpkg.com/react-relink@<VERSION>/dist/umd/index.js" crossorigin></script>
+```
+Remember to replace `index.js` with `index.min.js` when deploying.
 
 <br/>
 
