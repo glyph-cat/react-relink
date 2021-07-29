@@ -28,9 +28,10 @@ export function createSource(specs) {
   if (typeof options.mutable === 'undefined') {
     deprecationWarn(
       'mutable',
-      'Starting from V1, mutability will be disabled by default. To opt out ' +
-      'of this change, you need to set `mutable: false` under options in ' +
-      '`createSource` starting from this version. How-to: https://git.io/JWfDY'
+      'Out of concerns for performance, mutability will be enabled by ' +
+      'default starting from V1. To opt out of this change, you should set ' +
+      '`mutable: false` under options in `createSource` starting from this ' +
+      'version. How-to: https://git.io/JWfDY'
     )
   }
 
