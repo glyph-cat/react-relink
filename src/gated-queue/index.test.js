@@ -1,7 +1,8 @@
 import { createGatedQueue } from '.'
 
 describe('createGatedQueue', () => {
-  it('initialStatus = false', () => {
+
+  test('initialStatus = false', () => {
     let counter = 0
     const gate = createGatedQueue() // Defaults to false
 
@@ -24,7 +25,7 @@ describe('createGatedQueue', () => {
     expect(counter).toBe(2)
   })
 
-  it('initialStatus = true', () => {
+  test('initialStatus = true', () => {
     let counter = 0
     const gate = createGatedQueue(true)
 
@@ -45,4 +46,5 @@ describe('createGatedQueue', () => {
     gate.M$setStatus(true)
     expect(counter).toBe(2)
   })
+
 })

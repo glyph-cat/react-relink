@@ -3,6 +3,7 @@
 [![React Relink Banner](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/react-relink-wording.svg)](https://github.com/chin98edwin/react-relink)
 
 [![Version](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)
+![Build Status](https://img.shields.io/github/workflow/status/chin98edwin/langutil/Test/main)
 ![Bundle size](https://img.shields.io/bundlephobia/min/react-relink)
 ![Downloads](https://img.shields.io/npm/dt/react-relink)
 [![License](https://img.shields.io/npm/l/react-relink)](https://github.com/chin98edwin/react-relink/blob/main/LICENSE)

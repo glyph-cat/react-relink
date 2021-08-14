@@ -9,7 +9,8 @@ function createMockSource({ deps }) {
 }
 
 describe('checkForCircularDepsAndGetKeyStack', () => {
-  it('with circular deps', () => {
+
+  test('with circular deps', () => {
     const callback = () => {
       const MockSourceA = createMockSource({
         deps: {},
@@ -26,7 +27,7 @@ describe('checkForCircularDepsAndGetKeyStack', () => {
     expect(callback).toThrow()
   })
 
-  it('without circular deps', () => {
+  test('without circular deps', () => {
     const callback = () => {
       const MockSourceA = createMockSource({
         deps: {},
@@ -44,4 +45,5 @@ describe('checkForCircularDepsAndGetKeyStack', () => {
     }
     expect(callback).not.toThrow()
   })
+
 })
