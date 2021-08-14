@@ -9,7 +9,7 @@
 
 ![Designed for React](https://img.shields.io/static/v1?label&logo=react&logoColor=61DBFB&message=Designed%20for%20React&color=4a4a4a)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/chin98edwin/react-relink)
-[![Become a Patron](https://img.shields.io/static/v1?label&logo=patreon&logoColor=ffffff&message=Become%20a%20Patron&color=ff424d)](https://www.patreon.com/bePatron?u=27931751)
+[![Support me on Ko-fi](https://img.shields.io/static/v1?label&logo=kofi&logoColor=ffffff&message=Support%20me%20on%20Ko-fi&color=FF5E5B)](https://ko-fi.com/dev_chin98edwin)
 
 
 </div>
