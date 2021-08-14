@@ -1,13 +1,13 @@
 import deepCopy from '.'
 
-it('Primitive types', () => {
+test('Primitive types', () => {
   let a = 1
   let b = deepCopy(a)
   a = 2
   expect(a).not.toBe(b)
 })
 
-it('Arrays', () => {
+test('Arrays', () => {
   let a = [1, 2, 3]
   let b = deepCopy(a)
   const areDifferent = a !== b
@@ -16,23 +16,26 @@ it('Arrays', () => {
 })
 
 describe('Objects', () => {
-  it('Normal values', () => {
+
+  test('Normal values', () => {
     let a = { k1: 1, k2: '2', k3: true }
     let b = deepCopy(a)
     const areDifferent = a !== b
     expect(a).toStrictEqual(b)
     expect(areDifferent).toStrictEqual(true)
   })
-  it('Falsey values', () => {
+
+  test('Falsey values', () => {
     let a = { k1: undefined, k2: null, k3: NaN, k4: false }
     let b = deepCopy(a)
     const areDifferent = a !== b
     expect(a).toStrictEqual(b)
     expect(areDifferent).toStrictEqual(true)
   })
+
 })
 
-it('Deeply nested', () => {
+test('Deeply nested', () => {
   let a = {
     k1: [
       {
@@ -48,11 +51,13 @@ it('Deeply nested', () => {
 })
 
 describe('Other data types', () => {
-  it('Date', () => {
+
+  test('Date', () => {
     const a = new Date()
-    const b = deepCopy(a, [])
+    const b = deepCopy(new Date(a))
     const areDifferent = a !== b
     expect(a.toISOString()).toBe(b.toISOString())
     expect(areDifferent).toBe(true)
   })
+
 })

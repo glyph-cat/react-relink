@@ -1,11 +1,9 @@
 import fastCopy from 'fast-copy'
 
 /**
- * @description Wrapper around 'fast-copy'
- * @param {any} value
- * @returns {any}
+ * Wrapper around 'fast-copy'
  */
-function deepCopy(value) {
+function deepCopy<V>(value: V): V {
   if (typeof value !== 'object' || value === null) {
     return value
   } else {
