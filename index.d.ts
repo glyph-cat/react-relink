@@ -94,7 +94,7 @@ export function useSetRelinkState<T>(
 
 export function useResetRelinkState<T>(
   source: RelinkSource<T>,
-): void
+): () => void
 
 export function useRehydrateRelinkSource<T>(
   source: RelinkSource<T>,
