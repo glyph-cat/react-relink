@@ -27,6 +27,9 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
+    'object-property-newline': [WARN, {
+      allowAllPropertiesOnSameLine: true,
+    }],
     quotes: [ERROR, 'single'],
     semi: [ERROR, 'never'],
     'no-irregular-whitespace': [
