@@ -1,7 +1,8 @@
+// Old file
 import batchedUpdates from '../batch'
 import { checkForCircularDepsAndGetKeyStack } from '../circular-deps'
 import deepCopy from '../deep-copy'
-import { deprecationWarn, devError } from '../dev'
+import { devError } from '../dev'
 import { createGatedQueue } from '../gated-queue'
 import { createListener } from '../listener'
 import { createSuspenseWaiter } from '../suspense-waiter'
@@ -203,7 +204,6 @@ export function createSource(specs) {
   }
 
   const addListener = (callback) => {
-    deprecationWarn('listener', 'Use `.watch` instead of `.addListener`')
     return M$listener.M$add(() => {
       callback(get())
     })
