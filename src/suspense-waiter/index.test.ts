@@ -6,7 +6,7 @@ enum WAIT_TIME {
   max = 100,
 }
 
-it('Pending', (): Promise<void> => {
+test('Pending', (): Promise<void> => {
   const promise: Promise<void> = new Promise((resolve) => {
     setTimeout(() => { resolve() }, WAIT_TIME.max)
   })
@@ -20,7 +20,7 @@ it('Pending', (): Promise<void> => {
   })
 })
 
-it('Completed', (): Promise<void> => {
+test('Completed', (): Promise<void> => {
   const promise: Promise<void> = new Promise((resolve) => {
     setTimeout(() => { resolve() }, WAIT_TIME.min)
   })
@@ -34,7 +34,7 @@ it('Completed', (): Promise<void> => {
   })
 })
 
-it('Error', (): Promise<void> => {
+test('Error', (): Promise<void> => {
   const promise: Promise<void> = new Promise((_resolve, reject) => {
     setTimeout(() => { reject('match-key') }, WAIT_TIME.min)
   })

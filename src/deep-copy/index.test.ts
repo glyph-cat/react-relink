@@ -2,14 +2,14 @@ import deepCopy from '.'
 
 test('Primitive types', () => {
   let a = 1
-  let b = deepCopy(a)
+  const b = deepCopy(a)
   a = 2
   expect(a).not.toBe(b)
 })
 
 test('Arrays', () => {
-  let a = [1, 2, 3]
-  let b = deepCopy(a)
+  const a = [1, 2, 3]
+  const b = deepCopy(a)
   const areDifferent = a !== b
   expect(a).toStrictEqual(b)
   expect(areDifferent).toStrictEqual(true)
@@ -18,16 +18,16 @@ test('Arrays', () => {
 describe('Objects', () => {
 
   test('Normal values', () => {
-    let a = { k1: 1, k2: '2', k3: true }
-    let b = deepCopy(a)
+    const a = { k1: 1, k2: '2', k3: true }
+    const b = deepCopy(a)
     const areDifferent = a !== b
     expect(a).toStrictEqual(b)
     expect(areDifferent).toStrictEqual(true)
   })
 
   test('Falsey values', () => {
-    let a = { k1: undefined, k2: null, k3: NaN, k4: false }
-    let b = deepCopy(a)
+    const a = { k1: undefined, k2: null, k3: NaN, k4: false }
+    const b = deepCopy(a)
     const areDifferent = a !== b
     expect(a).toStrictEqual(b)
     expect(areDifferent).toStrictEqual(true)
@@ -36,7 +36,7 @@ describe('Objects', () => {
 })
 
 test('Deeply nested', () => {
-  let a = {
+  const a = {
     k1: [
       {
         id: 1,
@@ -44,7 +44,7 @@ test('Deeply nested', () => {
       },
     ],
   }
-  let b = deepCopy(a)
+  const b = deepCopy(a)
   const areDifferent = a !== b
   expect(a).toStrictEqual(b)
   expect(areDifferent).toStrictEqual(true)

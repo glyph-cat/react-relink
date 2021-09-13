@@ -1,47 +1,51 @@
-export type WatcherCallback<P> = (...args: Array<P>) => void
+import { CallbackWithNoParamAndReturnsVoid } from '../helper-types'
 
-export type UnwatchCallback = () => void
+export type WatcherCallback<A extends Array<unknown>> = (...args: A) => void
 
-export interface Watcher<P> {
-  M$watch(callback: WatcherCallback<P>): UnwatchCallback
-  M$refresh: WatcherCallback<P>
+export type UnwatchCallback = CallbackWithNoParamAndReturnsVoid
+
+export interface Watcher<A extends Array<unknown>> {
+  M$watch(callback: WatcherCallback<A>): UnwatchCallback
+  M$unwatchAll(): void
+  M$refresh: WatcherCallback<A>
 }
 
 /**
  * Creates a Watcher.
- * @returns A Watcher object.
  * @example
  * const watcher = createWatcher()
- *
  * const unwatch = watcher.watch(() => { ... })
- *
- * // Arguments (if provided) will be passed to all subscribed callbacks
- * watcher.refresh(...)
- *
+ * watcher.refresh(...) // Arguments can be passed
  * unwatch()
+ * @returns A Watcher object.
  */
-export function createWatcher<P>(): Watcher<P> {
+export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
 
-  const watcherMap: Map<number, CallableFunction> = new Map()
+  let watcherMap: Record<number, CallableFunction> = {}
   let incrementalWatchId = 1
 
-  function M$watch(callback: WatcherCallback<P>): UnwatchCallback {
+  const M$watch = (callback: WatcherCallback<A>): UnwatchCallback => {
     const newId = incrementalWatchId++
-    watcherMap.set(newId, callback)
+    watcherMap[newId] = callback
     const unwatch = (): void => {
-      watcherMap.delete(newId)
+      delete watcherMap[newId]
     }
     return unwatch
   }
 
-  function M$refresh(...args: Array<P>): void {
-    watcherMap.forEach((callback) => {
+  const M$unwatchAll = () => {
+    watcherMap = {}
+  }
+
+  const M$refresh = (...args: A): void => {
+    Object.values(watcherMap).forEach((callback) => {
       callback(...args)
     })
   }
 
   return {
     M$watch,
+    M$unwatchAll,
     M$refresh,
   }
 
