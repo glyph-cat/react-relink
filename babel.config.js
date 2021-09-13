@@ -1,7 +1,10 @@
 module.exports = {
   env: {
     test: {
-      presets: ['@babel/preset-react'],
+      presets: [
+        '@babel/preset-typescript',
+        '@babel/preset-react',
+      ],
       plugins: [
         '@babel/plugin-proposal-optional-chaining',
         '@babel/plugin-transform-modules-commonjs',

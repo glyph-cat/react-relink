@@ -1,104 +1,134 @@
-import batchedUpdates from '../batch'
 import { checkForCircularDepsAndGetKeyStack } from '../circular-deps'
 import { INTERNALS_SYMBOL } from '../constants'
 import deepCopy from '../deep-copy'
-import { devError } from '../dev'
+import { devError, devWarn } from '../dev'
+import { TYPE_ERROR_SOURCE_KEY } from '../errors'
 import { createGatedQueue } from '../gated-queue'
-import { RelinkSource, RelinkSourceEntry } from '../schema'
-import { createSuspenseWaiter } from '../suspense-waiter'
+import { isFunction } from '../is-function'
+import {
+  RelinkSetter,
+  RelinkHydrator,
+  RelinkSource,
+  RelinkSourceEntry,
+  RelinkStateDerivator,
+  RelinkSourceKey,
+  RelinkSourceOptions,
+} from '../schema'
+import { getAutomaticKey, registerKey, unregisterKey } from '../source-key'
+import { createSuspenseWaiter, SuspenseWaiter } from '../suspense-waiter'
 import { createVirtualBatcher, VirtualBatchedCallback } from '../virtual-batch'
-import { createWatcher, Watcher } from '../watcher'
+import { waitForAll } from '../wait-for'
+import { createWatcher } from '../watcher'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
 // are not mangled by Terser, this causes problems in production build where
 // variable name mangling takes place
 
-let internalIdCounter = 1
-
-interface RelinkSourceInternalInstance<T> {
-  M$watcher: Watcher<any>
-  M$internalId: number
-  M$copyState<S>(s: S): S
+enum PERF_UPDATE_TYPE {
+  M$set = undefined,
+  M$reset = 1,
+  M$hydrate = 2,
 }
 
-export function createSource<T>(specs: RelinkSourceEntry<T>): RelinkSource<T> {
+const DEFAULT_OPTIONS: RelinkSourceOptions = {
+  mutable: true,
+  public: false,
+  suspense: false,
+  virtualBatch: false,
+} as const
 
-  const {
-    key,
-    deps = {},
-    default: defaultState,
-    lifecycle = {},
-    options = {},
-  } = specs
+export function createSource<S>({
+  key: rawKey,
+  deps = [],
+  default: defaultState,
+  lifecycle = {},
+  options: rawOptions,
+}: RelinkSourceEntry<S>): RelinkSource<S> {
 
-  const self: RelinkSourceInternalInstance<T> = {
-    M$watcher: createWatcher<any>(),
-    M$internalId: internalIdCounter++,
-    /**
-     * State should be wrapped in this function whenever it is received from or
-     * exposed to code outside of this library.
-     *
-     * Every line of code that uses this method should also have a "// (Receive)"
-     * or "// (Receive)" comment added to the end.
-     * For example: state = copyState(newState); // (Receive)
-     */
-    M$copyState: <S>(s: S): S => options.mutable ? s : deepCopy(s),
+  // === Key checking ===
+  let normalizedKey: RelinkSourceKey
+  const typeofRawKey = typeof rawKey
+  if (typeofRawKey === 'string' || typeofRawKey === 'number') {
+    normalizedKey = rawKey
+  } else if (typeofRawKey === 'undefined') {
+    normalizedKey = getAutomaticKey()
+    devWarn(
+      'No key provided to source, ' +
+      `automatically generating one: '${normalizedKey}'`
+    )
+  } else {
+    throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
   }
+  registerKey(normalizedKey)
 
-  const depsKeyStack = checkForCircularDepsAndGetKeyStack(self.M$internalId, deps)
+  // === Local Variables & Methods ===
 
-  const allDepsAreReady = () => {
+  const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
+  const isSourceMutable = mergedOptions.mutable
+  const isSourcePublic = mergedOptions.public
+  const isVirtualBatchEnabled = mergedOptions.virtualBatch
+  const isSuspenseEnabled = mergedOptions.suspense
+
+  /**
+   * State should be wrapped in this function whenever it is received from or
+   * exposed to code outside of this library.
+   *
+   * Every line of code that uses this method should also have a "// (Expose)"
+   * or "// (Receive)" comment added to the end.
+   * For example: state = copyState(newState); // (Receive)
+   */
+  const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
+  const initialState: S = copyState(defaultState) // (Receive)
+  let currentState: S = copyState(defaultState) // (Receive)
+  const stateWatcher = createWatcher<never>()
+
+  // === Dependency Handling ===
+  const depsKeyStack = checkForCircularDepsAndGetKeyStack(deps, [normalizedKey])
+  const allDepsAreReady = (): boolean => {
     for (const depKey of depsKeyStack) {
       const dep = deps[depKey]
-      if (!dep.M$getIsReadyStatus()) {
+      if (!dep[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
         return false // Early exit
       }
     }
     return true
   }
-
-  const initialState = self.M$copyState(defaultState) // (Receive)
-  let state = self.M$copyState(defaultState) // (Receive)
-  let shadowState // Assignment deferred until first set occurs
-  let isFirstSetOccured = false
-
   // Open the gate right away if there are no dependencies
   // NOTE: Gate open ≠ dependencies are ready, it simply means that
   // the current source can finally hydrate itself
-  const gate = createGatedQueue(depsKeyStack.length <= 0)
+  const ancestorGate = createGatedQueue(depsKeyStack.length <= 0)
 
-  const internalBatch = (() => {
-    if (options.virtualBatch) {
+  const batch = (() => {
+    if (isVirtualBatchEnabled) {
       const virtualbatch = createVirtualBatcher()
-      return (callback: VirtualBatchedCallback) => {
-        virtualbatch(() => {
-          batchedUpdates(callback)
-        })
+      return (callback: VirtualBatchedCallback): void => {
+        virtualbatch(callback)
       }
     } else {
-      return batchedUpdates
+      return (callback: VirtualBatchedCallback): void => {
+        callback()
+      }
     }
   })()
 
-  const performUpdate = (type, newState) => {
-    const isReset = type === 1
-    const isHydrate = type === 2
-    shadowState = self.M$copyState(newState) // (Receive)
-    internalBatch(() => {
-      state = self.M$copyState(newState) // (Receive)
-      M$listener.M$refresh()
-      const isDidResetProvided = typeof lifecycle.didReset === 'function'
-      const isDidSetProvided = typeof lifecycle.didSet === 'function'
-      if (isReset) {
+  const isDidResetProvided = isFunction(lifecycle.didReset)
+  const isDidSetProvided = isFunction(lifecycle.didSet)
+  const performUpdate = (type: PERF_UPDATE_TYPE, newState: S) => {
+    batch(() => {
+      currentState = copyState(newState) // (Receive)
+      if (type === PERF_UPDATE_TYPE.M$reset) {
         if (isDidResetProvided) {
           lifecycle.didReset()
         }
-      } else if (!isHydrate) {
+      } else if (type !== PERF_UPDATE_TYPE.M$hydrate) {
         if (isDidSetProvided) {
-          lifecycle.didSet({ state: self.M$copyState(state) }) // (Expose)
+          lifecycle.didSet({
+            state: copyState(currentState), // (Expose)
+          })
         }
       }
+      stateWatcher.M$refresh()
     })
   }
 
@@ -107,140 +137,117 @@ export function createSource<T>(specs: RelinkSourceEntry<T>): RelinkSource<T> {
   // is thrown, when promise resolves, react automatically knows
   // to attempt to render the components again
 
-  let suspenseWaiter
+  let suspenseWaiter: SuspenseWaiter
   let isHydrating = false
-  const hydrate = (callback) => {
-    if (isHydrating) {
-      devError(
-        'Cannot hydrate source when it is already hydrating' +
-        (key ? `(in "${key}")` : '')
-      )
-      return
-    } // Early exit
-    isHydrating = true
-    if (options.suspense) {
-      suspenseWaiter = createSuspenseWaiter(
-        new Promise((resolve) => {
-          const commit = (payload) => {
-            // NOTE: `performUpdate` is not called here because components
-            // will be re-rendered anyway when the promise resolved.
-            // The state, however, must be copied
-            state = self.M$copyState(payload) // (Receive)
-            resolve()
-            suspenseWaiter = undefined
-            isHydrating = false
-            initListener.M$refresh(0)
-          }
-          initListener.M$refresh(1)
-          callback({ commit })
-        })
-      )
-    } else {
-      const commit = (payload) => {
-        performUpdate(2, payload)
-        isHydrating = false
-        initListener.M$refresh(0)
-      }
-      initListener.M$refresh(1)
-      callback({ commit })
-    }
-  }
+  const M$hydrationWatcher = createWatcher<[boolean]>() // true = is hydrating
 
-  const gateExecHydration = () => {
-    gate.M$exec(() => {
-      if (typeof lifecycle.init === 'function') {
-        hydrate(lifecycle.init)
-      }
-    })
-  }
-
-  // Hydration must run at least once if lifecycle.init is provided
-  gateExecHydration()
-
-  // If there are deps, add listeners so that we know when to hydrate this source again
-  if (depsKeyStack.length > 0) {
-    for (const depKey of depsKeyStack) {
-      const dep = deps[depKey]
-      dep.M$addInitListener((type) => {
-        if (type === 1) {
-          // Dependency is entering init status
-          gate.M$setStatus(false)
-          // Subsequent hydrations are queued here. Every time dependency enters init status, it
-          // should be init-ed again after that Hence, `lifecycle.init` is added to the queue
-          // immediately —— before other methods can be added to the queue
-          gateExecHydration()
-          // NOTE: Gate is closed before calling `gateExecHydration` so that hydration is queued
-          // deferred until deps have finished hydrating
-        } else {
-          // Dependency has finished init status
-          if (allDepsAreReady()) {
-            gate.M$setStatus(true)
-          }
-        }
-      })
-    }
-  }
-
-  // === Exposed methods ===
-
-  const M$suspenseOnHydration = () => {
+  const M$suspenseOnHydration = (): void => {
     if (suspenseWaiter) {
       suspenseWaiter()
     }
   }
 
-  const get = (): T => self.M$copyState(state) // (Expose)
 
-  const set = (partialState): void => {
-    gate.M$exec(() => {
-      if (!isFirstSetOccured) {
-        shadowState = self.M$copyState(state) // (Receive)
-        isFirstSetOccured = true
+  // === Hydration ===
+
+  const hydrate: RelinkHydrator<S> = (callback): void => {
+    ancestorGate.M$exec(() => {
+      if (isHydrating) {
+        devError(`Cannot hydrate '${normalizedKey}' when it is already hydrating`)
+        return // Early exit
       }
-      performUpdate(
-        undefined,
-        self.M$copyState(
-          typeof partialState === 'function'
-            ? partialState(self.M$copyState(shadowState)) // (Expose)
-            : partialState
-        ) // (Receive)
-      )
+      isHydrating = true
+      if (isSuspenseEnabled) {
+        suspenseWaiter = createSuspenseWaiter(
+          new Promise((resolve) => {
+            const commit = (hydratedState: S): void => {
+              performUpdate(PERF_UPDATE_TYPE.M$hydrate, hydratedState)
+              resolve()
+              suspenseWaiter = undefined
+              isHydrating = false
+              M$hydrationWatcher.M$refresh(false)
+            }
+            M$hydrationWatcher.M$refresh(true)
+            callback({ commit })
+          })
+        )
+      } else {
+        const commit = (hydratedState: S): void => {
+          performUpdate(PERF_UPDATE_TYPE.M$hydrate, hydratedState)
+          isHydrating = false
+          M$hydrationWatcher.M$refresh(false)
+        }
+        M$hydrationWatcher.M$refresh(true)
+        callback({ commit })
+      }
     })
+  }
+
+  if (isFunction(lifecycle.init)) {
+    const selfInvokingInitFn = async () => {
+      if (depsKeyStack.length > 0) {
+        await waitForAll(deps)
+      }
+      hydrate(lifecycle.init)
+    }; selfInvokingInitFn()
+  }
+
+
+  // === Exposed Methods ===
+
+  const M$directGet = (): S => currentState
+
+  const get = (): S => copyState(currentState) // (Expose)
+
+  const set: RelinkSetter<S> = (partialState): void => {
+    // TODO: Gate control to wait until no hydrating
+    performUpdate(PERF_UPDATE_TYPE.M$set, isFunction(partialState)
+      ? (partialState as RelinkStateDerivator<S>)(copyState(currentState)) // (Expose)
+      : partialState
+    )
   }
 
   const reset = (): void => {
-    gate.M$exec(() => {
-      performUpdate(1, initialState)
-    })
+    // TODO: Gate control to wait until no hydrating
+    performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
   }
 
-  const sourceInstance: RelinkSource<T> = {
-    get,
-    set,
-    reset,
-    hydrate,
-    watch: self.M$watcher.M$watch,
+  // KIV: We still haven't been able to find a way to check if sources are still
+  // in use so that we can clean them up, but since for most cases, sources are
+  // used for as long as an app is opened, this can be temporarily neglected.
+  const UNSTABLE_cleanup = (): void => {
+    stateWatcher.M$unwatchAll()
+    M$hydrationWatcher.M$unwatchAll()
+    unregisterKey(normalizedKey)
+  }
+
+  return {
     [INTERNALS_SYMBOL]: {
-      M$internalId,
-      M$key: key,
+      M$key: normalizedKey,
+      M$isMutable: isSourceMutable,
+      M$isPublic: isSourcePublic,
       M$deps: deps,
-      M$addInitListener: initListener.M$add,
-      M$removeInitListener: initListener.M$remove,
+      M$directGet,
       M$suspenseOnHydration,
-      M$isMutable: options.mutable,
+      M$hydrationWatcher,
       /**
        * Self is not hydrating && Deps are not hydrating
        */
       M$getIsReadyStatus: () => !isHydrating && allDepsAreReady(),
-      M$getDirectState: () => state,
     },
+    get,
+    set,
+    reset,
+    hydrate,
+    watch: stateWatcher.M$watch,
+    UNSTABLE_cleanup,
   }
-
-  return sourceInstance
 
 }
 
-export function isRelinkSource(value: unknown): boolean {
+export function isRelinkSource<S = unknown>(
+  value: unknown
+): value is RelinkSource<S> {
   // NOTE: Must do preliminary check. If value is undefined, trying to directly
   // access `value[INTERNALS_SYMBOL]` would've resulted in an error.
   if (!value) { return false } // Early exit

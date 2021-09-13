@@ -14,3 +14,7 @@ function devPrint(
 export function devError(...args: unknown[]): void {
   devPrint('error', ...args)
 }
+
+export function devWarn(...args: unknown[]): void {
+  devPrint('warn', ...args)
+}
