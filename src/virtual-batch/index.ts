@@ -7,7 +7,7 @@ export type VirtualBatchFunction = (callback: VirtualBatchedCallback) => void
 export function createBrowserBatcher(): VirtualBatchFunction {
   let debounceRef: ReturnType<typeof setTimeout>
   const deferredCallbackStack: Array<VirtualBatchedCallback> = []
-  const batch = (callback: VirtualBatchedCallback) => {
+  return (callback: VirtualBatchedCallback) => {
     clearTimeout(debounceRef)
     deferredCallbackStack.push(callback)
     debounceRef = setTimeout(() => {
@@ -18,16 +18,12 @@ export function createBrowserBatcher(): VirtualBatchFunction {
       }
     })
   }
-  return batch
 }
 
 export function createServerBatcher(): VirtualBatchFunction {
-  const batch = (callback: VirtualBatchedCallback) => { callback() }
-  return batch
+  return (callback: VirtualBatchedCallback) => { callback() }
 }
 
 export function createVirtualBatcher(): VirtualBatchFunction {
-  return IS_BROWSER_ENV
-    ? createBrowserBatcher()
-    : createServerBatcher()
+  return IS_BROWSER_ENV ? createBrowserBatcher() : createServerBatcher()
 }

@@ -2,6 +2,8 @@ import { INTERNALS_SYMBOL } from '../constants'
 import { RelinkSource } from '../schema'
 
 export function waitForAll(
+  // Special case: If put unknown, then there would be errors everywhere else.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sources: Array<RelinkSource<any>>
 ): Promise<void> {
   return new Promise((resolve, reject) => {
