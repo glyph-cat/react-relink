@@ -2,10 +2,10 @@ import { INTERNALS_SYMBOL } from '../constants'
 import { ERROR_CIRCULAR_DEPENDENCY } from '../errors'
 import { RelinkSource, RelinkSourceKey } from '../schema'
 
-export function checkForCircularDepsAndGetKeyStack(
+export function checkForCircularDeps(
   deps: Array<RelinkSource<unknown>>,
   keyPathStack: Array<RelinkSourceKey>
-): Array<RelinkSourceKey> {
+): void {
   const depsKeyStack = []
   for (let i = 0; i < deps.length; i++) {
     const currentDep = deps[i]
@@ -17,10 +17,10 @@ export function checkForCircularDepsAndGetKeyStack(
     if (keyPathStack.includes(currentDepKey)) {
       throw ERROR_CIRCULAR_DEPENDENCY(currentKeyPathStack)
     }
-    checkForCircularDepsAndGetKeyStack(
+    checkForCircularDeps(
       currentDep[INTERNALS_SYMBOL].M$deps,
       currentKeyPathStack
     )
   }
-  return depsKeyStack
+  // return depsKeyStack
 }

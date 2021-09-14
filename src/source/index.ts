@@ -1,4 +1,4 @@
-import { checkForCircularDepsAndGetKeyStack } from '../circular-deps'
+import { checkForCircularDeps } from '../circular-deps'
 import { INTERNALS_SYMBOL } from '../constants'
 import deepCopy from '../deep-copy'
 import { devError, devWarn } from '../dev'
@@ -84,11 +84,10 @@ export function createSource<S>({
   const stateWatcher = createWatcher<never>()
 
   // === Dependency Handling ===
-  const depsKeyStack = checkForCircularDepsAndGetKeyStack(deps, [normalizedKey])
+  checkForCircularDeps(deps, [normalizedKey])
   const allDepsAreReady = (): boolean => {
-    for (const depKey of depsKeyStack) {
-      const dep = deps[depKey]
-      if (!dep[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
+    for (let i = 0; i < deps.length; i++) {
+      if (!deps[i][INTERNALS_SYMBOL].M$getIsReadyStatus()) {
         return false // Early exit
       }
     }
@@ -97,7 +96,7 @@ export function createSource<S>({
   // Open the gate right away if there are no dependencies
   // NOTE: Gate open ≠ dependencies are ready, it simply means that
   // the current source can finally hydrate itself
-  const ancestorGate = createGatedQueue(depsKeyStack.length <= 0)
+  const ancestorGate = createGatedQueue(deps.length <= 0)
 
   const batch = (() => {
     if (isVirtualBatchEnabled) {
@@ -185,7 +184,7 @@ export function createSource<S>({
 
   if (isFunction(lifecycle.init)) {
     const selfInvokingInitFn = async () => {
-      if (depsKeyStack.length > 0) {
+      if (deps.length > 0) {
         await waitForAll(deps)
       }
       hydrate(lifecycle.init)
