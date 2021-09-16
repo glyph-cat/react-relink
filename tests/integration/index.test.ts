@@ -11,11 +11,8 @@ const BUNDLED_BUILDS = [
   { tag: 'UMD', src: require('../../dist/umd/index.js'), debug: true },
   { tag: 'UMD (Minified)', src: require('../../dist/umd/index.min.js') },
   { tag: 'ES', src: require('../../dist/es/index.js'), debug: true },
-  // --------------------------------------------------
-  // // Will fail (unexpected token "import")
+  // Will fail (unexpected token "import"):
   // { tag: 'ES (Minified)', src: require('../../dist/es/index.mjs') },
-  // // Doesn't use ReactDOM
-  // { tag: 'React Native', src: require('../../dist/native/index.js'), debug: true },
 ]
 
 const buildStack = []
