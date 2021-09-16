@@ -45,6 +45,6 @@ export function useState<S>(
     return () => { stateCache.delete(stateId) }
   }, [])
 
-  return stateCache.get(id.current) as StateHookData<S> // KIV
+  return stateCache.get(id.current) as StateHookData<S>
 
 }
