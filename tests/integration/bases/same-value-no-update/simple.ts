@@ -5,11 +5,11 @@ import {
 import { IntegrationTestProps } from '../../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
-  test('Simple value', () => {
+  test('Simple value', (): void => {
 
     const Source = createSource({
       key: 'test/same-value-no-update/simple',
@@ -19,7 +19,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     const hookInterface = createHookInterface({
       useHook: () => useRelinkState(Source),
       actions: {
-        setState: ({ hookData }) => {
+        setState: ({ hookData }): void => {
           const [, updateState] = hookData
           updateState(1)
         },

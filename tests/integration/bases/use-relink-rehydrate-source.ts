@@ -5,18 +5,21 @@ import {
 import { IntegrationTestProps } from '../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
+
   const { createSource, useRehydrateRelinkSource, useRelinkValue } = Relink
-  test(useRehydrateRelinkSource.name, () => {
+
+  const TEST_METHOD_NAME = 'useRehydrateRelinkSource'
+  test(TEST_METHOD_NAME, (): void => {
     let didSetCalled = false
 
     const Source = createSource({
-      key: `test/${useRehydrateRelinkSource.name}/normal`,
+      key: `test/${TEST_METHOD_NAME}/normal`,
       default: 1,
       lifecycle: {
-        didSet: () => {
+        didSet: (): void => {
           didSetCalled = true
         },
       },
@@ -25,8 +28,8 @@ export default function ({ Relink }: IntegrationTestProps): void {
     const hookInterfaceA = createHookInterface({
       useHook: () => useRehydrateRelinkSource(Source),
       actions: {
-        rehydrate: ({ hookData: rehydrateSource }) => {
-          rehydrateSource(({ commit }) => {
+        rehydrate: ({ hookData: rehydrateSource }): void => {
+          rehydrateSource(({ commit }): void => {
             commit(5)
           })
         },

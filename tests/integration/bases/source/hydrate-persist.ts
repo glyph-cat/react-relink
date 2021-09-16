@@ -3,9 +3,9 @@ import { MOCK_SERVER_RESPONSE_TIME, PADDING_TIME } from './constants'
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource } = Relink
-  describe('Hydration & Persistence', () => {
+  describe('Hydration & Persistence', (): void => {
 
-    test('Synchronous', () => {
+    test('Synchronous', (): void => {
       let mockStorage = null
       const hydrationValue = 2
 
@@ -59,7 +59,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
         default: 1,
         lifecycle: {
           init: ({ commit }): void => {
-            getValueFromMockServer().then((data) => {
+            getValueFromMockServer().then((data): void => {
               commit(data)
             })
           },
@@ -103,19 +103,20 @@ export default function ({ Relink }: IntegrationTestProps): void {
       let mockStorage = null
       const hydrationValue = 2
 
-      const getValueFromMockServer = () =>
-        new Promise((resolve) => {
+      const getValueFromMockServer = (): Promise<number> => {
+        return new Promise((resolve): void => {
           setTimeout((): void => {
             resolve(hydrationValue)
           }, MOCK_SERVER_RESPONSE_TIME)
         })
+      }
 
       const Source = createSource({
         key: 'test/hydration/asynchronous',
         default: 1,
         lifecycle: {
           init: async ({ commit }): Promise<void> => {
-            const data = (await getValueFromMockServer()) as number
+            const data = await getValueFromMockServer()
             commit(data)
           },
           didSet: ({ state }): void => {

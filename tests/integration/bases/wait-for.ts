@@ -6,7 +6,8 @@ export default function ({ Relink }: IntegrationTestProps): void {
   const expectedWaitTime = TIME_GAP(3)
   const gracePeriod = TIME_GAP(5)
 
-  describe(waitForAll.name, (): void => {
+  const TEST_METHOD_NAME = 'waitForAll'
+  describe(TEST_METHOD_NAME, (): void => {
 
     test('Normal usage', async (): Promise<void> => {
       jest.useRealTimers()
@@ -54,11 +55,11 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
   function generateSources() {
     const SourceA = createSource({
-      key: `test/${waitForAll.name}/SourceA`,
+      key: `test/${TEST_METHOD_NAME}/SourceA`,
       // Total wait time: 1 time gap (because it has no deps)
       default: { inited: false },
       lifecycle: {
-        init: ({ commit }) => {
+        init: ({ commit }): void => {
           setTimeout((): void => {
             commit({ inited: true })
           }, TIME_GAP(1))
@@ -67,7 +68,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
     const SourceB = createSource({
       // Total wait time: 2 time gaps (because it depends on A)
-      key: `test/${waitForAll.name}/SourceB`,
+      key: `test/${TEST_METHOD_NAME}/SourceB`,
       deps: [SourceA],
       default: { inited: false },
       lifecycle: {
@@ -80,7 +81,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
     const SourceC = createSource({
       // Total wait time: 3 time gaps (because it depends on A and B)
-      key: `test/${waitForAll.name}/SourceC`,
+      key: `test/${TEST_METHOD_NAME}/SourceC`,
       deps: [SourceB],
       default: { inited: false },
       lifecycle: {
@@ -93,7 +94,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
     const SourceD = createSource({
       // Total wait time: 1 time gap (because it has no deps)
-      key: `test/${waitForAll.name}/SourceD`,
+      key: `test/${TEST_METHOD_NAME}/SourceD`,
       default: { inited: false },
       lifecycle: {
         init: async ({ commit }): Promise<void> => {
@@ -105,7 +106,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
     const SourceE = createSource({
       // Total wait time: 0 time gaps (because it has no deps or init method)
-      key: `test/${waitForAll.name}/SourceE`,
+      key: `test/${TEST_METHOD_NAME}/SourceE`,
       // This allows us to test if the function will dumbly attach a listener
       // to a source that is already hydrated, because if that's the case,
       // it will result in waiting forever as the listener callback won't be fired.

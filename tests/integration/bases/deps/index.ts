@@ -6,7 +6,7 @@ import { act } from 'react-test-renderer'
 import { IntegrationTestProps, TIME_GAP } from '../../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
 

@@ -1,13 +1,13 @@
 import deepCopy from '.'
 
-test('Primitive types', () => {
+test('Primitive types', (): void => {
   let a = 1
   const b = deepCopy(a)
   a = 2
   expect(a).not.toBe(b)
 })
 
-test('Arrays', () => {
+test('Arrays', (): void => {
   const a = [1, 2, 3]
   const b = deepCopy(a)
   const areDifferent = a !== b
@@ -15,9 +15,9 @@ test('Arrays', () => {
   expect(areDifferent).toStrictEqual(true)
 })
 
-describe('Objects', () => {
+describe('Objects', (): void => {
 
-  test('Normal values', () => {
+  test('Normal values', (): void => {
     const a = { k1: 1, k2: '2', k3: true }
     const b = deepCopy(a)
     const areDifferent = a !== b
@@ -25,7 +25,7 @@ describe('Objects', () => {
     expect(areDifferent).toStrictEqual(true)
   })
 
-  test('Falsey values', () => {
+  test('Falsey values', (): void => {
     const a = { k1: undefined, k2: null, k3: NaN, k4: false }
     const b = deepCopy(a)
     const areDifferent = a !== b
@@ -35,7 +35,7 @@ describe('Objects', () => {
 
 })
 
-test('Deeply nested', () => {
+test('Deeply nested', (): void => {
   const a = {
     k1: [
       {
@@ -50,9 +50,9 @@ test('Deeply nested', () => {
   expect(areDifferent).toStrictEqual(true)
 })
 
-describe('Other data types', () => {
+describe('Other data types', (): void => {
 
-  test('Date', () => {
+  test('Date', (): void => {
     const a = new Date()
     const b = deepCopy(new Date(a))
     const areDifferent = a !== b

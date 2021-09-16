@@ -1,7 +1,7 @@
 import { IntegrationTestProps } from '../../../helpers'
 
 export default function (testProps: IntegrationTestProps): void {
-  describe('Source', () => {
+  describe('Source', (): void => {
     require('./basics').default(testProps)
     require('./hydrate-persist').default(testProps)
     require('./mutability').default(testProps)

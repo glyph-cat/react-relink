@@ -2,7 +2,7 @@ import { IntegrationTestProps } from '../../../helpers'
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource } = Relink
-  test('Source - Watch/Unwatch', () => {
+  test('Source - Watch/Unwatch', (): void => {
     const Source = createSource({
       key: 'test/watcher',
       default: 1,
@@ -13,7 +13,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
     // Add listener
     let receivedState = null
-    const unwatch = Source.watch((newState) => {
+    const unwatch = Source.watch((newState): void => {
       receivedState = newState
     })
 

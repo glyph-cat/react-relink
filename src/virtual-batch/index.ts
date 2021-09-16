@@ -7,10 +7,10 @@ export type VirtualBatchFunction = (callback: VirtualBatchedCallback) => void
 export function createBrowserBatcher(): VirtualBatchFunction {
   let debounceRef: ReturnType<typeof setTimeout>
   const deferredCallbackStack: Array<VirtualBatchedCallback> = []
-  return (callback: VirtualBatchedCallback) => {
+  return (callback: VirtualBatchedCallback): void => {
     clearTimeout(debounceRef)
     deferredCallbackStack.push(callback)
-    debounceRef = setTimeout(() => {
+    debounceRef = setTimeout((): void => {
       while (deferredCallbackStack.length > 0) {
         // Returned item is a function, since there's nothing extra to do
         // with it, the function is invoked right away.
@@ -21,7 +21,7 @@ export function createBrowserBatcher(): VirtualBatchFunction {
 }
 
 export function createServerBatcher(): VirtualBatchFunction {
-  return (callback: VirtualBatchedCallback) => { callback() }
+  return (callback: VirtualBatchedCallback): void => { callback() }
 }
 
 export function createVirtualBatcher(): VirtualBatchFunction {

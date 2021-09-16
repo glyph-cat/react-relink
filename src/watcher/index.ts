@@ -33,12 +33,12 @@ export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
     return unwatch
   }
 
-  const M$unwatchAll = () => {
+  const M$unwatchAll = (): void => {
     watcherMap = {}
   }
 
   const M$refresh = (...args: A): void => {
-    Object.values(watcherMap).forEach((callback) => {
+    Object.values(watcherMap).forEach((callback): void => {
       callback(...args)
     })
   }

@@ -152,7 +152,7 @@ export function createSource<S>({
       isHydrating = true
       if (isSuspenseEnabled) {
         suspenseWaiter = createSuspenseWaiter(
-          new Promise((resolve) => {
+          new Promise((resolve): void => {
             const commit = (hydratedState: S): void => {
               performUpdate(PERF_UPDATE_TYPE.M$hydrate, hydratedState)
               resolve()
@@ -196,7 +196,7 @@ export function createSource<S>({
   for (const dep of deps) {
     dep[INTERNALS_SYMBOL].M$childDeps[normalizedKey] = true
     const unwatchDepHydration = dep[INTERNALS_SYMBOL]
-      .M$hydrationWatcher.M$watch((isDepHydrating) => {
+      .M$hydrationWatcher.M$watch((isDepHydrating): void => {
         if (isDepHydrating === true) {
           // Dependency is entering init status
           hydrationGate.M$setStatus(false)
@@ -224,7 +224,7 @@ export function createSource<S>({
   const get = (): S => copyState(currentState) // (Expose)
 
   const set: RelinkSetter<S> = (partialState): void => {
-    hydrationGate.M$exec(() => {
+    hydrationGate.M$exec((): void => {
       performUpdate(PERF_UPDATE_TYPE.M$set, isFunction(partialState)
         ? partialState(copyState(currentState)) // (Expose)
         : partialState
@@ -233,7 +233,7 @@ export function createSource<S>({
   }
 
   const reset = (): void => {
-    hydrationGate.M$exec(() => {
+    hydrationGate.M$exec((): void => {
       performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
     })
   }

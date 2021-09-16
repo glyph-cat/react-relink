@@ -5,31 +5,32 @@ import {
 import { IntegrationTestProps } from '../../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
-  test('Normal', () => {
+  const TEST_METHOD_NAME = 'useRelinkState'
+  test('Normal', (): void => {
 
     const Source = createSource({
-      key: `test/${useRelinkState.name}`,
+      key: `test/${TEST_METHOD_NAME}`,
       default: 1,
     })
 
     const hookInterface = createHookInterface({
       useHook: () => useRelinkState(Source),
       actions: {
-        step: ({ hookData }) => {
+        step: ({ hookData }): void => {
           const [, setState] = hookData
           setState((c) => c + 1)
         },
-        replace: ({ hookData }) => {
+        replace: ({ hookData }): void => {
           const [, setState] = hookData
           setState(5)
         },
       },
       values: {
-        counter: ({ hookData }) => {
+        counter: ({ hookData }): number => {
           const [state] = hookData
           return state
         },

@@ -5,6 +5,7 @@ import {
   RelinkSelector,
   RelinkSetter,
   RelinkSource,
+  RelinkSourceKey,
 } from './schema'
 import { useLayoutEffect, useState } from './custom-hooks'
 import deepCopy from './deep-copy'
@@ -50,7 +51,12 @@ export function useRelinkValue<S, K>(
   )
 
   // Show debug value
-  useDebugValue(undefined, () => {
+  interface DebugValueReturnType {
+    key: RelinkSourceKey
+    selector: RelinkSelector<S, K>
+    value: S | K
+  }
+  useDebugValue(undefined, (): DebugValueReturnType => {
     // In case source contains sensitive information, it is hidden away in
     // production environment by default.
     if (source[INTERNALS_SYMBOL].M$isPublic || IS_DEBUG_ENV) {
@@ -63,11 +69,11 @@ export function useRelinkValue<S, K>(
   })
 
   // Add/remove watcher
-  useLayoutEffect(() => {
-    const unwatch = source.watch(() => {
+  useLayoutEffect((): (() => void) => {
+    const unwatch = source.watch((): void => {
       setState(getCurrentValue(source, selector))
     })
-    return () => { unwatch() }
+    return (): void => { unwatch() }
   }, [source, selector])
 
   return state

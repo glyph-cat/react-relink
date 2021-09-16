@@ -6,13 +6,13 @@ import { IntegrationTestProps } from '../../../helpers'
 import { getFreshTestData } from '../../test-data'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
-  describe('Complex object', () => {
+  describe('Complex object', (): void => {
 
-    test('Mutable', () => {
+    test('Mutable', (): void => {
 
       const Source = createSource({
         key: 'test/same-value-no-update/complex/mutable:true',
@@ -24,7 +24,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       const hookInterface = createHookInterface({
         useHook: () => useRelinkState(Source),
         actions: {
-          setState: ({ hookData }) => {
+          setState: ({ hookData }): void => {
             const [, updateState] = hookData
             updateState(oldState => oldState)
           },
@@ -43,7 +43,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
     })
 
-    test('Mutable', () => {
+    test('Mutable', (): void => {
 
       const Source = createSource({
         key: 'test/same-value-no-update/complex/mutable:false',
@@ -55,7 +55,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       const hookInterface = createHookInterface({
         useHook: () => useRelinkState(Source),
         actions: {
-          setState: ({ hookData }) => {
+          setState: ({ hookData }): void => {
             const [, updateState] = hookData
             updateState(getFreshTestData())
           },

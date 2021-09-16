@@ -31,12 +31,12 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
       act((): void => {
         // Expect hydration to use this value...
-        Source.hydrate(async ({ commit }) => {
+        Source.hydrate(async ({ commit }): Promise<void> => {
           const data = 2
           commit(data)
         })
         // ...then use this, since it is synchronous
-        Source.hydrate(async ({ commit }) => {
+        Source.hydrate(async ({ commit }): Promise<void> => {
           const data = 3
           commit(data)
         })
@@ -84,7 +84,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
       return new Promise((resolve): void => {
         setTimeout((): void => {
-          act(() => {
+          act((): void => {
             // Expect hydration to use this value...
             Source.hydrate(async ({ commit }): Promise<void> => {
               const data = await getValueFromMockServer(2, PADDING_TIME * 2)
