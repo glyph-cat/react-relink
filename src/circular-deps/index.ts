@@ -8,8 +8,7 @@ export function checkForCircularDeps(
 ): void {
   const depsKeyStack = []
   for (let i = 0; i < deps.length; i++) {
-    const currentDep = deps[i]
-    const currentDepKey = currentDep[INTERNALS_SYMBOL].M$key
+    const currentDepKey = deps[i][INTERNALS_SYMBOL].M$key
     depsKeyStack.push(currentDepKey)
     const currentKeyPathStack = [...keyPathStack, currentDepKey]
     // Check with previous stack to make sure current one is not compared
@@ -18,9 +17,8 @@ export function checkForCircularDeps(
       throw ERROR_CIRCULAR_DEPENDENCY(currentKeyPathStack)
     }
     checkForCircularDeps(
-      currentDep[INTERNALS_SYMBOL].M$deps,
+      deps[i][INTERNALS_SYMBOL].M$parentDeps,
       currentKeyPathStack
     )
   }
-  // return depsKeyStack
 }

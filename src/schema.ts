@@ -52,9 +52,25 @@ export interface RelinkLifecycleConfig<S> {
  * @public
  */
 export interface RelinkSourceOptions {
+  /**
+   * [EXPERIMENTAL] Suspense while hydrating.
+   * False by default.
+   */
   suspense?: boolean
+  /**
+   * Make the source mutable.
+   * True by default.
+   */
   mutable?: boolean
+  /**
+   * Enable virtual batching.
+   * False by default.
+   */
   virtualBatch?: boolean
+  /**
+   * Make this source accessible through React DevTools even in production mode.
+   * False by default.
+   */
   public?: boolean
 }
 
@@ -64,8 +80,18 @@ export type RelinkSourceKey = string | number
  * @public
  */
 export interface RelinkSourceEntry<S> {
+  /**
+   * A unique key for the source. Helps make debugging easier and makes
+   * dependency checking possible.
+   */
   key: RelinkSourceKey
+  /**
+   * The default state of the source.
+   */
   default: S
+  /**
+   * Wait for other sources to be hydrated before this one does.
+   */
   deps?: Array<RelinkSource<any>>
   lifecycle?: RelinkLifecycleConfig<S>
   options?: RelinkSourceOptions
@@ -93,7 +119,14 @@ export interface RelinkSource<S> {
     M$key: RelinkSourceKey
     M$isMutable: boolean
     M$isPublic: boolean
-    M$deps: Array<RelinkSource<unknown>>
+    /**
+     * Sources that this one depend on before it can hydrate itself.
+     */
+    M$parentDeps: Array<RelinkSource<unknown>>
+    /**
+     * Sources that depend on this one before they can hydrate themselves.
+     */
+    M$childDeps: Record<RelinkSourceKey, true>
     M$directGet(): S
     M$hydrationWatcher: Watcher<[boolean]>
     M$suspenseOnHydration(): void

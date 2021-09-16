@@ -1,7 +1,8 @@
-import { IntegrationTestProps } from '../../constants'
+import { IntegrationTestProps } from '../../../helpers'
 
 export default function (testProps: IntegrationTestProps): void {
-  describe('useSetRelinkState', () => {
+  const { Relink: { useSetRelinkState } } = testProps
+  describe(useSetRelinkState.name, () => {
     require('./normal').default(testProps)
   })
 }

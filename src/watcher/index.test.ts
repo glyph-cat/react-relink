@@ -1,7 +1,7 @@
 import { createWatcher } from '.'
 
-test('createWatcher', () => {
-  const watcher = createWatcher<number>()
+test(createWatcher.name, () => {
+  const watcher = createWatcher<[number]>()
 
   let counter = 0
   const stopWatching = watcher.M$watch((num: number) => { counter += num })

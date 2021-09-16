@@ -1,49 +1,44 @@
 import { createSuspenseWaiter } from '../../src/suspense-waiter'
-
-enum WAIT_TIME {
-  min = 25,
-  mid = 50,
-  max = 100,
-}
+import { TIME_GAP } from '../../tests/helpers'
 
 test('Pending', (): Promise<void> => {
   const promise: Promise<void> = new Promise((resolve) => {
-    setTimeout(() => { resolve() }, WAIT_TIME.max)
+    setTimeout((): void => { resolve() }, TIME_GAP(2))
   })
   const wait = createSuspenseWaiter(promise)
   const callback = () => { wait() }
   return new Promise((resolve) => {
-    setTimeout(() => {
+    setTimeout((): void => {
       expect(callback).toThrow()
       resolve()
-    }, WAIT_TIME.mid)
+    }, TIME_GAP(1))
   })
 })
 
 test('Completed', (): Promise<void> => {
   const promise: Promise<void> = new Promise((resolve) => {
-    setTimeout(() => { resolve() }, WAIT_TIME.min)
+    setTimeout((): void => { resolve() }, TIME_GAP(1))
   })
   const wait = createSuspenseWaiter(promise)
   const callback = () => { wait() }
   return new Promise((resolve) => {
-    setTimeout(() => {
+    setTimeout((): void => {
       expect(callback).not.toThrow()
       resolve()
-    }, WAIT_TIME.mid)
+    }, TIME_GAP(2))
   })
 })
 
 test('Error', (): Promise<void> => {
   const promise: Promise<void> = new Promise((_resolve, reject) => {
-    setTimeout(() => { reject('match-key') }, WAIT_TIME.min)
+    setTimeout((): void => { reject('match-key') }, TIME_GAP(1))
   })
   const wait = createSuspenseWaiter(promise)
   const callback = () => { wait() }
   return new Promise((resolve) => {
-    setTimeout(() => {
+    setTimeout((): void => {
       expect(callback).toThrowError('match-key')
       resolve()
-    }, WAIT_TIME.mid)
+    }, TIME_GAP(2))
   })
 })

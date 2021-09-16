@@ -1,11 +1,10 @@
-import { delay } from '../../__utils__/delay'
-import { IntegrationTestProps } from '../constants'
+import { delay, IntegrationTestProps, TIME_GAP } from '../../helpers'
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, waitForAll } = Relink
 
-  const expectedWaitTime = 3000 // ms
-  const gracePeriod = 1000 // ms
+  const expectedWaitTime = TIME_GAP(3)
+  const gracePeriod = TIME_GAP(5)
 
   describe(waitForAll.name, (): void => {
 
@@ -40,11 +39,13 @@ export default function ({ Relink }: IntegrationTestProps): void {
       jest.useRealTimers()
       let errObj: Error
       const CorruptedSource = {}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore Ignored on purpose to test incorrect types
-      await waitForAll([CorruptedSource]).catch((e) => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore Ignored on purpose to test incorrect types
+        await waitForAll([CorruptedSource])
+      } catch (e) {
         errObj = e
-      })
+      }
       await delay(0)
       expect(errObj instanceof Error).toBe(true)
     })
@@ -54,64 +55,64 @@ export default function ({ Relink }: IntegrationTestProps): void {
   function generateSources() {
     const SourceA = createSource({
       key: `test/${waitForAll.name}/SourceA`,
-      // Total wait time: 100ms
+      // Total wait time: 1 time gap (because it has no deps)
       default: { inited: false },
       lifecycle: {
         init: ({ commit }) => {
-          setTimeout(() => {
+          setTimeout((): void => {
             commit({ inited: true })
-          }, 100)
+          }, TIME_GAP(1))
         },
       },
     })
     const SourceB = createSource({
-      // Total wait time: 200ms (because it depends on A)
+      // Total wait time: 2 time gaps (because it depends on A)
       key: `test/${waitForAll.name}/SourceB`,
       deps: [SourceA],
       default: { inited: false },
       lifecycle: {
-        init: async ({ commit }) => {
-          setTimeout(() => {
+        init: async ({ commit }): Promise<void> => {
+          setTimeout((): void => {
             commit({ inited: true })
-          }, 100)
+          }, TIME_GAP(1))
         },
       },
     })
     const SourceC = createSource({
-      // Total wait time: 300ms (because it depends on A and B)
+      // Total wait time: 3 time gaps (because it depends on A and B)
       key: `test/${waitForAll.name}/SourceC`,
       deps: [SourceB],
       default: { inited: false },
       lifecycle: {
-        init: ({ commit }) => {
-          setTimeout(() => {
+        init: ({ commit }): void => {
+          setTimeout((): void => {
             commit({ inited: true })
-          }, 1000)
+          }, TIME_GAP(3))
         },
       },
     })
     const SourceD = createSource({
-      // Total wait time: 100ms
+      // Total wait time: 1 time gap (because it has no deps)
       key: `test/${waitForAll.name}/SourceD`,
       default: { inited: false },
       lifecycle: {
-        init: async ({ commit }) => {
-          setTimeout(() => {
+        init: async ({ commit }): Promise<void> => {
+          setTimeout((): void => {
             commit({ inited: true })
-          }, 100)
+          }, TIME_GAP(1))
         },
       },
     })
     const SourceE = createSource({
+      // Total wait time: 0 time gaps (because it has no deps or init method)
       key: `test/${waitForAll.name}/SourceE`,
-      // Total wait time: (Should be) 0ms
       // This allows us to test if the function will dumbly attach a listener
       // to a source that is already hydrated, because if that's the case,
       // it will result in waiting forever as the listener callback won't be fired.
       default: { inited: true },
     })
     // NOTE: Max wait time is 300ms
-    const getArraySnapshot = () => [
+    const getArraySnapshot = (): Array<boolean> => [
       SourceA.get().inited,
       SourceB.get().inited,
       SourceC.get().inited,

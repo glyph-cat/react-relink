@@ -16,14 +16,14 @@ export function formatErrorCode(
 export function TYPE_ERROR_SOURCE_KEY(typeofRawKey: string): TypeError {
   return new TypeError(
     IS_DEBUG_ENV
-      ? `Expected 'key' to be a string or number but got ${typeofRawKey}`
+      ? `Expected \`key\` to be a string or number but got ${typeofRawKey}`
       : formatErrorCode(1, typeofRawKey)
   )
 }
 export function TYPE_ERROR_DUPLICATE_SOURCE_KEY(key: RelinkSourceKey): TypeError {
   return new TypeError(
     IS_DEBUG_ENV
-      ? `Expected 'key' to be unique but got duplicate '${key}'`
+      ? `Expected \`key\` to be unique but got duplicate '${key}'`
       : formatErrorCode(2, key)
   )
 }
