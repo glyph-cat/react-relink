@@ -1,6 +1,9 @@
 import { INTERNALS_SYMBOL } from '../constants'
 import { RelinkSource } from '../schema'
 
+/**
+ * @public
+ */
 export function waitForAll(
   // Special case: If put unknown, then there would be errors everywhere else.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

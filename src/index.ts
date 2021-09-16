@@ -133,5 +133,6 @@ export function useRehydrateRelinkSource<S>(
   return source.hydrate
 }
 
-export { createSource, isRelinkSource } from './source'
-export { waitForAll } from './wait-for'
+export * from './schema'
+export * from './source'
+export * from './wait-for'

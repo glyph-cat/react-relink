@@ -36,6 +36,9 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
   virtualBatch: false,
 } as const
 
+/**
+ * @public
+ */
 export function createSource<S>({
   key: rawKey,
   deps = [],
@@ -248,8 +251,8 @@ export function createSource<S>({
     if (childDepStack.length !== 0) {
       devWarn(
         `Attempted to call \`${UNSTABLE_cleanup.name}()\` on ` +
-        `${normalizedKey} while there are still other sources that depend ` +
-        `on it: ${childDepStack.join(', ')}.`
+        `'${normalizedKey}' while there are still other sources that depend ` +
+        `on it: '${childDepStack.join('\', \'')}'.`
       )
     }
     for (const dep of deps) {
@@ -288,6 +291,9 @@ export function createSource<S>({
 
 }
 
+/**
+ * @public
+ */
 export function isRelinkSource<S = unknown>(
   value: unknown
 ): value is RelinkSource<S> {
