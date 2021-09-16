@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
-import { IntegrationTestProps } from '../../constants'
+import { IntegrationTestProps } from '../../../helpers'
 import { getFreshTestData } from '../../test-data'
 
 const cleanupRef = createCleanupRef()

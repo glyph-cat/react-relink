@@ -2,7 +2,7 @@ import { createBrowserBatcher, createServerBatcher } from '.'
 
 describe('Virtual batch', () => {
 
-  test('createBrowserBatcher', () => {
+  test(createBrowserBatcher.name, () => {
     jest.useFakeTimers()
     const batch = createBrowserBatcher()
     const spyFn = jest.fn()
@@ -14,7 +14,7 @@ describe('Virtual batch', () => {
     expect(spyFn).toBeCalledTimes(3)
   })
 
-  test('createServerBatcher', () => {
+  test(createServerBatcher.name, () => {
     const batch = createServerBatcher()
     const spyFn = jest.fn()
     batch(spyFn)

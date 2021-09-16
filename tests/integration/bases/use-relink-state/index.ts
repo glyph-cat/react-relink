@@ -1,9 +1,10 @@
-import { IntegrationTestProps } from '../../constants'
+import { IntegrationTestProps } from '../../../helpers'
 
 // TODO: Test with complex data
 
 export default function (testProps: IntegrationTestProps): void {
-  describe('useRelinkState', () => {
+  const { Relink: { useRelinkState } } = testProps
+  describe(useRelinkState.name, () => {
     require('./use-relink-state').default(testProps)
     require('./use-relink-state-s').default(testProps)
     require('./use-relink-state-s,r').default(testProps)

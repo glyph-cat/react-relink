@@ -3,29 +3,30 @@ import {
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
 import { act } from 'react-test-renderer'
-import { IntegrationTestProps } from '../../constants'
+import { IntegrationTestProps, TIME_GAP } from '../../../helpers'
 
 const cleanupRef = createCleanupRef()
 afterEach(() => { cleanupRef.run() })
-
-const timeInterval = 1000 // ms
 
 export default function ({ Relink }: IntegrationTestProps): void {
 
   const { createSource, useRelinkValue } = Relink
 
-  test('Deps', () => {
+  test('Deps', (): void => {
     jest.useFakeTimers()
 
     const SourceA = createSource({
       key: 'test/deps/SourceA',
       default: 0,
       lifecycle: {
-        init: ({ commit }) => {
-          setTimeout(() => {
+        init: ({ commit }): void => {
+          setTimeout((): void => {
             commit(2)
-          }, timeInterval)
+          }, TIME_GAP(1))
         },
+      },
+      options: {
+        virtualBatch: true,
       },
     })
 
@@ -34,12 +35,15 @@ export default function ({ Relink }: IntegrationTestProps): void {
       default: 0,
       deps: [SourceA],
       lifecycle: {
-        init: ({ commit }) => {
-          setTimeout(() => {
+        init: ({ commit }): void => {
+          setTimeout((): void => {
             const sourceAValue = SourceA.get()
             commit(sourceAValue + 1)
-          }, timeInterval)
+          }, TIME_GAP(1))
         },
+      },
+      options: {
+        virtualBatch: true,
       },
     })
 
@@ -48,7 +52,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       default: 0,
       deps: [SourceB],
       lifecycle: {
-        init: ({ commit }) => {
+        init: ({ commit }): void => {
           const sourceBValue = SourceB.get()
           commit(sourceBValue + 1)
         },
@@ -76,22 +80,31 @@ export default function ({ Relink }: IntegrationTestProps): void {
       },
     }, cleanupRef)
 
+    // expect(SourceA.get()).toBe(0)
+    // expect(SourceB.get()).toBe(0)
+    // expect(SourceC.get()).toBe(0)
     expect(hookInterfaceA.get('value')).toBe(0)
     expect(hookInterfaceB.get('value')).toBe(0)
     expect(hookInterfaceC.get('value')).toBe(0)
 
     act(() => {
-      jest.advanceTimersByTime(timeInterval)
+      jest.advanceTimersByTime(TIME_GAP(2))
     })
 
+    // expect(SourceA.get()).toBe(2)
+    // expect(SourceB.get()).toBe(0)
+    // expect(SourceC.get()).toBe(0)
     expect(hookInterfaceA.get('value')).toBe(2)
     expect(hookInterfaceB.get('value')).toBe(0)
     expect(hookInterfaceC.get('value')).toBe(0)
 
     act(() => {
-      jest.advanceTimersByTime(timeInterval)
+      jest.advanceTimersByTime(TIME_GAP(2))
     })
 
+    // expect(SourceA.get()).toBe(2)
+    // expect(SourceB.get()).toBe(3)
+    // expect(SourceC.get()).toBe(4)
     expect(hookInterfaceA.get('value')).toBe(2)
     expect(hookInterfaceB.get('value')).toBe(3)
     expect(hookInterfaceC.get('value')).toBe(4)

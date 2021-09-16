@@ -1,24 +1,26 @@
 import { act } from 'react-test-renderer'
-import { IntegrationTestProps } from '../../constants'
+import { IntegrationTestProps } from '../../../helpers'
 import { PADDING_TIME } from './constants'
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource } = Relink
-  describe('Rehydration', () => {
-    test('Synchronous', () => {
+
+  describe('Rehydration', (): void => {
+
+    test('Synchronous', (): void => {
       let mockStorage = null
       const Source = createSource({
         key: 'test/rehydration/synchronous',
         default: 0,
         lifecycle: {
-          init: ({ commit }) => {
+          init: ({ commit }): void => {
             const data = 1
             commit(data)
           },
-          didSet: ({ state }) => {
+          didSet: ({ state }): void => {
             mockStorage = state
           },
-          didReset: () => {
+          didReset: (): void => {
             mockStorage = null
           },
         },
@@ -27,7 +29,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
         },
       })
 
-      act(() => {
+      act((): void => {
         // Expect hydration to use this value...
         Source.hydrate(async ({ commit }) => {
           const data = 2
@@ -49,25 +51,29 @@ export default function ({ Relink }: IntegrationTestProps): void {
     test('Asynchronous', (): Promise<void> => {
       jest.useRealTimers()
       let mockStorage = null
-      const getValueFromMockServer = (mockValue, mockTimeout) =>
-        new Promise((resolve) => {
-          setTimeout(() => {
+      const getValueFromMockServer = (
+        mockValue: number,
+        mockTimeout: number
+      ): Promise<number> => {
+        return new Promise((resolve): void => {
+          setTimeout((): void => {
             resolve(mockValue)
           }, mockTimeout)
         })
+      }
 
       const Source = createSource({
         key: 'test/rehydration/asynchronous',
         default: 0,
         lifecycle: {
-          init: async ({ commit }) => {
+          init: async ({ commit }): Promise<void> => {
             const data = await getValueFromMockServer(1, 0)
-            commit(data as number)
+            commit(data)
           },
-          didSet: ({ state }) => {
+          didSet: ({ state }): void => {
             mockStorage = state
           },
-          didReset: () => {
+          didReset: (): void => {
             mockStorage = null
           },
         },
@@ -77,20 +83,20 @@ export default function ({ Relink }: IntegrationTestProps): void {
       })
 
       return new Promise((resolve): void => {
-        setTimeout(() => {
+        setTimeout((): void => {
           act(() => {
             // Expect hydration to use this value...
-            Source.hydrate(async ({ commit }) => {
+            Source.hydrate(async ({ commit }): Promise<void> => {
               const data = await getValueFromMockServer(2, PADDING_TIME * 2)
-              commit(data as number)
+              commit(data)
             })
             // ...while this one is blocked
-            Source.hydrate(async ({ commit }) => {
+            Source.hydrate(async ({ commit }): Promise<void> => {
               const data = await getValueFromMockServer(3, PADDING_TIME)
-              commit(data as number)
+              commit(data)
             })
           })
-          setTimeout(() => {
+          setTimeout((): void => {
             expect(Source.get()).toBe(2)
             expect(mockStorage).toBe(null) // Since it's just hydration
             resolve()
@@ -100,5 +106,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
         }, PADDING_TIME)
       })
     })
+
   })
 }

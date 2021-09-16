@@ -15,9 +15,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "rollup -c rollup.config.js",
-    "debug": "scope=\"debug\" jest -c jest.config.ts",
-    "test": "jest -c jest.config.ts",
-    "test:bundled": "scope=\"bundled\" jest -c jest.config.ts",
+    "debug": "scope=\"debug\" jest",
+    "test": "jest",
+    "test:bundled": "scope=\"bundled\" jest",
     "all": "yarn lint:fix && yarn build && yarn test && yarn pack",
     "ci:test": "yarn lint && yarn build && yarn test"
   },
