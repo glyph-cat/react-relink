@@ -3,18 +3,22 @@ import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
 import { terser } from 'rollup-plugin-terser'
+import typescript from 'rollup-plugin-typescript2'
+import { version } from '../package.json'
 
-const INPUT_FILE = 'src/index.js'
-const EXTERNAL_LIBS_BASE = ['react', 'fast-copy', 'react-fast-compare']
-const EXTERNAL_LIBS_DOM = [...EXTERNAL_LIBS_BASE, 'react-dom']
-const EXTERNAL_LIBS_RN = [...EXTERNAL_LIBS_BASE, 'react-native']
+const NODE_RESOLVE_CONFIG_BASE = {
+  extensions: ['.ts', '.js'],
+}
+
+const INPUT_FILE = 'src/index.ts'
 
 const UMD_GLOBALS = {
   react: 'React',
-  'react-dom': 'ReactDOM',
   'fast-copy': 'fastCopy',
   'react-fast-compare': 'isEqual',
 }
+
+const EXTERNAL_LIBS_BASE = Object.keys(UMD_GLOBALS)
 
 /**
  * @param {object} config
@@ -24,18 +28,31 @@ const UMD_GLOBALS = {
  */
 function getPlugins({ overrides = {}, mode } = {}) {
   const basePlugins = {
+    nodeResolve: nodeResolve(NODE_RESOLVE_CONFIG_BASE),
+    typescript: typescript({
+      tsconfigOverride: {
+        compilerOptions: {
+          declaration: false,
+          declarationDir: null,
+          outDir: null,
+        },
+      },
+    }),
     babel: babel({
       presets: ['@babel/preset-react'],
       plugins: ['@babel/plugin-proposal-optional-chaining'],
       exclude: '**/node_modules/**',
       babelHelpers: 'bundled',
     }),
-    nodeResolve: nodeResolve(),
     commonjs: commonjs(),
   }
+
+  // Override plugins
   for (const overrideKey in overrides) {
     basePlugins[overrideKey] = overrides[overrideKey]
   }
+
+  // Convert plugins object to array
   const pluginStack = []
   for (const i in basePlugins) {
     // Allows plugins to be excluded by replacing them with falsey values
@@ -43,18 +60,26 @@ function getPlugins({ overrides = {}, mode } = {}) {
       pluginStack.push(basePlugins[i])
     }
   }
-  if (mode) {
-    pluginStack.push(replace({
-      preventAssignment: true,
-      values: {
-        'process.env.NODE_ENV': JSON.stringify(mode),
-      },
-    }))
+
+  // Replace values
+  const replaceValues = {
+    'process.env.NPM_PACKAGE_VERSION': JSON.stringify(version),
   }
+  if (mode) {
+    replaceValues['process.env.NODE_ENV'] = JSON.stringify(mode)
+  }
+  pluginStack.push(replace({
+    preventAssignment: true,
+    values: replaceValues,
+  }))
+
+  // Minification and cleanup
   if (mode === 'production') {
     const terserPlugin = terser({ mangle: { properties: { regex: /^M\$/ } } })
     pluginStack.push(terserPlugin)
   }
+  pluginStack.push(forceCleanup())
+
   return pluginStack
 }
 
@@ -67,7 +92,7 @@ const config = [
       format: 'cjs',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS_DOM,
+    external: EXTERNAL_LIBS_BASE,
     plugins: getPlugins(),
   },
   {
@@ -78,7 +103,7 @@ const config = [
       format: 'es',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS_DOM,
+    external: EXTERNAL_LIBS_BASE,
     plugins: getPlugins(),
   },
   {
@@ -89,25 +114,8 @@ const config = [
       format: 'es',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS_DOM,
+    external: EXTERNAL_LIBS_BASE,
     plugins: getPlugins({ mode: 'production' }),
-  },
-  {
-    // React Native
-    input: INPUT_FILE,
-    output: {
-      file: 'dist/native/index.js',
-      format: 'es',
-      exports: 'named',
-    },
-    external: [...EXTERNAL_LIBS_RN, 'react-native'],
-    plugins: getPlugins({
-      overrides: {
-        nodeResolve: nodeResolve({
-          extensions: ['.native.js', '.js'],
-        }),
-      },
-    }),
   },
   {
     // UMD
@@ -119,7 +127,7 @@ const config = [
       exports: 'named',
       globals: UMD_GLOBALS,
     },
-    external: EXTERNAL_LIBS_DOM,
+    external: EXTERNAL_LIBS_BASE,
     plugins: getPlugins({ mode: 'development' }),
   },
   {
@@ -132,9 +140,31 @@ const config = [
       exports: 'named',
       globals: UMD_GLOBALS,
     },
-    external: EXTERNAL_LIBS_DOM,
+    external: EXTERNAL_LIBS_BASE,
     plugins: getPlugins({ mode: 'production' }),
   },
 ]
 
 export default config
+
+function forceCleanup() {
+  return {
+    name: 'forceCleanup',
+    transform: (code, id) => {
+      if (id.includes('tslib')) {
+        return new Promise((resolve) => {
+          const indexOfFirstCommentCloseAsterisk = code.indexOf('*/')
+          if (indexOfFirstCommentCloseAsterisk >= 0) {
+            // +2 to include the 2 searched characters as well
+            code = code.substring(
+              indexOfFirstCommentCloseAsterisk + 2,
+              code.length
+            )
+          }
+          resolve({ code })
+        })
+      }
+      return null
+    },
+  }
+}
