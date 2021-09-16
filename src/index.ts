@@ -9,14 +9,6 @@ import {
 import { useLayoutEffect, useState } from './custom-hooks'
 import deepCopy from './deep-copy'
 
-// NOTE: For selector behavior >= 1.X.X
-// Since React uses Object.is comparison, it will be exhausive to compare deep
-// copies of the states, hence direct references are used for selectors.
-// When the selected value is finally going to be returned from the hook, only
-// then it is deep copied. Although this means deep copy still takes place on
-// every render, but by deep-copying only the selected values, we can gain some
-// performance boost.
-
 function getCurrentValue<S, K>(
   source: RelinkSource<S>,
   selector: RelinkSelector<S, K>
@@ -84,23 +76,25 @@ export function useRelinkValue<S, K>(
 /**
  * @public
  */
-export function useRelinkState<S>(source: RelinkSource<S>): [S, RelinkSetter<S>]
+export function useRelinkState<S>(
+  source: RelinkSource<S>
+): [S, RelinkSetter<S>, () => void]
 /**
  * @public
  */
 export function useRelinkState<S, K>(
   source: RelinkSource<S>,
   selector: RelinkSelector<S, K>
-): [K, RelinkSetter<S>]
+): [K, RelinkSetter<S>, () => void]
 /**
  * @public
  */
 export function useRelinkState<S, K>(
   source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
-): [S | K, RelinkSetter<S>] {
+): [S | K, RelinkSetter<S>, () => void] {
   const state = useRelinkValue(source, selector)
-  return [state, source.set]
+  return [state, source.set, source.reset]
 }
 
 /**
@@ -136,3 +130,8 @@ export function useRehydrateRelinkSource<S>(
 export * from './schema'
 export * from './source'
 export * from './wait-for'
+
+// === Special Notes ===
+// [A] Special case: If unknown is used, there would be errors everywhere else
+//     because all sources have some sort of type that just doesn't overlap
+//     with unknown.

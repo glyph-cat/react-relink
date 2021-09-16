@@ -1,12 +1,11 @@
-/* eslint-disable no-console */
 import { IS_DEBUG_ENV } from '../constants'
 
 function devPrint(
-  type: keyof typeof console,
+  type: 'log' | 'info' | 'warn' | 'error',
   ...args: unknown[]
 ): void {
   if (IS_DEBUG_ENV) {
-    // @ts-ignore
+    // eslint-disable-next-line no-console
     console[type]('[Development]', ...args)
   }
 }

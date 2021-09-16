@@ -5,7 +5,7 @@ import { RelinkSource } from '../schema'
  * @public
  */
 export function waitForAll(
-  // Special case: If put unknown, then there would be errors everywhere else.
+  // Refer to Special Notes [A] in 'src/index.ts'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sources: Array<RelinkSource<any>>
 ): Promise<void> {

@@ -98,6 +98,8 @@ export interface RelinkSourceEntry<S> {
   /**
    * Wait for other sources to be hydrated before this one does.
    */
+  // Refer to Special Notes [A] in 'src/index.ts'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deps?: Array<RelinkSource<any>>
   lifecycle?: RelinkLifecycleConfig<S>
   options?: RelinkSourceOptions

@@ -28,13 +28,16 @@ describe(useState.name, () => {
 
     // Initial stage
     expect(hookInterface.get('value')).toBe(1)
+    expect(hookInterface.getRenderCount()).toBe(1)
 
     // Trigger update
     hookInterface.actions('overrideValue')
     expect(hookInterface.get('value')).toBe(2)
+    expect(hookInterface.getRenderCount()).toBe(2)
 
   })
 
+  // TODO
   // test('Object', () => {
   //   const hookInterface = createHookInterface({
   //     useHook: () => useState(() => ({ foo: 1, bar: 2 }), true),
