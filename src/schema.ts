@@ -13,6 +13,9 @@ export interface RelinkHydrateArgs<S> {
  */
 export type RelinkHydrateCallback<S> = (args: RelinkHydrateArgs<S>) => void
 
+/**
+ * @public
+ */
 export type RelinkHydrator<S> = (callback: RelinkHydrateCallback<S>) => void
 
 /**
@@ -74,6 +77,9 @@ export interface RelinkSourceOptions {
   public?: boolean
 }
 
+/**
+ * @public
+ */
 export type RelinkSourceKey = string | number
 
 /**
