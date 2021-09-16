@@ -1,10 +1,12 @@
 import { createWatcher } from '.'
 
-test(createWatcher.name, () => {
+test(createWatcher.name, (): void => {
   const watcher = createWatcher<[number]>()
 
   let counter = 0
-  const stopWatching = watcher.M$watch((num: number) => { counter += num })
+  const stopWatching = watcher.M$watch((num: number): void => {
+    counter += num
+  })
 
   // Refresh and expect value to be updated
   watcher.M$refresh(1)

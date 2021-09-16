@@ -14,7 +14,7 @@ export interface IntegrationTestProps {
 export const TIME_GAP = (unit: number): number => 50 * unit // ms
 
 export function delay(timeout: number): Promise<void> {
-  return new Promise((resolve) => {
+  return new Promise((resolve): void => {
     setTimeout(resolve, timeout)
   })
 }

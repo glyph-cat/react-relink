@@ -1,13 +1,13 @@
 import { createGatedQueue } from '.'
 
-describe(createGatedQueue.name, () => {
+describe(createGatedQueue.name, (): void => {
 
-  test('initialStatus = false', () => {
+  test('initialStatus = false', (): void => {
     let counter = 0
     const gate = createGatedQueue() // Defaults to false
 
     // Test if queued callback is effective
-    gate.M$exec(() => {
+    gate.M$exec((): void => {
       counter = counter + 1
     })
     expect(gate.M$getStatus()).toBe(false)
@@ -19,25 +19,25 @@ describe(createGatedQueue.name, () => {
     expect(gate.M$getStatus()).toBe(true)
 
     // Check if callback is directly invoked when gate is already open
-    gate.M$exec(() => {
+    gate.M$exec((): void => {
       counter = counter + 1
     })
     expect(counter).toBe(2)
   })
 
-  test('initialStatus = true', () => {
+  test('initialStatus = true', (): void => {
     let counter = 0
     const gate = createGatedQueue(true)
 
     // Check if callback is directly invoked when gate is already open
-    gate.M$exec(() => {
+    gate.M$exec((): void => {
       counter = counter + 1
     })
     expect(counter).toBe(1)
 
     // Check if callback is still invoked after gate is closed
     gate.M$setStatus(false)
-    gate.M$exec(() => {
+    gate.M$exec((): void => {
       counter = counter + 1
     })
     expect(counter).toBe(1)

@@ -40,9 +40,9 @@ export function useState<S>(
     stateCache.set(id.current, [initialState(), stateSetter])
   }
 
-  useLayoutEffect(() => {
+  useLayoutEffect((): (() => void) => {
     const stateId = id.current
-    return () => { stateCache.delete(stateId) }
+    return (): void => { stateCache.delete(stateId) }
   }, [])
 
   return stateCache.get(id.current) as StateHookData<S>

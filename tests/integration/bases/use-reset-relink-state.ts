@@ -5,7 +5,7 @@ import {
 import { IntegrationTestProps } from '../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
 
@@ -16,19 +16,20 @@ export default function ({ Relink }: IntegrationTestProps): void {
     useRelinkValue,
   } = Relink
 
-  describe(useResetRelinkState.name, () => {
+  const TEST_METHOD_NAME = 'useResetRelinkState'
+  describe(TEST_METHOD_NAME, (): void => {
 
-    test('Normal + No unnecessary re-rendering', () => {
+    test('Normal + No unnecessary re-rendering', (): void => {
 
       const Source = createSource({
-        key: `test/${useResetRelinkState.name}`,
+        key: `test/${TEST_METHOD_NAME}`,
         default: 1,
       })
 
       const hookInterfaceA1 = createHookInterface({
         useHook: () => useSetRelinkState(Source),
         actions: {
-          step: ({ hookData: setState }) => {
+          step: ({ hookData: setState }): void => {
             setState(2)
           },
         },
@@ -37,7 +38,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       const hookInterfaceA2 = createHookInterface({
         useHook: () => useResetRelinkState(Source),
         actions: {
-          reset: ({ hookData: resetState }) => {
+          reset: ({ hookData: resetState }): void => {
             resetState()
           },
         },

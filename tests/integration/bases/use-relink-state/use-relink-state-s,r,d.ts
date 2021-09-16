@@ -5,26 +5,27 @@ import {
 import { IntegrationTestProps } from '../../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
-  test('Different sources, No unnecessary re-rendering 2', () => {
+  const TEST_METHOD_NAME = 'useRelinkState'
+  test('Different sources, No unnecessary re-rendering 2', (): void => {
 
     const SourceA = createSource({
-      key: `test/${useRelinkState.name}-s,r,d/SourceA`,
+      key: `test/${TEST_METHOD_NAME}-s,r,d/SourceA`,
       default: 1,
     })
 
     const SourceB = createSource({
-      key: `test/${useRelinkState.name}-s,r,d/SourceB`,
+      key: `test/${TEST_METHOD_NAME}-s,r,d/SourceB`,
       default: 2,
     })
 
     const hookInterfaceA = createHookInterface({
       useHook: () => useRelinkState(SourceA),
       actions: {
-        step: ({ hookData }) => {
+        step: ({ hookData }): void => {
           const [, setState] = hookData
           setState((c) => c + 1)
         },

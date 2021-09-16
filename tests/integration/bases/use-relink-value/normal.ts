@@ -5,14 +5,15 @@ import {
 import { IntegrationTestProps } from '../../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkValue } = Relink
-  test('Normal', () => {
+  const TEST_METHOD_NAME = 'useRelinkValue'
+  test('Normal', (): void => {
 
     const Source = createSource({
-      key: `test/${useRelinkValue.name}`,
+      key: `test/${TEST_METHOD_NAME}`,
       default: 1,
     })
 

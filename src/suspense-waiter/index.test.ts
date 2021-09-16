@@ -2,12 +2,12 @@ import { createSuspenseWaiter } from '../../src/suspense-waiter'
 import { TIME_GAP } from '../../tests/helpers'
 
 test('Pending', (): Promise<void> => {
-  const promise: Promise<void> = new Promise((resolve) => {
+  const promise: Promise<void> = new Promise((resolve): void => {
     setTimeout((): void => { resolve() }, TIME_GAP(2))
   })
   const wait = createSuspenseWaiter(promise)
-  const callback = () => { wait() }
-  return new Promise((resolve) => {
+  const callback = (): void => { wait() }
+  return new Promise((resolve): void => {
     setTimeout((): void => {
       expect(callback).toThrow()
       resolve()
@@ -16,12 +16,12 @@ test('Pending', (): Promise<void> => {
 })
 
 test('Completed', (): Promise<void> => {
-  const promise: Promise<void> = new Promise((resolve) => {
+  const promise: Promise<void> = new Promise((resolve): void => {
     setTimeout((): void => { resolve() }, TIME_GAP(1))
   })
   const wait = createSuspenseWaiter(promise)
-  const callback = () => { wait() }
-  return new Promise((resolve) => {
+  const callback = (): void => { wait() }
+  return new Promise((resolve): void => {
     setTimeout((): void => {
       expect(callback).not.toThrow()
       resolve()
@@ -30,12 +30,12 @@ test('Completed', (): Promise<void> => {
 })
 
 test('Error', (): Promise<void> => {
-  const promise: Promise<void> = new Promise((_resolve, reject) => {
+  const promise: Promise<void> = new Promise((_resolve, reject): void => {
     setTimeout((): void => { reject('match-key') }, TIME_GAP(1))
   })
   const wait = createSuspenseWaiter(promise)
-  const callback = () => { wait() }
-  return new Promise((resolve) => {
+  const callback = (): void => { wait() }
+  return new Promise((resolve): void => {
     setTimeout((): void => {
       expect(callback).toThrowError('match-key')
       resolve()

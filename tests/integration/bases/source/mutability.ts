@@ -4,11 +4,11 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
   const { createSource } = Relink
 
-  describe('Mutability', () => {
+  describe('Mutability', (): void => {
 
-    describe('Create', () => {
+    describe('Create', (): void => {
 
-      test('Mutable', () => {
+      test('Mutable', (): void => {
         const defaultValue = { value: 1 }
         const Source = createSource({
           key: 'test/mutability/create/mutable:true',
@@ -23,7 +23,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
         Source.UNSTABLE_cleanup()
       })
 
-      test('Immutable', () => {
+      test('Immutable', (): void => {
         const defaultValue = { value: 1 }
         const Source = createSource({
           key: 'test/mutability/create/mutable:false',
@@ -49,9 +49,9 @@ export default function ({ Relink }: IntegrationTestProps): void {
     // * Another check is made to ensure that the states have been updated
     //   correctly.
 
-    describe('Set', () => {
+    describe('Set', (): void => {
 
-      test('Mutable', () => {
+      test('Mutable', (): void => {
         jest.useFakeTimers()
         const Source = createSource({
           key: 'test/mutability/set/mutable:true',
@@ -84,7 +84,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
       })
 
-      test('Immutable', () => {
+      test('Immutable', (): void => {
         jest.useFakeTimers()
         const Source = createSource({
           key: 'test/mutability/set/mutable:false',

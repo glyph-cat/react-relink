@@ -5,11 +5,11 @@ import {
 import { IntegrationTestProps } from '../../helpers'
 
 const cleanupRef = createCleanupRef()
-afterEach(() => { cleanupRef.run() })
+afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
-  test('With Virtual Batch', () => {
+  test('With Virtual Batch', (): void => {
     jest.useFakeTimers()
     const Source = createSource({
       key: 'test/virtual-batch',
@@ -18,13 +18,13 @@ export default function ({ Relink }: IntegrationTestProps): void {
     const hookInterface = createHookInterface({
       useHook: () => useRelinkState(Source),
       actions: {
-        step: ({ hookData }) => {
+        step: ({ hookData }): void => {
           const [, setCounter] = hookData
           setCounter((c) => c + 1)
         },
       },
       values: {
-        value: ({ hookData }) => {
+        value: ({ hookData }): number => {
           const [counter] = hookData
           return counter
         },
