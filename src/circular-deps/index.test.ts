@@ -1,37 +1,50 @@
 import { INTERNALS_SYMBOL } from '../constants'
+import { createSource } from '..'
 import { checkForCircularDeps } from '.'
 
-// NOTE: We need to use mock sources so that we can modify the deps.
-let mockId = 0
-function createMockSource({ deps }) {
-  return {
-    [INTERNALS_SYMBOL]: {
-      M$deps: deps,
-      M$key: `test/mock-source/${++mockId}`,
-    },
-  }
-}
+describe(checkForCircularDeps.name, (): void => {
 
-describe(checkForCircularDeps.name, () => {
-
-  test('with circular deps', () => {
-    const callback = () => {
-      const MockSourceA = createMockSource({ deps: [] })
-      const MockSourceB = createMockSource({ deps: [MockSourceA] })
-      MockSourceA[INTERNALS_SYMBOL].M$deps = [MockSourceB]
-      checkForCircularDeps(MockSourceA[INTERNALS_SYMBOL].M$deps, [
+  test('with circular deps', (): void => {
+    const callback = (): void => {
+      const MockSourceA = createSource({
+        key: 'test/mock-source/w-cdeps/a',
+        default: 0,
+        deps: [],
+      })
+      const MockSourceB = createSource({
+        key: 'test/mock-source/w-cdeps/b',
+        default: 0,
+        deps: [MockSourceA],
+      })
+      // Tamper with the source to create circular dependency. I have no idea
+      // how circular dependencies would be possible in a normal use case, but
+      // still, this check is added as a safeguard.
+      MockSourceA[INTERNALS_SYMBOL].M$parentDeps = [MockSourceB]
+      checkForCircularDeps(MockSourceA[INTERNALS_SYMBOL].M$parentDeps, [
         MockSourceA[INTERNALS_SYMBOL].M$key,
       ])
     }
     expect(callback).toThrow()
   })
 
-  test('without circular deps', () => {
-    const callback = () => {
-      const MockSourceA = createMockSource({ deps: [] })
-      const MockSourceB = createMockSource({ deps: [MockSourceA] })
-      const MockSourceC = createMockSource({ deps: [MockSourceB] })
-      checkForCircularDeps(MockSourceC[INTERNALS_SYMBOL].M$deps, [
+  test('without circular deps', (): void => {
+    const callback = (): void => {
+      const MockSourceA = createSource({
+        key: 'test/mock-source/wo-cdeps/a',
+        default: 0,
+        deps: [],
+      })
+      const MockSourceB = createSource({
+        key: 'test/mock-source/wo-cdeps/b',
+        default: 0,
+        deps: [MockSourceA],
+      })
+      const MockSourceC = createSource({
+        key: 'test/mock-source/wo-cdeps/c',
+        default: 0,
+        deps: [MockSourceB],
+      })
+      checkForCircularDeps(MockSourceC[INTERNALS_SYMBOL].M$parentDeps, [
         MockSourceC[INTERNALS_SYMBOL].M$key,
       ])
     }

@@ -80,31 +80,22 @@ export default function ({ Relink }: IntegrationTestProps): void {
       },
     }, cleanupRef)
 
-    // expect(SourceA.get()).toBe(0)
-    // expect(SourceB.get()).toBe(0)
-    // expect(SourceC.get()).toBe(0)
     expect(hookInterfaceA.get('value')).toBe(0)
     expect(hookInterfaceB.get('value')).toBe(0)
     expect(hookInterfaceC.get('value')).toBe(0)
 
-    act(() => {
-      jest.advanceTimersByTime(TIME_GAP(2))
+    act((): void => {
+      jest.advanceTimersByTime(TIME_GAP(1))
     })
 
-    // expect(SourceA.get()).toBe(2)
-    // expect(SourceB.get()).toBe(0)
-    // expect(SourceC.get()).toBe(0)
     expect(hookInterfaceA.get('value')).toBe(2)
     expect(hookInterfaceB.get('value')).toBe(0)
     expect(hookInterfaceC.get('value')).toBe(0)
 
-    act(() => {
-      jest.advanceTimersByTime(TIME_GAP(2))
+    act((): void => {
+      jest.advanceTimersByTime(TIME_GAP(1))
     })
 
-    // expect(SourceA.get()).toBe(2)
-    // expect(SourceB.get()).toBe(3)
-    // expect(SourceC.get()).toBe(4)
     expect(hookInterfaceA.get('value')).toBe(2)
     expect(hookInterfaceB.get('value')).toBe(3)
     expect(hookInterfaceC.get('value')).toBe(4)
