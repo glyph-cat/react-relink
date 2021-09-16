@@ -247,9 +247,9 @@ export function createSource<S>({
     const childDepStack = Object.keys(M$childDeps)
     if (childDepStack.length !== 0) {
       devWarn(
-        `Attempted to call \`${UNSTABLE_cleanup.name}()\` on ${normalizedKey}` +
-        'while there are still other sources that depend on it: ' +
-        childDepStack.join(', ')
+        `Attempted to call \`${UNSTABLE_cleanup.name}()\` on ` +
+        `${normalizedKey} while there are still other sources that depend ` +
+        `on it: ${childDepStack.join(', ')}.`
       )
     }
     for (const dep of deps) {
