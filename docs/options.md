@@ -49,6 +49,6 @@ With virtual batch enabled, if you let a cat run across your keyboard, you are v
 * Type: `boolean`
 * Default: `false`
 
-Setting this to `true` will allow state values to be readable from [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) in production mode. You should not change this setting if your state contains sensitive information. State values will always be readable in debug mode.
+Setting this to `true` will make state values visible in [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) when in production mode. You should not change this option if your state contains sensitive information. State values will always be visible in debug mode.
 
 <br/>
