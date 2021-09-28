@@ -17,10 +17,11 @@ const defaultUserState = {
   preferences: {
     theme: 'system-default',
     language: 'system-default',
-  }
+  },
 }
 
 const UserSource = createSource({
+  key: 'user-source',
   default: defaultUserState,
   lifecycle: {
     init: ({ commit }) => {
@@ -70,6 +71,7 @@ const defaultUserState = {
 }
 
 const UserSource = createSource({
+  key: 'user-source',
   default: defaultUserState,
   lifecycle: {
     init: ({ commit }) => {

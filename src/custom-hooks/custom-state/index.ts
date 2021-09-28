@@ -1,6 +1,5 @@
-import { MutableRefObject, useReducer, useRef } from 'react'
+import { MutableRefObject, useReducer, useRef, useEffect } from 'react'
 import { isEqual } from '../../equality'
-import { useLayoutEffect } from '../isomorphic-layout-effect'
 
 const forceUpdateReducer = (c: number): number => c + 1
 
@@ -16,10 +15,10 @@ type StateHookData<S> = [S, (newState: S) => void]
  * A custom state hook that has a similar usage pattern to React's, but is
  * highly specialized for Relink's state management workflow.
  * There are, however a few differences:
- * - Initial state must be a factory
  * - Has customizable equality checking
  * - State values are not exposed in React dev tools
- * - New state cannot be a function (Only `() => S`)
+ * - Initial state must be a factory
+ * - State setter only accepts new values (no factory functions)
  */
 export function useState<S>(
   initialState: () => S,
@@ -40,7 +39,7 @@ export function useState<S>(
     stateCache.set(id.current, [initialState(), stateSetter])
   }
 
-  useLayoutEffect((): (() => void) => {
+  useEffect((): (() => void) => {
     const stateId = id.current
     return (): void => { stateCache.delete(stateId) }
   }, [])

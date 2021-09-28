@@ -6,18 +6,13 @@
 ![Build Status](https://img.shields.io/github/workflow/status/chin98edwin/langutil/Test/main)
 ![Bundle size](https://img.shields.io/bundlephobia/min/react-relink)
 ![Downloads](https://img.shields.io/npm/dt/react-relink)
-[![License](https://img.shields.io/npm/l/react-relink)](https://github.com/chin98edwin/react-relink/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/chin98edwin/react-relink)](https://github.com/chin98edwin/react-relink/blob/main/LICENSE)
 
 ![Designed for React](https://img.shields.io/static/v1?label&logo=react&logoColor=61DBFB&message=Designed%20for%20React&color=4a4a4a)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/chin98edwin/react-relink)
 [![Support me on Ko-fi](https://img.shields.io/static/v1?label&logo=kofi&logoColor=ffffff&message=Support%20me%20on%20Ko-fi&color=FF5E5B)](https://ko-fi.com/dev_chin98edwin)
 
-
 </div>
-
-<br/>
-
-[**🚧　IMPORTANT: What's Coming in V1　🚧**](https://github.com/chin98edwin/react-relink/blob/main/docs/whats-coming-in-v1.md)
 
 <br/>
 
@@ -48,6 +43,7 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 - [Create a Source](#create-a-source)
 - [Consume a Source](#consume-a-source)
 - [Documentation](#documentation)
+- [Support Me](#support-me)
 
 <br/>
 
@@ -83,7 +79,7 @@ Provide a default state for the source.
 import { createSource } from 'react-relink'
 
 const CounterSource = createSource({
-  key: 'counter', // Optional, used for debugging with React DevTools
+  key: 'counter',
   default: 1,
 })
 ```
@@ -105,7 +101,7 @@ An example with the `useRelinkState` hook:
 
 ```js
 function App() {
-  const [counter, setCounter] = useRelinkState(CounterSource)
+  const [counter, setCounter, resetCounter] = useRelinkState(CounterSource)
   // `setCounter` accepts either:
   // • A value to replace the state, or
   // • A function that returns a new state.
@@ -114,6 +110,7 @@ function App() {
       <span>Counter: {counter}</span>
       <button onClick={() => { setCounter(5) }}>Set to 5</button>
       <button onClick={() => { setCounter(c => c + 1) }}>Step up</button>
+      <button onClick={resetCounter}>Reset</button>
     </div>
   )
 }
@@ -154,5 +151,13 @@ rehydrateCounter(({ commit }) => {
 * [Options](https://github.com/chin98edwin/react-relink/blob/main/docs/options.md)
 * [Error Codes](https://github.com/chin98edwin/react-relink/blob/main/docs/error-codes.md)
 * [Interacting with Sources Outside of React Tree](https://github.com/chin98edwin/react-relink/blob/main/docs/interacting-with-sources-outside-of-react-tree.md)
+
+<br/>
+
+# Support Me
+
+* Ko-fi: [`ko-fi.com/dev_chin98edwin`](https://ko-fi.com/dev_chin98edwin)
+* PayPal: [`paypal.me/chin98edwin`](http://paypal.me/chin98edwin)
+* BTC: [`bc1q5qp6a972l8m0k26ln9deuhup0nmldf86ndu5we`](bitcoin:bc1q5qp6a972l8m0k26ln9deuhup0nmldf86ndu5we)
 
 <br/>
