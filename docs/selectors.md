@@ -4,6 +4,7 @@ You can use selectors to narrow down the items passed from `useRelinkState` and 
 
 ```js
 const MessagesSource = createSource({
+  key: 'messages-source',
   default: [
     {
       messageId: 1,
