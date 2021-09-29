@@ -1,4 +1,4 @@
-import { IS_DEBUG_ENV } from '../constants'
+import { IS_BROWSER_ENV, IS_DEBUG_ENV } from '../constants'
 import { RelinkSourceKey } from '../schema'
 import { warnDuplicateKey } from './warn-duplicate-key'
 
@@ -8,10 +8,12 @@ const KEY_STORE: Record<RelinkSourceKey, true> = {}
  * Registers a key into the store. If key already existed, throws an error.
  */
 export function registerKey(key: RelinkSourceKey): void {
-  if (!KEY_STORE[key]) {
-    KEY_STORE[key] = true
-  } else if (IS_DEBUG_ENV) {
-    warnDuplicateKey(key)
+  if (IS_BROWSER_ENV) {
+    if (!KEY_STORE[key]) {
+      KEY_STORE[key] = true
+    } else if (IS_DEBUG_ENV) {
+      warnDuplicateKey(key)
+    }
   }
 }
 
