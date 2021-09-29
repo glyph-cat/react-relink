@@ -1,5 +1,6 @@
-import { TYPE_ERROR_DUPLICATE_SOURCE_KEY } from '../errors'
+import { IS_DEBUG_ENV } from '../constants'
 import { RelinkSourceKey } from '../schema'
+import { warnDuplicateKey } from './warn-duplicate-key'
 
 const KEY_STORE: Record<RelinkSourceKey, true> = {}
 
@@ -9,8 +10,8 @@ const KEY_STORE: Record<RelinkSourceKey, true> = {}
 export function registerKey(key: RelinkSourceKey): void {
   if (!KEY_STORE[key]) {
     KEY_STORE[key] = true
-  } else {
-    throw TYPE_ERROR_DUPLICATE_SOURCE_KEY(key)
+  } else if (IS_DEBUG_ENV) {
+    warnDuplicateKey(key)
   }
 }
 
