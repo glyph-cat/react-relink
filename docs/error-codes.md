@@ -3,18 +3,13 @@ In production builds, error codes are thrown instead of the lengthy messages to 
 
 <br/>
 
-## `e1-typeofRawKey`
+## `Relink_E1-typeofRawKey`
 
 Expected `key` to be a string or number but got `${typeofRawKey}`
 
 <br/>
 
-## `e2-key`
-Expected `key` to be unique but got duplicate '`${key}`'
-
-<br/>
-
-## `e3-depStack`
+## `Relink_E2-depStack`
 Circular dependencies are not allowed: `${depStack}`
 
 <br/>
