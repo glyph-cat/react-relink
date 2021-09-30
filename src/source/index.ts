@@ -51,8 +51,17 @@ export function createSource<S>({
   // === Key checking ===
   let normalizedKey: RelinkSourceKey
   const typeofRawKey = typeof rawKey
-  if (typeofRawKey === 'string' || typeofRawKey === 'number') {
+  if (typeofRawKey === 'string' ||
+    typeofRawKey === 'number' ||
+    typeofRawKey === 'symbol'
+  ) {
     normalizedKey = rawKey
+    if (rawKey === '') {
+      devWarn(
+        'Did you just passed an empty string as a source key? Be careful, ' +
+        'it can lead to problems that are hard to diagnose and debug later on.'
+      )
+    }
   } else if (typeofRawKey === 'undefined') {
     normalizedKey = getAutomaticKey()
     if (!isSourceKeyAutogenWarningShown) {
@@ -137,10 +146,16 @@ export function createSource<S>({
 
   // === Hydration ===
 
+  // Wrap in `String(...)`
+  // Wrap in `new String(...)`
+  // Use `.toString()`
+
   const hydrate: RelinkHydrator<S> = (callback): void => {
     hydrationGate.M$exec((): void => {
       if (isHydrating) {
-        devError(`Cannot hydrate '${normalizedKey}' when it is already hydrating`)
+        devError(
+          `Cannot hydrate '${String(normalizedKey)}' when it is already hydrating`
+        )
         return // Early exit
       }
       isHydrating = true
@@ -245,8 +260,8 @@ export function createSource<S>({
     if (childDepStack.length !== 0) {
       devWarn(
         `Attempted to call \`${UNSTABLE_cleanup.name}()\` on ` +
-        `'${normalizedKey}' while there are still other sources that depend ` +
-        `on it: '${childDepStack.join('\', \'')}'.`
+        `'${String(normalizedKey)}' while there are still other sources ` +
+        `that depend on it: '${childDepStack.join('\', \'')}'.`
       )
     }
     for (const dep of deps) {

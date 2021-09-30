@@ -12,7 +12,7 @@ export function warnDuplicateKey(key: RelinkSourceKey): void {
   tempKeyStack.push(key)
   debouncedWarningRef = setTimeout((): void => {
     const dynamicMessageFragment = tempKeyStack.length === 1
-      ? `key '${tempKeyStack[0]}'`
+      ? `key '${String(tempKeyStack[0])}'`
       : `keys: '${tempKeyStack.join('\', \'')}'`
     devWarn(
       `Duplicate source ${dynamicMessageFragment}. This is a FATAL ERROR in ` +
