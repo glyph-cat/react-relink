@@ -6,10 +6,32 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
   describe('createSource', (): void => {
 
-    test('With key provided', (): void => {
+    test('With string as key', (): void => {
       const callback = (): void => {
         const Source = createSource({
-          key: 'test/with-key-provided',
+          key: 'test/string-as-key',
+          default: 1,
+        })
+        Source.UNSTABLE_cleanup()
+      }
+      expect(callback).not.toThrow()
+    })
+
+    test('With number as key', (): void => {
+      const callback = (): void => {
+        const Source = createSource({
+          key: 123, // 'test/number-as-key'
+          default: 1,
+        })
+        Source.UNSTABLE_cleanup()
+      }
+      expect(callback).not.toThrow()
+    })
+
+    test('With Symbol as key', (): void => {
+      const callback = (): void => {
+        const Source = createSource({
+          key: Symbol('test/symbol-as-key'),
           default: 1,
         })
         Source.UNSTABLE_cleanup()

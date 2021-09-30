@@ -22,7 +22,7 @@ export function waitForAll(...args: any[]): Promise<void> {
   if (typeof deprecatedCallback === 'function') {
     const depsKeyStack = []
     for (const source of sources) {
-      depsKeyStack.push(`'${source[INTERNALS_SYMBOL].M$key}'`)
+      depsKeyStack.push(`'${String(source[INTERNALS_SYMBOL].M$key)}'`)
     }
     devWarn(
       'Starting from V1, `waitForAll` is just an async function, but it ' +

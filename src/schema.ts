@@ -80,15 +80,16 @@ export interface RelinkSourceOptions {
 /**
  * @public
  */
-export type RelinkSourceKey = string | number
+export type RelinkSourceKey = string | number | symbol
 
 /**
  * @public
  */
 export interface RelinkSourceEntry<S> {
   /**
-   * A unique key for the source. Helps make debugging easier and makes
-   * dependency checking possible.
+   * A unique key for the source. Use a string or number for better clarity in a
+   * normal project, use a Symbol instead if you're building a library to avoid
+   * clashing with user-defined keys.
    */
   key?: RelinkSourceKey
   /**
