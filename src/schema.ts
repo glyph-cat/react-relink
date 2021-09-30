@@ -90,7 +90,7 @@ export interface RelinkSourceEntry<S> {
    * A unique key for the source. Helps make debugging easier and makes
    * dependency checking possible.
    */
-  key: RelinkSourceKey
+  key?: RelinkSourceKey
   /**
    * The default state of the source.
    */
@@ -127,6 +127,7 @@ export interface RelinkSource<S> {
     M$key: RelinkSourceKey
     M$isMutable: boolean
     M$isPublic: boolean
+    M$isVirtualBatchEnabled: boolean
     /**
      * Sources that this one depend on before it can hydrate itself.
      */

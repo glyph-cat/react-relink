@@ -1,5 +1,5 @@
 import { useDebugValue } from 'react'
-import { INTERNALS_SYMBOL, IS_DEBUG_ENV } from './constants'
+import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
 import {
   RelinkHydrator,
   RelinkSelector,
@@ -70,10 +70,25 @@ export function useRelinkValue<S, K>(
 
   // Add/remove watcher
   useLayoutEffect((): (() => void) => {
-    const unwatch = source.watch((): void => {
+    // NOTE: Virtual batching is implemented at the hook level instead of the
+    // source because it used to cause faulty `Source.set()` calls.
+    let debounceRef: ReturnType<typeof setTimeout>
+    const triggerUpdateImmediately = (): void => {
       setState(getCurrentValue(source, selector))
-    })
-    return (): void => { unwatch() }
+    }
+    const triggerUpdateDebounced = (): void => {
+      clearTimeout(debounceRef)
+      debounceRef = setTimeout(triggerUpdateImmediately)
+    }
+    const unwatch = source.watch(
+      IS_CLIENT_ENV && source[INTERNALS_SYMBOL].M$isVirtualBatchEnabled
+        ? triggerUpdateDebounced
+        : triggerUpdateImmediately
+    )
+    return (): void => {
+      unwatch()
+      clearTimeout(debounceRef)
+    }
   }, [source, selector])
 
   return state
@@ -133,6 +148,7 @@ export function useRehydrateRelinkSource<S>(
   return source.hydrate
 }
 
+export { VERSION } from './constants'
 export * from './schema'
 export * from './source'
 export * from './wait-for'
