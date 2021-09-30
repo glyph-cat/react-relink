@@ -1,11 +1,35 @@
-import { IntegrationTestProps } from '../../../helpers'
+import { IntegrationTestProps, TIME_GAP } from '../../../helpers'
 
 export default function ({ Relink }: IntegrationTestProps): void {
 
   const { createSource, isRelinkSource } = Relink
 
-  const TEST_METHOD_NAME_1 = 'createSource'
-  describe(`${TEST_METHOD_NAME_1} basics`, (): void => {
+  describe('createSource', (): void => {
+
+    test('With key provided', (): void => {
+      const callback = (): void => {
+        const Source = createSource({
+          key: 'test/with-key-provided',
+          default: 1,
+        })
+        Source.UNSTABLE_cleanup()
+      }
+      expect(callback).not.toThrow()
+    })
+
+    test('With no key provided', (): void => {
+      const callback = (): void => {
+        const Source = createSource({
+          default: 1,
+        })
+        Source.UNSTABLE_cleanup()
+      }
+      expect(callback).not.toThrow()
+    })
+
+  })
+
+  describe('Source basics', (): void => {
 
     test('get', (): void => {
       const Source = createSource({
@@ -37,7 +61,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       })
       Source.set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
       Source.set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
-      jest.advanceTimersByTime(0)
+      jest.advanceTimersByTime(TIME_GAP(1))
       const state = Source.get()
       expect(state).toStrictEqual({ a: 2, b: 2 })
       Source.UNSTABLE_cleanup()

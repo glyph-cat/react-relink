@@ -15,7 +15,6 @@ import {
 } from '../schema'
 import { getAutomaticKey, registerKey, unregisterKey } from '../source-key'
 import { createSuspenseWaiter, SuspenseWaiter } from '../suspense-waiter'
-import { createServerBatcher, createVirtualBatcher } from '../virtual-batch'
 import { createWatcher } from '../watcher'
 
 // NOTE:
@@ -36,6 +35,8 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
   virtualBatch: false,
 } as const
 
+let isSourceKeyAutogenWarningShown = false
+
 /**
  * @public
  */
@@ -54,10 +55,11 @@ export function createSource<S>({
     normalizedKey = rawKey
   } else if (typeofRawKey === 'undefined') {
     normalizedKey = getAutomaticKey()
-    devWarn(
-      'No key provided to source, ' +
-      `automatically generating one: '${normalizedKey}'`
-    )
+    if (!isSourceKeyAutogenWarningShown) {
+      isSourceKeyAutogenWarningShown = true
+      devWarn('Starting from V1, every source must have a unique key. This is because it helps simplify Relink\'s codebase and makes debugging easier for you at the same time. To facilitate this change, keys will be automatically generated at runtime for sources that do not already have one. Eventually, you will need to manually add in the keys, they can be strings or numbers, as long as they make sense.')
+    }
+    devWarn(`Automatically generated a source key: '${normalizedKey}'`)
   } else {
     throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
   }
@@ -100,30 +102,22 @@ export function createSource<S>({
   const hydrationGate = createGatedQueue(deps.length <= 0)
   // ^ Open the gate right away if there are no dependencies.
 
-  // If virtual batching is disabled, then it is the same as if it is running
-  // on a server. (Code get execute right away in servers).
-  const batch = isVirtualBatchEnabled
-    ? createVirtualBatcher()
-    : createServerBatcher()
-
   const isDidResetProvided = isFunction(lifecycle.didReset)
   const isDidSetProvided = isFunction(lifecycle.didSet)
   const performUpdate = (type: PERF_UPDATE_TYPE, newState: S): void => {
-    batch((): void => {
-      currentState = copyState(newState) // (Receive)
-      if (type === PERF_UPDATE_TYPE.M$reset) {
-        if (isDidResetProvided) {
-          lifecycle.didReset()
-        }
-      } else if (type !== PERF_UPDATE_TYPE.M$hydrate) {
-        if (isDidSetProvided) {
-          lifecycle.didSet({
-            state: copyState(currentState), // (Expose)
-          })
-        }
+    currentState = copyState(newState) // (Receive)
+    if (type === PERF_UPDATE_TYPE.M$reset) {
+      if (isDidResetProvided) {
+        lifecycle.didReset()
       }
-      stateWatcher.M$refresh()
-    })
+    } else if (type !== PERF_UPDATE_TYPE.M$hydrate) {
+      if (isDidSetProvided) {
+        lifecycle.didSet({
+          state: copyState(currentState), // (Expose)
+        })
+      }
+    }
+    stateWatcher.M$refresh()
   }
 
   // Note: when suspense hydration is complete, no need to batch update
@@ -271,6 +265,7 @@ export function createSource<S>({
       M$key: normalizedKey,
       M$isMutable: isSourceMutable,
       M$isPublic: isSourcePublic,
+      M$isVirtualBatchEnabled: isVirtualBatchEnabled,
       M$parentDeps: deps,
       M$childDeps,
       M$directGet,

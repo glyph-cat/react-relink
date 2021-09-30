@@ -18,15 +18,17 @@ const UMD_GLOBALS = {
   'react-fast-compare': 'isEqual',
 }
 
-const EXTERNAL_LIBS_BASE = Object.keys(UMD_GLOBALS)
+const EXTERNAL_LIBS = Object.keys(UMD_GLOBALS)
 
 /**
- * @param {object} config
- * @param {object} config.overrides
- * @param {'development'|'production'} config.mode
+ * @param {Object?} config
+ * @param {Object?} config.overrides
+ * @param {'development'|'production'?} config.mode
+ * @param {string?} config.buildEnv
  * @returns {Array}
  */
-function getPlugins({ overrides = {}, mode } = {}) {
+function getPlugins(config = {}) {
+  const { overrides = {}, mode, buildEnv } = config
   const basePlugins = {
     nodeResolve: nodeResolve(NODE_RESOLVE_CONFIG_BASE),
     typescript: typescript({
@@ -63,6 +65,7 @@ function getPlugins({ overrides = {}, mode } = {}) {
 
   // Replace values
   const replaceValues = {
+    'process.env.BUILD_ENV': JSON.stringify(buildEnv),
     'process.env.NPM_PACKAGE_VERSION': JSON.stringify(version),
   }
   if (mode) {
@@ -92,7 +95,7 @@ const config = [
       format: 'cjs',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS_BASE,
+    external: EXTERNAL_LIBS,
     plugins: getPlugins(),
   },
   {
@@ -103,7 +106,7 @@ const config = [
       format: 'es',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS_BASE,
+    external: EXTERNAL_LIBS,
     plugins: getPlugins(),
   },
   {
@@ -114,8 +117,19 @@ const config = [
       format: 'es',
       exports: 'named',
     },
-    external: EXTERNAL_LIBS_BASE,
+    external: EXTERNAL_LIBS,
     plugins: getPlugins({ mode: 'production' }),
+  },
+  {
+    // React Native
+    input: INPUT_FILE,
+    output: {
+      file: 'dist/native/index.js',
+      format: 'es',
+      exports: 'named',
+    },
+    external: EXTERNAL_LIBS,
+    plugins: getPlugins({ buildEnv: 'react-native' }),
   },
   {
     // UMD
@@ -127,7 +141,7 @@ const config = [
       exports: 'named',
       globals: UMD_GLOBALS,
     },
-    external: EXTERNAL_LIBS_BASE,
+    external: EXTERNAL_LIBS,
     plugins: getPlugins({ mode: 'development' }),
   },
   {
@@ -140,7 +154,7 @@ const config = [
       exports: 'named',
       globals: UMD_GLOBALS,
     },
-    external: EXTERNAL_LIBS_BASE,
+    external: EXTERNAL_LIBS,
     plugins: getPlugins({ mode: 'production' }),
   },
 ]

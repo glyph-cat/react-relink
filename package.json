@@ -4,6 +4,7 @@
   "description": "A React state management library inspired by Recoil.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
+  "react-native": "dist/native/index.js",
   "unpkg": "dist/umd/index.js",
   "files": [
     "dist",

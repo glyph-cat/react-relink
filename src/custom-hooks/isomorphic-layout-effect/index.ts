@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect } from 'react'
-import { IS_BROWSER_ENV } from '../../constants'
+import { IS_CLIENT_ENV } from '../../constants'
 
-const useIsomorphicLayoutEffect = IS_BROWSER_ENV ? useLayoutEffect : useEffect
+const useIsomorphicLayoutEffect = IS_CLIENT_ENV ? useLayoutEffect : useEffect
 
 export { useIsomorphicLayoutEffect as useLayoutEffect }

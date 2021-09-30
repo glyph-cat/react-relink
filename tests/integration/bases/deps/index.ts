@@ -39,7 +39,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
           setTimeout((): void => {
             const sourceAValue = SourceA.get()
             commit(sourceAValue + 1)
-          }, TIME_GAP(1))
+          }, TIME_GAP(3))
         },
       },
       options: {
@@ -85,7 +85,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     expect(hookInterfaceC.get('value')).toBe(0)
 
     act((): void => {
-      jest.advanceTimersByTime(TIME_GAP(1))
+      jest.advanceTimersByTime(TIME_GAP(2))
     })
 
     expect(hookInterfaceA.get('value')).toBe(2)
@@ -93,7 +93,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     expect(hookInterfaceC.get('value')).toBe(0)
 
     act((): void => {
-      jest.advanceTimersByTime(TIME_GAP(1))
+      jest.advanceTimersByTime(TIME_GAP(4))
     })
 
     expect(hookInterfaceA.get('value')).toBe(2)
