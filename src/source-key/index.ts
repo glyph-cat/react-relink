@@ -8,6 +8,9 @@ const KEY_STORE: Record<RelinkSourceKey, true> = {}
  * Registers a key into the store. If key already existed, throws an error.
  */
 export function registerKey(key: RelinkSourceKey): void {
+  // Duplicate keys are guaranteed to occur in SSR because the same code can
+  // be used to serve to multiple clients. By checking with `IS_CLIENT_ENV`,
+  // duplicate keys are only checked when code is run in the client.
   if (IS_CLIENT_ENV) {
     if (!KEY_STORE[key]) {
       KEY_STORE[key] = true

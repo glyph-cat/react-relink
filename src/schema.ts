@@ -16,28 +16,6 @@ export type RelinkHydrateCallback<S> = (args: RelinkHydrateArgs<S>) => void
 /**
  * @public
  */
-export type RelinkHydrator<S> = (callback: RelinkHydrateCallback<S>) => void
-
-/**
- * @public
- */
-export type RelinkStateDerivator<S> = ((currentState: S) => S)
-
-/**
- * @public
- */
-export type RelinkPartialState<S> = S | RelinkStateDerivator<S>
-
-/**
- * @public
- */
-export interface RelinkSetter<S> {
-  (partialState: RelinkPartialState<S>): void
-}
-
-/**
- * @public
- */
 export interface RelinkSelector<S, K> {
   (state: S): K
 }
@@ -111,9 +89,9 @@ export interface RelinkSourceEntry<S> {
  */
 export interface RelinkSource<S> {
   get(): S
-  set: RelinkSetter<S>
-  reset(): void
-  hydrate: RelinkHydrator<S>
+  set(partialState: S | ((currentState: S) => S)): Promise<void>
+  reset(): Promise<void>
+  hydrate(callback: RelinkHydrateCallback<S>): void
   /**
    * @example
    * const unwatchSource = Source.watch(selfDefinedCallback) // Start watching

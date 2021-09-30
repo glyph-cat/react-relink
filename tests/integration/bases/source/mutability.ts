@@ -39,16 +39,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
       })
     })
 
-    // NOTES:
-    // * Virtual batching is enabled so that we can check the state in between
-    //   the updates.
-    // * The update will not take effect immediately due to virtual batching.
-    // * This is where we check if the value has been mutated.
-    // * After calling `jest.advanceTimersyTime()`, the states should've been
-    //   updated.
-    // * Another check is made to ensure that the states have been updated
-    //   correctly.
-
     describe('Set', (): void => {
 
       test('Mutable', (): void => {
@@ -58,7 +48,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
           default: { value: 1 },
           options: {
             mutable: true,
-            // virtualBatch: true,
           },
         })
 
@@ -91,7 +80,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
           default: { value: 1 },
           options: {
             mutable: false,
-            // virtualBatch: true,
           },
         })
 
