@@ -34,10 +34,10 @@ export default function ({ Relink }: IntegrationTestProps): void {
     // Initial phase
     expect(hookInterface.getRenderCount()).toBe(1)
 
-    // Update (Invoke 'step' twice in the same `act()` callback)
-    hookInterface.actions('step', 'step')
+    // Update (Invoke 'step' multiple times in the same `act()` callback)
+    hookInterface.actions('step', 'step', 'step', 'step')
     jest.advanceTimersByTime(0)
-    expect(hookInterface.get('value')).toBe(3)
+    expect(hookInterface.get('value')).toBe(5)
 
     // Check for unnecessary renders
     expect(hookInterface.getRenderCount()).toBe(2)

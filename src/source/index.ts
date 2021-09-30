@@ -6,8 +6,6 @@ import { TYPE_ERROR_SOURCE_KEY } from '../errors'
 import { createGatedQueue } from '../gated-queue'
 import { isFunction } from '../is-function'
 import {
-  RelinkSetter,
-  RelinkHydrator,
   RelinkSource,
   RelinkSourceEntry,
   RelinkSourceKey,
@@ -150,7 +148,7 @@ export function createSource<S>({
   // Wrap in `new String(...)`
   // Use `.toString()`
 
-  const hydrate: RelinkHydrator<S> = (callback): void => {
+  const hydrate: RelinkSource<S>['hydrate'] = (callback): void => {
     hydrationGate.M$exec((): void => {
       if (isHydrating) {
         devError(
@@ -232,7 +230,7 @@ export function createSource<S>({
 
   const get = (): S => copyState(currentState) // (Expose)
 
-  const set: RelinkSetter<S> = (partialState): void => {
+  const set: RelinkSource<S>['set'] = async (partialState): Promise<void> => {
     hydrationGate.M$exec((): void => {
       performUpdate(PERF_UPDATE_TYPE.M$set, isFunction(partialState)
         ? partialState(copyState(currentState)) // (Expose)
@@ -241,7 +239,7 @@ export function createSource<S>({
     })
   }
 
-  const reset = (): void => {
+  const reset = async (): Promise<void> => {
     hydrationGate.M$exec((): void => {
       performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
     })

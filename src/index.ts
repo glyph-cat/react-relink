@@ -1,12 +1,6 @@
 import { useDebugValue } from 'react'
 import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
-import {
-  RelinkHydrator,
-  RelinkSelector,
-  RelinkSetter,
-  RelinkSource,
-  RelinkSourceKey,
-} from './schema'
+import { RelinkSelector, RelinkSource, RelinkSourceKey } from './schema'
 import { useLayoutEffect, useState } from './custom-hooks'
 import deepCopy from './deep-copy'
 
@@ -99,21 +93,21 @@ export function useRelinkValue<S, K>(
  */
 export function useRelinkState<S>(
   source: RelinkSource<S>
-): [S, RelinkSetter<S>, () => void]
+): [S, RelinkSource<S>['set'], RelinkSource<S>['reset']]
 /**
  * @public
  */
 export function useRelinkState<S, K>(
   source: RelinkSource<S>,
   selector: RelinkSelector<S, K>
-): [K, RelinkSetter<S>, () => void]
+): [K, RelinkSource<S>['set'], RelinkSource<S>['reset']]
 /**
  * @public
  */
 export function useRelinkState<S, K>(
   source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
-): [S | K, RelinkSetter<S>, () => void] {
+): [S | K, RelinkSource<S>['set'], RelinkSource<S>['reset']] {
   const state = useRelinkValue(source, selector)
   return [state, source.set, source.reset]
 }
@@ -123,7 +117,7 @@ export function useRelinkState<S, K>(
  */
 export function useSetRelinkState<S>(
   source: RelinkSource<S>
-): RelinkSetter<S> {
+): RelinkSource<S>['set'] {
   source[INTERNALS_SYMBOL].M$suspenseOnHydration()
   return source.set
 }
@@ -133,7 +127,7 @@ export function useSetRelinkState<S>(
  */
 export function useResetRelinkState<S>(
   source: RelinkSource<S>
-): () => void {
+): RelinkSource<S>['reset'] {
   source[INTERNALS_SYMBOL].M$suspenseOnHydration()
   return source.reset
 }
@@ -143,7 +137,7 @@ export function useResetRelinkState<S>(
  */
 export function useRehydrateRelinkSource<S>(
   source: RelinkSource<S>
-): RelinkHydrator<S> {
+): RelinkSource<S>['hydrate'] {
   source[INTERNALS_SYMBOL].M$suspenseOnHydration()
   return source.hydrate
 }
