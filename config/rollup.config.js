@@ -158,8 +158,8 @@ const config = [
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
-      mode: 'development',
       buildEnv: 'umd',
+      mode: 'development',
     }),
   },
   {
@@ -174,8 +174,8 @@ const config = [
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
-      mode: 'production',
       buildEnv: 'umd',
+      mode: 'production',
     }),
   },
 ]

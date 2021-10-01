@@ -8,7 +8,11 @@ export const INTERNALS_SYMBOL = Symbol()
  * separate build for React Native where `IS_CLIENT_ENV` will always be true.
  */
 export const IS_CLIENT_ENV = process.env.BUILD_ENV === 'react-native' ||
+  process.env.BUILD_ENV === 'umd' ||
   typeof window !== 'undefined'
+// ^ NOTE: `typeof window !== 'undefined'` must be placed at the last because
+// the value remains unknown at compile time, and will result in dead code not
+// trimmed even when `IS_CLIENT_ENV` is undoubtedly true.
 
 export const IS_DEBUG_ENV = process.env.NODE_ENV !== 'production'
 

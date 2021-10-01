@@ -5,12 +5,11 @@ export function formatErrorCode(
   code: number,
   ...args: Array<unknown>
 ): string {
-  const PREFIX = 'Relink_E'
+  let errCode = `Relink_E${code}`
   if (args.length > 0) {
-    return `${PREFIX}${code}-${args.join(',')}`
-  } else {
-    return `${PREFIX}${code}`
+    errCode += `-${args.join(',')}`
   }
+  return errCode
 }
 
 export function TYPE_ERROR_SOURCE_KEY(typeofRawKey: string): TypeError {

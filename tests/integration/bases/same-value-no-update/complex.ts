@@ -43,7 +43,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
     })
 
-    test('Mutable', (): void => {
+    test('Immutable', (): void => {
 
       const Source = createSource({
         key: 'test/same-value-no-update/complex/mutable:false',
