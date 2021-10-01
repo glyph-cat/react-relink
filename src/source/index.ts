@@ -213,13 +213,6 @@ export function createSource<S>({
       })
     depWatchers.push(unwatchDepHydration)
   }
-  // flow(normalizedKey, async (): Promise<void> => { })
-  // if (deps.length > 0) { }
-
-  // // If there are no deps, hydration will take place right away. Otherwise, it
-  // // will be queued because a flow callback will be invoked above when the
-  // // dependency array is not empty.
-  // hydrateIfLifecycleInitIsProvided()
 
 
   // === Exposed Methods ===
@@ -227,13 +220,6 @@ export function createSource<S>({
   const M$directGet = (): S => currentState
 
   const get = (): S => copyState(currentState) // (Expose)
-
-  // const getAsync = async (): Promise<S> => {
-  //   return await flow(normalizedKey, (): S => {
-  //     return copyState(currentState) // (Expose)
-  //   })
-  //   // TODO: await hydrationGate.M$exec(async (): Promise<void> => { })
-  // }
 
   const set: RelinkSource<S>['set'] = async (partialState): Promise<void> => {
     hydrationGate.M$exec((): void => {
@@ -243,21 +229,16 @@ export function createSource<S>({
           copyState(currentState) // (Expose)
         )
         nextState = executedPartialState
-        // nextState = isThenable(executedPartialState)
-        //   ? await executedPartialState
-        //   : executedPartialState
       } else {
         nextState = partialState
       }
       performUpdate(PERF_UPDATE_TYPE.M$set, nextState)
     })
-    // await flow(normalizedKey, async (): Promise<void> => { })
   }
 
   const reset = async (): Promise<void> => {
     hydrationGate.M$exec((): void => {
       performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
-      // await flow(normalizedKey, (): void => { })
     })
   }
 
@@ -305,7 +286,6 @@ export function createSource<S>({
        */
       M$getIsReadyStatus: () => !isHydrating && allDepsAreReady(deps),
     },
-    // getAsync,
     get,
     set,
     reset,
