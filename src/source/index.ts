@@ -1,9 +1,7 @@
-import { checkForCircularDeps } from '../circular-deps'
 import { INTERNALS_SYMBOL } from '../constants'
 import deepCopy from '../deep-copy'
 import { devError, devWarn } from '../dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../errors'
-import { flow } from '../flow-controller'
 import { createGatedQueue } from '../gated-queue'
 import {
   RelinkSource,
@@ -13,13 +11,23 @@ import {
 } from '../schema'
 import { getAutomaticKey, registerKey, unregisterKey } from '../source-key'
 import { createSuspenseWaiter, SuspenseWaiter } from '../suspense-waiter'
-import { isFunction, isThenable } from '../type-checker'
+import { isFunction } from '../type-checker'
 import { createWatcher } from '../watcher'
+import { allDepsAreReady } from './all-deps-are-ready'
+import { checkForCircularDeps } from './circular-deps'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
 // are not mangled by Terser, this causes problems in production build where
 // variable name mangling takes place
+
+// The four horsemen of `flow(...)`:
+// * .getAsync()
+// * .set()
+// * .reset()
+// * .hydrate()
+// DO NOT wrap these functions inside another flow callback, otherwise it will
+// result in a deadlock.
 
 enum PERF_UPDATE_TYPE {
   M$set = undefined,
@@ -74,6 +82,14 @@ export function createSource<S>({
   registerKey(normalizedKey)
 
 
+  // === Dependency Handling ===
+  checkForCircularDeps(deps, [normalizedKey])
+  // Gate open DOES NOT MEAN the source has been hydrated and is ready to use,
+  // it simply means that the source can finally hydrate itself.
+  const hydrationGate = createGatedQueue(deps.length <= 0)
+  // ^ Open the gate right away if there are no dependencies.
+
+
   // === Local Variables & Methods ===
 
   const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
@@ -95,21 +111,6 @@ export function createSource<S>({
   let currentState: S = copyState(defaultState) // (Receive)
   const stateWatcher = createWatcher<never>()
 
-  // === Dependency Handling ===
-  checkForCircularDeps(deps, [normalizedKey])
-  const allDepsAreReady = (): boolean => {
-    for (let i = 0; i < deps.length; i++) {
-      if (!deps[i][INTERNALS_SYMBOL].M$getIsReadyStatus()) {
-        return false // Early exit
-      }
-    }
-    return true
-  }
-  // Gate open DOES NOT MEAN the source has been hydrated and is ready to use,
-  // it simply means that the source can finally hydrate itself.
-  const hydrationGate = createGatedQueue(deps.length <= 0)
-  // ^ Open the gate right away if there are no dependencies.
-
   const isDidResetProvided = isFunction(lifecycle.didReset)
   const isDidSetProvided = isFunction(lifecycle.didSet)
   const performUpdate = (type: PERF_UPDATE_TYPE, newState: S): void => {
@@ -128,11 +129,6 @@ export function createSource<S>({
     stateWatcher.M$refresh()
   }
 
-  // Note: when suspense hydration is complete, no need to batch update
-  // because react is directly tracking the promise that is thrown, when
-  // promise resolves, react automatically knows to attempt to render the
-  // components again.
-
   let suspenseWaiter: SuspenseWaiter
   let isHydrating = false
   const M$hydrationWatcher = createWatcher<[boolean]>() // true = is hydrating
@@ -146,9 +142,7 @@ export function createSource<S>({
   // === Hydration ===
 
   const hydrate: RelinkSource<S>['hydrate'] = async (callback): Promise<void> => {
-    // TODO: Wrap in flow
-    // TODO: Find out flow or gate should be outside, and which one inside
-    await hydrationGate.M$exec((): void => {
+    hydrationGate.M$exec((): void => {
       if (isHydrating) {
         devError(
           `Cannot hydrate '${String(normalizedKey)}' when it is already hydrating`
@@ -180,22 +174,20 @@ export function createSource<S>({
         callback({ commit })
       }
     })
+    // await flow(normalizedKey, (): void => { })
   }
 
-  const safeExecHydration = (): void => {
+  const hydrateIfLifecycleInitIsProvided = (): void => {
     if (isFunction(lifecycle.init)) {
       hydrate(lifecycle.init)
     }
   }
 
-  // TODO: [HIGH]
-  // Find out if hydration would be trigerred multiple times in a source that
-  // has dependencies because of the first and subsequent runs.
-
   // This runs the first round of hydration for this source as soon as it is
   // deemed that it no longer has parent deps that are still hydrating.
-  safeExecHydration()
+  hydrateIfLifecycleInitIsProvided()
 
+  // TODO: Make sources rehydrate if their parent deps hydrate
   // This allows subsequent hydrations if any parent deps are being rehydrated
   // Watchers are used to make this possible
   const depWatchers: Array<() => void> = []
@@ -210,17 +202,24 @@ export function createSource<S>({
           // enters init status, it should be init-ed again after that/
           // Hence, `lifecycle.init` is added to the queue immediately ——
           // before other methods can be added to the queue.
-          safeExecHydration()
+          hydrateIfLifecycleInitIsProvided()
           // Gate is closed before calling `gateExecHydration` so that hydration
           // is queued deferred until deps have finished hydrating.
         } else {
-          if (allDepsAreReady()) {
+          if (allDepsAreReady(deps)) {
             hydrationGate.M$setStatus(true)
           }
         }
       })
     depWatchers.push(unwatchDepHydration)
   }
+  // flow(normalizedKey, async (): Promise<void> => { })
+  // if (deps.length > 0) { }
+
+  // // If there are no deps, hydration will take place right away. Otherwise, it
+  // // will be queued because a flow callback will be invoked above when the
+  // // dependency array is not empty.
+  // hydrateIfLifecycleInitIsProvided()
 
 
   // === Exposed Methods ===
@@ -229,36 +228,36 @@ export function createSource<S>({
 
   const get = (): S => copyState(currentState) // (Expose)
 
-  const getAsync = async (): Promise<S> => {
-    return await flow(normalizedKey, (): S => {
-      return copyState(currentState) // (Expose)
-    })
-  }
+  // const getAsync = async (): Promise<S> => {
+  //   return await flow(normalizedKey, (): S => {
+  //     return copyState(currentState) // (Expose)
+  //   })
+  //   // TODO: await hydrationGate.M$exec(async (): Promise<void> => { })
+  // }
 
   const set: RelinkSource<S>['set'] = async (partialState): Promise<void> => {
-    await flow(normalizedKey, async (): Promise<void> => {
-      await hydrationGate.M$exec(async (): Promise<void> => {
-        let nextState: S
-        if (isFunction(partialState)) {
-          const executedPartialState = partialState(
-            copyState(currentState) // (Expose)
-          )
-          nextState = isThenable(executedPartialState)
-            ? await executedPartialState
-            : executedPartialState
-        } else {
-          nextState = partialState
-        }
-        performUpdate(PERF_UPDATE_TYPE.M$set, nextState)
-      })
+    hydrationGate.M$exec((): void => {
+      let nextState: S
+      if (isFunction(partialState)) {
+        const executedPartialState = partialState(
+          copyState(currentState) // (Expose)
+        )
+        nextState = executedPartialState
+        // nextState = isThenable(executedPartialState)
+        //   ? await executedPartialState
+        //   : executedPartialState
+      } else {
+        nextState = partialState
+      }
+      performUpdate(PERF_UPDATE_TYPE.M$set, nextState)
     })
+    // await flow(normalizedKey, async (): Promise<void> => { })
   }
 
   const reset = async (): Promise<void> => {
-    await flow(normalizedKey, async (): Promise<void> => {
-      await hydrationGate.M$exec((): void => {
-        performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
-      })
+    hydrationGate.M$exec((): void => {
+      performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
+      // await flow(normalizedKey, (): void => { })
     })
   }
 
@@ -304,9 +303,9 @@ export function createSource<S>({
       /**
        * Self is not hydrating && Deps are not hydrating
        */
-      M$getIsReadyStatus: () => !isHydrating && allDepsAreReady(),
+      M$getIsReadyStatus: () => !isHydrating && allDepsAreReady(deps),
     },
-    getAsync,
+    // getAsync,
     get,
     set,
     reset,

@@ -1,5 +1,5 @@
 import { act } from 'react-test-renderer'
-import { IntegrationTestProps } from '../../../helpers'
+import { delay, IntegrationTestProps } from '../../../helpers'
 import { PADDING_TIME } from './constants'
 
 export default function ({ Relink }: IntegrationTestProps): void {
@@ -48,18 +48,16 @@ export default function ({ Relink }: IntegrationTestProps): void {
       Source.UNSTABLE_cleanup()
     })
 
-    test('Asynchronous', (): Promise<void> => {
+    test('Asynchronous', async (): Promise<void> => {
       jest.useRealTimers()
       let mockStorage = null
-      const getValueFromMockServer = (
+
+      const getValueFromMockServer = async (
         mockValue: number,
         mockTimeout: number
       ): Promise<number> => {
-        return new Promise((resolve): void => {
-          setTimeout((): void => {
-            resolve(mockValue)
-          }, mockTimeout)
-        })
+        await delay(mockTimeout)
+        return mockValue
       }
 
       const Source = createSource({
@@ -82,29 +80,24 @@ export default function ({ Relink }: IntegrationTestProps): void {
         },
       })
 
-      return new Promise((resolve): void => {
-        setTimeout((): void => {
-          act((): void => {
-            // Expect hydration to use this value...
-            Source.hydrate(async ({ commit }): Promise<void> => {
-              const data = await getValueFromMockServer(2, PADDING_TIME * 2)
-              commit(data)
-            })
-            // ...while this one is blocked
-            Source.hydrate(async ({ commit }): Promise<void> => {
-              const data = await getValueFromMockServer(3, PADDING_TIME)
-              commit(data)
-            })
-          })
-          setTimeout((): void => {
-            expect(Source.get()).toBe(2)
-            expect(mockStorage).toBe(null) // Since it's just hydration
-            resolve()
-            // Cleanup
-            Source.UNSTABLE_cleanup()
-          }, PADDING_TIME * 3)
-        }, PADDING_TIME)
+      await delay(PADDING_TIME)
+      act((): void => {
+        // Expect hydration to use this value...
+        Source.hydrate(async ({ commit }): Promise<void> => {
+          const data = await getValueFromMockServer(2, PADDING_TIME * 2)
+          commit(data)
+        })
+        // ...while this one is blocked
+        Source.hydrate(async ({ commit }): Promise<void> => {
+          const data = await getValueFromMockServer(3, PADDING_TIME)
+          commit(data)
+        })
       })
+      await delay(PADDING_TIME * 3)
+      expect(Source.get()).toBe(2)
+      expect(mockStorage).toBe(null) // Since it's just hydration
+      // Cleanup
+      Source.UNSTABLE_cleanup()
     })
 
   })

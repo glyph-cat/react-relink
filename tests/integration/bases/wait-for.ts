@@ -36,6 +36,11 @@ export default function ({ Relink }: IntegrationTestProps): void {
       ])
     }, expectedWaitTime + gracePeriod)
 
+    test('Empty array', async (): Promise<void> => {
+      jest.useRealTimers()
+      await expect(waitForAll([])).resolves.toBe(undefined)
+    })
+
     test('Error handling', async (): Promise<void> => {
       jest.useRealTimers()
       let errObj: Error

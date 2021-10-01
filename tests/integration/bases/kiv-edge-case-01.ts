@@ -45,7 +45,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
     await addItemToList('1', 'meow')
     modifyItemInList('1')
-    await expect(ListSource.getAsync()).resolves.toStrictEqual({
+    expect(ListSource.get()).toStrictEqual({
       list: {
         '1': 'meowmeow',
       },
