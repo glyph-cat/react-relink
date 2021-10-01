@@ -1,6 +1,6 @@
 import { INTERNALS_SYMBOL } from '../constants'
 import { devWarn } from '../dev'
-import { RelinkSource } from '../schema'
+import { RelinkSource, RelinkSourceKey } from '../schema'
 import { isFunction } from '../type-checker'
 
 /**
@@ -18,12 +18,12 @@ export function waitForAll(
 export function waitForAll(...args: any[]): Promise<void> {
   // Refer to Special Notes [A] in 'src/index.ts'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sources: Array<RelinkSource<any>> = args[0]
+  const deps: Array<RelinkSource<any>> = args[0] // Deps are aources
   const deprecatedCallback = args[1]
   if (isFunction(deprecatedCallback)) {
     const depsKeyStack = []
-    for (const source of sources) {
-      depsKeyStack.push(`'${String(source[INTERNALS_SYMBOL].M$key)}'`)
+    for (const dep of deps) {
+      depsKeyStack.push(`'${String(dep[INTERNALS_SYMBOL].M$key)}'`)
     }
     devWarn(
       'Starting from V1, `waitForAll` is just an async function, but it ' +
@@ -34,19 +34,23 @@ export function waitForAll(...args: any[]): Promise<void> {
   }
   return new Promise((resolve, reject): void => {
     try {
-      let readyCount = 0
-      for (const source of sources) {
+      // Resolve and exit right away array is empty
+      if (deps.length <= 0) { return resolve() } // Early exit
+      const isReadyTracker: Record<RelinkSourceKey, true> = {}
+      for (const source of deps) {
         if (source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
           // If source is already hydrated, no need add watcher
-          readyCount += 1
+          isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
         } else {
           // If not, only then we add a watcher to it
           const unwatch = source[INTERNALS_SYMBOL].M$hydrationWatcher
             .M$watch((isIniting): void => {
-              if (!isIniting) {
-                readyCount += 1
+              if (isIniting) {
+                delete isReadyTracker[source[INTERNALS_SYMBOL].M$key]
+              } else {
+                isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
                 unwatch()
-                if (readyCount === sources.length) {
+                if (Object.keys(isReadyTracker).length === deps.length) {
                   resolve()
                 }
               }

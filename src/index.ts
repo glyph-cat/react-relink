@@ -1,9 +1,10 @@
 import { useDebugValue } from 'react'
 import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
-import { RelinkSelector, RelinkSource, RelinkSourceKey } from './schema'
 import { useLayoutEffect, useState } from './custom-hooks'
 import deepCopy from './deep-copy'
+import { RelinkSelector, RelinkSource, RelinkSourceKey } from './schema'
 import { isFunction } from './type-checker'
+import { unstable_batchedUpdates } from './unstable_batchedUpdates'
 
 function getCurrentValue<S, K>(
   source: RelinkSource<S>,
@@ -68,17 +69,19 @@ export function useRelinkValue<S, K>(
     // NOTE: Virtual batching is implemented at the hook level instead of the
     // source because it used to cause faulty `Source.set()` calls.
     let debounceRef: ReturnType<typeof setTimeout>
-    const triggerUpdateImmediately = (): void => {
-      setState(getCurrentValue(source, selector))
+    const triggerUpdateRightAway = (): void => {
+      unstable_batchedUpdates(() => {
+        setState(getCurrentValue(source, selector))
+      })
     }
     const triggerUpdateDebounced = (): void => {
       clearTimeout(debounceRef)
-      debounceRef = setTimeout(triggerUpdateImmediately)
+      debounceRef = setTimeout(triggerUpdateRightAway)
     }
     const unwatch = source.watch(
       IS_CLIENT_ENV && source[INTERNALS_SYMBOL].M$isVirtualBatchEnabled
         ? triggerUpdateDebounced
-        : triggerUpdateImmediately
+        : triggerUpdateRightAway
     )
     return (): void => {
       unwatch()

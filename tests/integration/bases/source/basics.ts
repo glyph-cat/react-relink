@@ -84,7 +84,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       Source.set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
       Source.set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
       jest.advanceTimersByTime(TIME_GAP(1))
-      await expect(Source.getAsync()).resolves.toStrictEqual({ a: 2, b: 2 })
+      expect(Source.get()).toStrictEqual({ a: 2, b: 2 })
       Source.UNSTABLE_cleanup()
     })
 

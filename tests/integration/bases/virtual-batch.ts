@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
-import { IntegrationTestProps } from '../../helpers'
+import { IntegrationTestProps, TIME_GAP } from '../../helpers'
 
 const cleanupRef = createCleanupRef()
 afterEach((): void => { cleanupRef.run() })
@@ -20,7 +20,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       actions: {
         step: ({ hookData }): void => {
           const [, setCounter] = hookData
-          setCounter((c) => c + 1)
+          setCounter(c => c + 1)
         },
       },
       values: {
@@ -36,7 +36,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
     // Update (Invoke 'step' multiple times in the same `act()` callback)
     hookInterface.actions('step', 'step', 'step', 'step')
-    jest.advanceTimersByTime(0)
+    jest.advanceTimersByTime(TIME_GAP(1))
     expect(hookInterface.get('value')).toBe(5)
 
     // Check for unnecessary renders

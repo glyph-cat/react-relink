@@ -12,7 +12,7 @@ const BUNDLED_BUILDS = [
   { tag: 'ES', src: require('../../dist/es/index.js') },
   // Will fail (unexpected token "import"):
   // { tag: 'ES (Minified)', src: require('../../dist/es/index.mjs') },
-  { tag: 'React Native', src: require('../../dist/native/index.js') },
+  // { tag: 'React Native', src: require('../../dist/native/index.js') },
   { tag: 'UMD', src: require('../../dist/umd/index.js') },
   { tag: 'UMD (Minified)', src: require('../../dist/umd/index.min.js') },
 ]
