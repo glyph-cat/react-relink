@@ -25,7 +25,7 @@ describe('Objects', (): void => {
     expect(areDifferent).toStrictEqual(true)
   })
 
-  test('Falsey values', (): void => {
+  test('Falsy values', (): void => {
     const a = { k1: undefined, k2: null, k3: NaN, k4: false }
     const b = deepCopy(a)
     const areDifferent = a !== b

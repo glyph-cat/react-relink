@@ -1,6 +1,7 @@
 import { INTERNALS_SYMBOL } from '../constants'
 import { devWarn } from '../dev'
 import { RelinkSource } from '../schema'
+import { isFunction } from '../type-checker'
 
 /**
  * @public
@@ -19,7 +20,7 @@ export function waitForAll(...args: any[]): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sources: Array<RelinkSource<any>> = args[0]
   const deprecatedCallback = args[1]
-  if (typeof deprecatedCallback === 'function') {
+  if (isFunction(deprecatedCallback)) {
     const depsKeyStack = []
     for (const source of sources) {
       depsKeyStack.push(`'${String(source[INTERNALS_SYMBOL].M$key)}'`)

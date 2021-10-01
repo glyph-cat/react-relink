@@ -2,7 +2,7 @@ import { IS_CLIENT_ENV, IS_DEBUG_ENV } from '../constants'
 import { RelinkSourceKey } from '../schema'
 import { warnDuplicateKey } from './warn-duplicate-key'
 
-const KEY_STORE: Record<RelinkSourceKey, true> = {}
+export const KEY_STORE: Record<RelinkSourceKey, true> = {}
 
 /**
  * Registers a key into the store. If key already existed, throws an error.
@@ -28,11 +28,6 @@ export function unregisterKey(key: RelinkSourceKey): void {
 }
 
 let counter = 1
-export function getAutomaticKey(): number {
-  let generatedKey: number
-  do {
-    // Avoid clash in case certain number-based keys already exist.
-    generatedKey = counter++
-  } while (KEY_STORE[generatedKey])
-  return generatedKey
+export function getAutomaticKey(): symbol {
+  return Symbol(`Autokey_${counter++}`)
 }

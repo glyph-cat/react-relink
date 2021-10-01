@@ -57,7 +57,7 @@ function getPlugins(config = {}) {
   // Convert plugins object to array
   const pluginStack = []
   for (const i in basePlugins) {
-    // Allows plugins to be excluded by replacing them with falsey values
+    // Allows plugins to be excluded by replacing them with falsy values
     if (basePlugins[i]) {
       pluginStack.push(basePlugins[i])
     }

@@ -3,8 +3,8 @@ import { INTERNALS_SYMBOL } from '../constants'
 import deepCopy from '../deep-copy'
 import { devError, devWarn } from '../dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../errors'
+import { flow } from '../flow-controller'
 import { createGatedQueue } from '../gated-queue'
-import { isFunction } from '../is-function'
 import {
   RelinkSource,
   RelinkSourceEntry,
@@ -13,6 +13,7 @@ import {
 } from '../schema'
 import { getAutomaticKey, registerKey, unregisterKey } from '../source-key'
 import { createSuspenseWaiter, SuspenseWaiter } from '../suspense-waiter'
+import { isFunction, isThenable } from '../type-checker'
 import { createWatcher } from '../watcher'
 
 // NOTE:
@@ -64,9 +65,9 @@ export function createSource<S>({
     normalizedKey = getAutomaticKey()
     if (!isSourceKeyAutogenWarningShown) {
       isSourceKeyAutogenWarningShown = true
-      devWarn('Starting from V1, every source must have a unique key. This is because it helps simplify Relink\'s codebase and makes debugging easier for you at the same time. To facilitate this change, keys will be automatically generated at runtime for sources that do not already have one. Eventually, you will need to manually add in the keys, they can be strings or numbers, as long as they make sense.')
+      devWarn('Starting from V1, every source must have a unique key. This is because it helps simplify Relink\'s codebase and makes debugging easier for you at the same time. To facilitate this change, keys will be automatically generated at runtime for sources that do not already have one. This is only a temporary measure. Eventually, you will need to manually add in the keys.')
     }
-    devWarn(`Automatically generated a source key: '${normalizedKey}'`)
+    devWarn(`Automatically generated a source key: '${String(normalizedKey)}'`)
   } else {
     throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
   }
@@ -104,8 +105,8 @@ export function createSource<S>({
     }
     return true
   }
-  // Gate open ≠ dependencies are ready, it simply means that the current source
-  // can finally hydrate itself.
+  // Gate open DOES NOT MEAN the source has been hydrated and is ready to use,
+  // it simply means that the source can finally hydrate itself.
   const hydrationGate = createGatedQueue(deps.length <= 0)
   // ^ Open the gate right away if there are no dependencies.
 
@@ -144,12 +145,10 @@ export function createSource<S>({
 
   // === Hydration ===
 
-  // Wrap in `String(...)`
-  // Wrap in `new String(...)`
-  // Use `.toString()`
-
-  const hydrate: RelinkSource<S>['hydrate'] = (callback): void => {
-    hydrationGate.M$exec((): void => {
+  const hydrate: RelinkSource<S>['hydrate'] = async (callback): Promise<void> => {
+    // TODO: Wrap in flow
+    // TODO: Find out flow or gate should be outside, and which one inside
+    await hydrationGate.M$exec((): void => {
       if (isHydrating) {
         devError(
           `Cannot hydrate '${String(normalizedKey)}' when it is already hydrating`
@@ -230,18 +229,36 @@ export function createSource<S>({
 
   const get = (): S => copyState(currentState) // (Expose)
 
+  const getAsync = async (): Promise<S> => {
+    return await flow(normalizedKey, (): S => {
+      return copyState(currentState) // (Expose)
+    })
+  }
+
   const set: RelinkSource<S>['set'] = async (partialState): Promise<void> => {
-    hydrationGate.M$exec((): void => {
-      performUpdate(PERF_UPDATE_TYPE.M$set, isFunction(partialState)
-        ? partialState(copyState(currentState)) // (Expose)
-        : partialState
-      )
+    await flow(normalizedKey, async (): Promise<void> => {
+      await hydrationGate.M$exec(async (): Promise<void> => {
+        let nextState: S
+        if (isFunction(partialState)) {
+          const executedPartialState = partialState(
+            copyState(currentState) // (Expose)
+          )
+          nextState = isThenable(executedPartialState)
+            ? await executedPartialState
+            : executedPartialState
+        } else {
+          nextState = partialState
+        }
+        performUpdate(PERF_UPDATE_TYPE.M$set, nextState)
+      })
     })
   }
 
   const reset = async (): Promise<void> => {
-    hydrationGate.M$exec((): void => {
-      performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
+    await flow(normalizedKey, async (): Promise<void> => {
+      await hydrationGate.M$exec((): void => {
+        performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
+      })
     })
   }
 
@@ -289,6 +306,7 @@ export function createSource<S>({
        */
       M$getIsReadyStatus: () => !isHydrating && allDepsAreReady(),
     },
+    getAsync,
     get,
     set,
     reset,
