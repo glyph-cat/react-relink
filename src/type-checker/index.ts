@@ -3,3 +3,9 @@
 export function isFunction(value: unknown): value is Function {
   return typeof value === 'function'
 }
+
+export function isThenable(value: unknown): value is Promise<unknown> {
+  // If `value` itself is falsy, it cannot possibly be a promise.
+  if (!value) { return false }
+  return isFunction(value['then'])
+}

@@ -1,7 +1,8 @@
 import { CallbackWithNoParamAndReturnsVoid } from '../helper-types'
+import { isThenable } from '../type-checker'
 
 export interface GatedQueue {
-  M$exec(callback: CallbackWithNoParamAndReturnsVoid): void
+  M$exec(callback: CallbackWithNoParamAndReturnsVoid): Promise<void>
   M$setStatus(newStatus: boolean): void
   M$getStatus(): boolean
 }
@@ -23,8 +24,17 @@ export function createGatedQueue(initialStatus = false): GatedQueue {
       }
     }
   }
-  const M$exec = (callback: CallbackWithNoParamAndReturnsVoid): void => {
-    isOpen ? callback() : queueStack.push(callback)
+  const M$exec = async (
+    callback: CallbackWithNoParamAndReturnsVoid
+  ): Promise<void> => {
+    if (isOpen) {
+      const executedCallback = callback()
+      if (isThenable(executedCallback)) {
+        await executedCallback
+      }
+    } else {
+      queueStack.push(callback)
+    }
   }
   return {
     M$exec,

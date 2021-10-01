@@ -1,4 +1,4 @@
-import { RelinkSourceKey } from '..'
+import { RelinkSourceKey } from '../schema'
 
 /**
  * Coordinates asynchronous functions so that they do not race against each
@@ -10,7 +10,7 @@ function createFlowController<T>() {
   const pendingMap: Map<RelinkSourceKey, Promise<T>> = new Map()
   function flow(
     flowKey: RelinkSourceKey,
-    asyncCallback: () => Promise<T>
+    asyncCallback: () => Promise<T> | T
   ): Promise<T> {
     const run = async (): Promise<T> => {
       if (pendingMap.has(flowKey)) {
@@ -28,7 +28,7 @@ function createFlowController<T>() {
 // dynamic type <T> can be shared. There should only be ONE flow controller.
 export const flow: <T>(
   flowKey: RelinkSourceKey,
-  asyncCallback: () => Promise<T>
+  asyncCallback: () => Promise<T> | T
 ) => Promise<T> = createFlowController()
 
 // (1)                       (2)

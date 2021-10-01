@@ -74,7 +74,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       Source.UNSTABLE_cleanup()
     })
 
-    test('States are carried forward in the batches', (): void => {
+    test('States are carried forward in the batches', async (): Promise<void> => {
       jest.useFakeTimers()
       const Source = createSource({
         key: 'test/batch-carry-forward',
@@ -84,8 +84,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       Source.set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
       Source.set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
       jest.advanceTimersByTime(TIME_GAP(1))
-      const state = Source.get()
-      expect(state).toStrictEqual({ a: 2, b: 2 })
+      await expect(Source.getAsync()).resolves.toStrictEqual({ a: 2, b: 2 })
       Source.UNSTABLE_cleanup()
     })
 

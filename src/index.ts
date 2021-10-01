@@ -3,12 +3,13 @@ import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
 import { RelinkSelector, RelinkSource, RelinkSourceKey } from './schema'
 import { useLayoutEffect, useState } from './custom-hooks'
 import deepCopy from './deep-copy'
+import { isFunction } from './type-checker'
 
 function getCurrentValue<S, K>(
   source: RelinkSource<S>,
   selector: RelinkSelector<S, K>
 ) {
-  const currentValue = typeof selector === 'function'
+  const currentValue = isFunction(selector)
     ? selector(source[INTERNALS_SYMBOL].M$directGet())
     : source[INTERNALS_SYMBOL].M$directGet()
   return source[INTERNALS_SYMBOL].M$isMutable

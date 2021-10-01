@@ -1,5 +1,4 @@
-import { IntegrationTestProps } from '../../../helpers'
-import { MOCK_SERVER_RESPONSE_TIME, PADDING_TIME } from './constants'
+import { delay, IntegrationTestProps, TIME_GAP } from '../../../helpers'
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource } = Relink
@@ -42,17 +41,15 @@ export default function ({ Relink }: IntegrationTestProps): void {
       Source.UNSTABLE_cleanup()
     })
 
-    test('Promise.then', (): Promise<void> => {
+    test('Synchronous (with Promise.then)', async (): Promise<void> => {
       jest.useRealTimers()
       let mockStorage = null
       const hydrationValue = 2
 
-      const getValueFromMockServer = (): Promise<number> =>
-        new Promise((resolve): void => {
-          setTimeout((): void => {
-            resolve(hydrationValue)
-          }, MOCK_SERVER_RESPONSE_TIME)
-        })
+      const getValueFromMockServer = async (): Promise<number> => {
+        await delay(TIME_GAP(1))
+        return hydrationValue
+      }
 
       const Source = createSource({
         key: 'test/hydration/promise.then',
@@ -75,27 +72,20 @@ export default function ({ Relink }: IntegrationTestProps): void {
         },
       })
 
-      return new Promise((resolve): void => {
-        setTimeout((): void => {
-          // Hydration - Wait for "server" to return value
-          const hydratedValue = Source.get()
-          expect(hydratedValue).toBe(hydrationValue)
-          // Persistence
-          const newPersistedValue = 3
-          Source.set(newPersistedValue)
-          setTimeout((): void => {
-            expect(mockStorage).toBe(newPersistedValue)
-            // Reset
-            setTimeout((): void => {
-              Source.reset()
-              expect(mockStorage).toBe(null)
-              resolve()
-              // Cleanup
-              Source.UNSTABLE_cleanup()
-            }, PADDING_TIME)
-          }, PADDING_TIME)
-        }, MOCK_SERVER_RESPONSE_TIME + PADDING_TIME)
-      })
+      // Hydration - Wait for "server" to return value
+      await delay(TIME_GAP(1))
+      const hydratedValue = Source.get()
+      expect(hydratedValue).toBe(hydrationValue)
+
+      // Persistence
+      const newPersistedValue = 3
+      Source.set(newPersistedValue)
+      expect(mockStorage).toBe(newPersistedValue)
+
+      // Reset
+      Source.reset()
+      expect(mockStorage).toBe(null)
+
     })
 
     test('Asynchronous', async (): Promise<void> => {
@@ -103,12 +93,9 @@ export default function ({ Relink }: IntegrationTestProps): void {
       let mockStorage = null
       const hydrationValue = 2
 
-      const getValueFromMockServer = (): Promise<number> => {
-        return new Promise((resolve): void => {
-          setTimeout((): void => {
-            resolve(hydrationValue)
-          }, MOCK_SERVER_RESPONSE_TIME)
-        })
+      const getValueFromMockServer = async (): Promise<number> => {
+        await delay(TIME_GAP(1))
+        return hydrationValue
       }
 
       const Source = createSource({
@@ -131,24 +118,20 @@ export default function ({ Relink }: IntegrationTestProps): void {
         },
       })
 
-      return new Promise((resolve): void => {
-        setTimeout((): void => {
-          // Hydration - Wait for "server" to return value
-          const hydratedValue = Source.get()
-          expect(hydratedValue).toBe(hydrationValue)
-          // Persistence
-          const newPersistedValue = 3
-          Source.set(newPersistedValue)
-          setTimeout((): void => {
-            expect(mockStorage).toBe(newPersistedValue)
-            setTimeout((): void => {
-              Source.reset()
-              expect(mockStorage).toBe(null)
-              resolve()
-            }, PADDING_TIME)
-          }, PADDING_TIME)
-        }, MOCK_SERVER_RESPONSE_TIME + PADDING_TIME)
-      })
+      // Hydration - Wait for "server" to return value
+      await delay(TIME_GAP(1))
+      const hydratedValue = Source.get()
+      expect(hydratedValue).toBe(hydrationValue)
+
+      // Persistence
+      const newPersistedValue = 3
+      Source.set(newPersistedValue)
+      expect(mockStorage).toBe(newPersistedValue)
+
+      // Reset
+      Source.reset()
+      expect(mockStorage).toBe(null)
+
     })
 
   })

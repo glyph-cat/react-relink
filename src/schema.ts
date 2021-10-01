@@ -89,9 +89,10 @@ export interface RelinkSourceEntry<S> {
  */
 export interface RelinkSource<S> {
   get(): S
-  set(partialState: S | ((currentState: S) => S)): Promise<void>
+  getAsync(): Promise<S>
+  set(partialState: S | ((currentState: S) => S | Promise<S>)): Promise<void>
   reset(): Promise<void>
-  hydrate(callback: RelinkHydrateCallback<S>): void
+  hydrate(callback: RelinkHydrateCallback<S>): Promise<void>
   /**
    * @example
    * const unwatchSource = Source.watch(selfDefinedCallback) // Start watching
