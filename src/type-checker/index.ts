@@ -4,6 +4,11 @@ export function isFunction(value: unknown): value is Function {
   return typeof value === 'function'
 }
 
+/**
+ * Helps prevent using await on normal functions. Although there's normally no
+ * harm to use await on normal functions, it creates a slight delay that is not
+ * tolerable for our use case here.
+ */
 export function isThenable(value: unknown): value is Promise<unknown> {
   // If `value` itself is falsy, it cannot possibly be a promise.
   if (!value) { return false }

@@ -7,7 +7,7 @@ export interface IntegrationTestProps {
 /**
  * The minimal time delay unit used in tests.
  */
-export const TIME_GAP = (unit: number): number => 50 * unit // ms
+export const TIME_GAP = (unit: number): number => 25 * unit // ms
 
 export function delay(timeout: number): Promise<void> {
   return new Promise((resolve): void => {

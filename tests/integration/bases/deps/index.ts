@@ -13,7 +13,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkValue } = Relink
 
   test('Deps', (): void => {
-    jest.useFakeTimers()
 
     const SourceA = createSource({
       key: 'test/deps/SourceA',

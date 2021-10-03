@@ -1,8 +1,8 @@
-import { IS_CLIENT_ENV, IS_DEBUG_ENV } from '../constants'
-import { RelinkSourceKey } from '../schema'
+import { IS_CLIENT_ENV, IS_DEBUG_ENV } from '../../constants'
+import { RelinkSourceKey } from '../../schema'
 import { warnDuplicateKey } from './warn-duplicate-key'
 
-export const KEY_STORE: Record<RelinkSourceKey, true> = {}
+export const KEY_REGISTRY: Record<RelinkSourceKey, true> = {}
 
 /**
  * Registers a key into the store. If key already existed, throws an error.
@@ -12,8 +12,8 @@ export function registerKey(key: RelinkSourceKey): void {
   // be used to serve to multiple clients. By checking with `IS_CLIENT_ENV`,
   // duplicate keys are only checked when code is run in the client.
   if (IS_CLIENT_ENV) {
-    if (!KEY_STORE[key]) {
-      KEY_STORE[key] = true
+    if (!KEY_REGISTRY[key]) {
+      KEY_REGISTRY[key] = true
     } else if (IS_DEBUG_ENV) {
       warnDuplicateKey(key)
     }
@@ -24,7 +24,7 @@ export function registerKey(key: RelinkSourceKey): void {
  * Removes a key from the store. If key is already removed, it does nothing.
  */
 export function unregisterKey(key: RelinkSourceKey): void {
-  delete KEY_STORE[key]
+  delete KEY_REGISTRY[key]
 }
 
 let counter = 1

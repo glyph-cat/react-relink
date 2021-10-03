@@ -155,3 +155,7 @@ export * from './wait-for'
 // [A] Special case: If unknown is used, there would be errors everywhere else
 //     because all sources have some sort of type that just doesn't overlap
 //     with unknown.
+// [B] It seems that in the same `describe` block, if `jest.useRealTimers()` is
+//     called, then the remaining test that uses fake timers also need
+//     `jest.useFakeTimers()` to be called explicitly.
+// [C] Not sure why fake timers don't work here...

@@ -2,19 +2,19 @@ import { INTERNALS_SYMBOL } from '../constants'
 import deepCopy from '../deep-copy'
 import { devError, devWarn } from '../dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../errors'
-import { createGatedQueue } from '../gated-queue'
 import {
   RelinkSource,
   RelinkSourceEntry,
   RelinkSourceKey,
   RelinkSourceOptions,
 } from '../schema'
-import { getAutomaticKey, registerKey, unregisterKey } from '../source-key'
 import { createSuspenseWaiter, SuspenseWaiter } from '../suspense-waiter'
-import { isFunction } from '../type-checker'
+import { isFunction, isThenable } from '../type-checker'
 import { createWatcher } from '../watcher'
 import { allDepsAreReady } from './all-deps-are-ready'
 import { checkForCircularDeps } from './circular-deps'
+import { createGatedFlow } from './gated-flow'
+import { getAutomaticKey, registerKey, unregisterKey } from './key-registry'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
@@ -83,11 +83,28 @@ export function createSource<S>({
 
 
   // === Dependency Handling ===
+
   checkForCircularDeps(deps, [normalizedKey])
   // Gate open DOES NOT MEAN the source has been hydrated and is ready to use,
   // it simply means that the source can finally hydrate itself.
-  const hydrationGate = createGatedQueue(deps.length <= 0)
+  const hydrationGate = createGatedFlow(deps.length <= 0)
   // ^ Open the gate right away if there are no dependencies.
+
+  let suspenseWaiter: SuspenseWaiter
+  let isHydrating = false
+  const M$hydrationWatcher = createWatcher<[boolean]>() // true = is hydrating
+  const M$suspenseOnHydration = (): void => {
+    if (suspenseWaiter) {
+      suspenseWaiter()
+    }
+  }
+
+  /**
+   * Self is not hydrating && deps are not hydrating.
+   */
+  const M$getIsReadyStatus = (): boolean => {
+    return !isHydrating && allDepsAreReady(deps)
+  }
 
 
   // === Local Variables & Methods ===
@@ -129,27 +146,20 @@ export function createSource<S>({
     stateWatcher.M$refresh()
   }
 
-  let suspenseWaiter: SuspenseWaiter
-  let isHydrating = false
-  const M$hydrationWatcher = createWatcher<[boolean]>() // true = is hydrating
-  const M$suspenseOnHydration = (): void => {
-    if (suspenseWaiter) {
-      suspenseWaiter()
-    }
-  }
-
 
   // === Hydration ===
 
   const hydrate: RelinkSource<S>['hydrate'] = async (callback): Promise<void> => {
+    // - Ignore request to hydrate if already hydrating.
+    // - Must be checked outside of `.M$exec` so that it doesn't get queued.
+    if (isHydrating) {
+      devError(
+        `Cannot hydrate '${String(normalizedKey)}' when it is already hydrating`
+      )
+      return // Early exit
+    }
+    isHydrating = true
     hydrationGate.M$exec((): void => {
-      if (isHydrating) {
-        devError(
-          `Cannot hydrate '${String(normalizedKey)}' when it is already hydrating`
-        )
-        return // Early exit
-      }
-      isHydrating = true
       if (isSuspenseEnabled) {
         suspenseWaiter = createSuspenseWaiter(
           new Promise((resolve): void => {
@@ -192,12 +202,13 @@ export function createSource<S>({
   // Watchers are used to make this possible
   const depWatchers: Array<() => void> = []
   for (const dep of deps) {
+    // Register child depenency to this source
     dep[INTERNALS_SYMBOL].M$childDeps[normalizedKey] = true
     const unwatchDepHydration = dep[INTERNALS_SYMBOL]
       .M$hydrationWatcher.M$watch((isDepHydrating): void => {
         if (isDepHydrating === true) {
           // Dependency is entering init status
-          hydrationGate.M$setStatus(false)
+          hydrationGate.M$lock()
           // Subsequent hydrations are queued here. Every time dependency
           // enters init status, it should be init-ed again after that/
           // Hence, `lifecycle.init` is added to the queue immediately ——
@@ -207,7 +218,7 @@ export function createSource<S>({
           // is queued deferred until deps have finished hydrating.
         } else {
           if (allDepsAreReady(deps)) {
-            hydrationGate.M$setStatus(true)
+            hydrationGate.M$open()
           }
         }
       })
@@ -221,14 +232,24 @@ export function createSource<S>({
 
   const get = (): S => copyState(currentState) // (Expose)
 
+  const getAsync = (): Promise<S> => {
+    return new Promise((resolve): void => {
+      hydrationGate.M$exec((): void => {
+        resolve(copyState(currentState)) // (Expose)
+      })
+    })
+  }
+
   const set: RelinkSource<S>['set'] = async (partialState): Promise<void> => {
-    hydrationGate.M$exec((): void => {
+    await hydrationGate.M$exec(async (): Promise<void> => {
       let nextState: S
       if (isFunction(partialState)) {
         const executedPartialState = partialState(
           copyState(currentState) // (Expose)
         )
-        nextState = executedPartialState
+        nextState = isThenable(executedPartialState)
+          ? await executedPartialState
+          : executedPartialState
       } else {
         nextState = partialState
       }
@@ -237,7 +258,7 @@ export function createSource<S>({
   }
 
   const reset = async (): Promise<void> => {
-    hydrationGate.M$exec((): void => {
+    await hydrationGate.M$exec((): void => {
       performUpdate(PERF_UPDATE_TYPE.M$reset, initialState)
     })
   }
@@ -260,6 +281,7 @@ export function createSource<S>({
       )
     }
     for (const dep of deps) {
+      // Unregister child depenency from this source
       delete dep[INTERNALS_SYMBOL].M$childDeps[normalizedKey]
     }
     stateWatcher.M$unwatchAll()
@@ -281,12 +303,10 @@ export function createSource<S>({
       M$directGet,
       M$suspenseOnHydration,
       M$hydrationWatcher,
-      /**
-       * Self is not hydrating && Deps are not hydrating
-       */
-      M$getIsReadyStatus: () => !isHydrating && allDepsAreReady(deps),
+      M$getIsReadyStatus,
     },
     get,
+    getAsync,
     set,
     reset,
     hydrate,

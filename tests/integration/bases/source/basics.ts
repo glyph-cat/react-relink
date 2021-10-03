@@ -1,4 +1,4 @@
-import { IntegrationTestProps, TIME_GAP } from '../../../helpers'
+import { delay, IntegrationTestProps, TIME_GAP } from '../../../helpers'
 
 export default function ({ Relink }: IntegrationTestProps): void {
 
@@ -75,15 +75,23 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
 
     test('States are carried forward in the batches', async (): Promise<void> => {
-      jest.useFakeTimers()
+      // See Special Note [C] in 'src/index.ts'
+      jest.useRealTimers()
       const Source = createSource({
         key: 'test/batch-carry-forward',
         default: { a: 1, b: 1 },
-        options: { virtualBatch: true },
       })
-      Source.set((oldState) => ({ ...oldState, a: oldState.a + 1 }))
-      Source.set((oldState) => ({ ...oldState, b: oldState.b + 1 }))
-      jest.advanceTimersByTime(TIME_GAP(1))
+      Source.set((oldState) => {
+        const nextState = { ...oldState, a: oldState.a + 1 }
+        expect(nextState).toStrictEqual({ a: 2, b: 1 })
+        return nextState
+      })
+      Source.set((oldState) => {
+        const nextState = { ...oldState, b: oldState.b + 1 }
+        expect(nextState).toStrictEqual({ a: 2, b: 2 })
+        return nextState
+      })
+      await delay(TIME_GAP(1))
       expect(Source.get()).toStrictEqual({ a: 2, b: 2 })
       Source.UNSTABLE_cleanup()
     })

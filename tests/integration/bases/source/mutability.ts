@@ -42,7 +42,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     describe('Set', (): void => {
 
       test('Mutable', (): void => {
-        jest.useFakeTimers()
+
         const Source = createSource({
           key: 'test/mutability/set/mutable:true',
           default: { value: 1 },
@@ -74,7 +74,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
       })
 
       test('Immutable', (): void => {
-        jest.useFakeTimers()
+
         const Source = createSource({
           key: 'test/mutability/set/mutable:false',
           default: { value: 1 },
