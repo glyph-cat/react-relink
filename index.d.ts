@@ -96,7 +96,14 @@ export function useResetRelinkState<T>(
   source: RelinkSource<T>,
 ): () => void
 
+/**
+ * @deprecated Use `useHydrateRelinkSource` instead.
+ */
 export function useRehydrateRelinkSource<T>(
+  source: RelinkSource<T>,
+): RelinkHydrator<T>
+
+export function useHydrateRelinkSource<T>(
   source: RelinkSource<T>,
 ): RelinkHydrator<T>
 

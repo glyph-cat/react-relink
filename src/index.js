@@ -69,9 +69,13 @@ export function useResetRelinkState(source) {
   return source.reset
 }
 
-export function useRehydrateRelinkSource(source) {
+export function useHydrateRelinkSource(source) {
   source.M$suspenseOnHydration()
   return source.hydrate
+}
+
+export function useRehydrateRelinkSource(source) {
+  return useHydrateRelinkSource(source)
 }
 
 export function dangerouslyGetRelinkValue(source) {
