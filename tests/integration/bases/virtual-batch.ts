@@ -2,18 +2,23 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
-import { IntegrationTestProps, TIME_GAP } from '../../helpers'
+import { delay, IntegrationTestProps, TIME_GAP } from '../../helpers'
 
 const cleanupRef = createCleanupRef()
 afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
-  test('With Virtual Batch', (): void => {
-    jest.useFakeTimers()
+  test('With Virtual Batch', async (): Promise<void> => {
+
+    // See Special Note [C] in 'src/index.ts'
+    jest.useRealTimers()
     const Source = createSource({
       key: 'test/virtual-batch',
       default: 1,
+      options: {
+        virtualBatch: true,
+      },
     })
     const hookInterface = createHookInterface({
       useHook: () => useRelinkState(Source),
@@ -36,7 +41,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
     // Update (Invoke 'step' multiple times in the same `act()` callback)
     hookInterface.actions('step', 'step', 'step', 'step')
-    jest.advanceTimersByTime(TIME_GAP(1))
+    await delay(TIME_GAP(1))
     expect(hookInterface.get('value')).toBe(5)
 
     // Check for unnecessary renders

@@ -67,6 +67,7 @@ function getPlugins(config = {}) {
   // Replace values
   const replaceValues = {
     'process.env.BUILD_ENV': JSON.stringify(buildEnv),
+    'process.env.IS_DIST_ENV': JSON.stringify('true'),
     'process.env.NPM_PACKAGE_VERSION': JSON.stringify(version),
   }
   if (mode) {
@@ -158,7 +159,6 @@ const config = [
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
-      buildEnv: 'umd',
       mode: 'development',
     }),
   },
@@ -174,7 +174,6 @@ const config = [
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
-      buildEnv: 'umd',
       mode: 'production',
     }),
   },

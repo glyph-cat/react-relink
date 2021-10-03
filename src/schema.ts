@@ -77,7 +77,7 @@ export interface RelinkSourceEntry<S> {
   /**
    * Wait for other sources to be hydrated before this one does.
    */
-  // Refer to Special Notes [A] in 'src/index.ts'
+  // See Special Note [A] in 'src/index.ts'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deps?: Array<RelinkSource<any>>
   lifecycle?: RelinkLifecycleConfig<S>
@@ -89,8 +89,9 @@ export interface RelinkSourceEntry<S> {
  */
 export interface RelinkSource<S> {
   get(): S
-  set(partialState: S | ((currentState: S) => S)): void
-  reset(): void
+  getAsync(): Promise<S>
+  set(partialState: S | ((currentState: S) => S | Promise<S>)): Promise<void>
+  reset(): Promise<void>
   hydrate(callback: RelinkHydrateCallback<S>): void
   /**
    * @example

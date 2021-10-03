@@ -4,7 +4,8 @@ export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource } = Relink
   describe('Hydration & Persistence', (): void => {
 
-    test('Synchronous', (): void => {
+    test('Synchronous', async (): Promise<void> => {
+      jest.useRealTimers()
       let mockStorage = null
       const hydrationValue = 2
 
@@ -35,6 +36,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
       // Reset
       Source.reset()
+      await delay(TIME_GAP(1)) // See Local Note [A]
       expect(mockStorage).toBe(null)
 
       // Cleanup
@@ -84,6 +86,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
       // Reset
       Source.reset()
+      await delay(TIME_GAP(1)) // See Local Note [A]
       expect(mockStorage).toBe(null)
 
     })
@@ -130,9 +133,13 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
       // Reset
       Source.reset()
+      await delay(TIME_GAP(1)) // See Local Note [A]
       expect(mockStorage).toBe(null)
 
     })
 
   })
 }
+
+// === Local Notes ===
+// [A] Not sure why a delay is needed to see the reset take effect.

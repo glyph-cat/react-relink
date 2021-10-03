@@ -7,7 +7,7 @@ import { isFunction } from '../type-checker'
  * @public
  */
 export function waitForAll(
-  // Refer to Special Notes [A] in 'src/index.ts'
+  // See Special Note [A] in 'src/index.ts'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sources: Array<RelinkSource<any>>
 ): Promise<void>
@@ -16,7 +16,7 @@ export function waitForAll(
  * @public
  */
 export function waitForAll(...args: any[]): Promise<void> {
-  // Refer to Special Notes [A] in 'src/index.ts'
+  // See Special Note [A] in 'src/index.ts'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const deps: Array<RelinkSource<any>> = args[0] // Deps are aources
   const deprecatedCallback = args[1]

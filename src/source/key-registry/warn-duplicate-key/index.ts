@@ -1,5 +1,5 @@
-import { devWarn } from '../../dev'
-import { RelinkSourceKey } from '../../schema'
+import { devWarn } from '../../../dev'
+import { RelinkSourceKey } from '../../../schema'
 
 let tempKeyStack: Array<RelinkSourceKey> = []
 let debouncedWarningRef: ReturnType<typeof setTimeout>
