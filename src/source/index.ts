@@ -240,24 +240,48 @@ export function createSource<S>({
 
   const get = (): S => copyState(currentState) // (Expose)
 
-  const getAsync = (): Promise<S> => {
-    return new Promise((resolve): void => {
-      hydrationGate.M$exec((): void => {
-        resolve(copyState(currentState)) // (Expose)
-      })
+  const getAsync = async (): Promise<S> => {
+    return await hydrationGate.M$exec((): S => {
+      return copyState(currentState) // (Expose)
     })
   }
 
-  const set: RelinkSource<S>['set'] = async (partialState): Promise<void> => {
-    await hydrationGate.M$exec(async (): Promise<void> => {
+  const set: RelinkSource<S>['set'] = (
+    partialState: S | ((currentState: S) => S | Promise<S>)
+  ): Promise<void> => {
+    return hydrationGate.M$exec((): void | Promise<void> => {
       let nextState: S
       if (isFunction(partialState)) {
         const executedPartialState = partialState(
           copyState(currentState) // (Expose)
         )
-        nextState = isThenable(executedPartialState)
-          ? await executedPartialState
-          : executedPartialState
+        /**
+         * This allows the execution to be synchronous if the reducer is also
+         * synchronous. Consider the code below:
+         * ```js
+         * nextState = isThenable(executedPartialState)
+         *   ? await executedPartialState
+         *   : executedPartialState
+         * ```
+         * This would make the execution asynchronous regardless of whether or
+         * not reducer is asynchronous.
+         * `.M$exec(async (): Promise<void> => { ...`
+         * And for unclear reasons, this creates a delay in integration tests
+         * that would result in inaccurate assertions.
+         * At the same time, if, by conditionally making the execution
+         * asynchronous eliminates unnecessary delay, this also means we get a
+         * little bit of performance gain.
+         */
+        if (isThenable(executedPartialState)) {
+          return new Promise((resolve) => {
+            executedPartialState.then((fulfilledPartialState) => {
+              nextState = fulfilledPartialState
+              resolve()
+            })
+          })
+        } else {
+          nextState = executedPartialState
+        }
       } else {
         nextState = partialState
       }

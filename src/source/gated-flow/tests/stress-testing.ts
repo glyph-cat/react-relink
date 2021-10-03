@@ -90,11 +90,7 @@ describe(createGatedFlow.name, (): void => {
     expect(array).toStrictEqual([1, 2])
 
     // Stage 10
-    gateKeeper.M$open()
-    expect(array).toStrictEqual([1, 2])
-    // The previous stages take up 10 time gaps in total, 1 more is given as
-    // extra padding.
-    await delay(TIME_GAP(11))
+    await gateKeeper.M$open()
     expect(array).toStrictEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
   })
