@@ -2,18 +2,18 @@ import { IS_DEBUG_ENV } from '../constants'
 
 function devPrint(
   type: 'log' | 'info' | 'warn' | 'error',
-  ...args: unknown[]
+  message: string
 ): void {
   if (IS_DEBUG_ENV) {
     // eslint-disable-next-line no-console
-    console[type]('[Development]', ...args)
+    console[type](`[Development] ${message}`)
   }
 }
 
-export function devError(...args: unknown[]): void {
-  devPrint('error', ...args)
+export function devError(message: string): void {
+  devPrint('error', message)
 }
 
-export function devWarn(...args: unknown[]): void {
-  devPrint('warn', ...args)
+export function devWarn(message: string): void {
+  devPrint('warn', message)
 }
