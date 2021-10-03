@@ -9,9 +9,9 @@ afterEach((): void => { cleanupRef.run() })
 
 export default function ({ Relink }: IntegrationTestProps): void {
 
-  const { createSource, useRehydrateRelinkSource, useRelinkValue } = Relink
+  const { createSource, useHydrateRelinkSource, useRelinkValue } = Relink
 
-  const TEST_METHOD_NAME = 'useRehydrateRelinkSource'
+  const TEST_METHOD_NAME = 'useHydrateRelinkSource'
   test(TEST_METHOD_NAME, (): void => {
     let didSetCalled = false
 
@@ -26,7 +26,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
 
     const hookInterfaceA = createHookInterface({
-      useHook: () => useRehydrateRelinkSource(Source),
+      useHook: () => useHydrateRelinkSource(Source),
       actions: {
         rehydrate: ({ hookData: rehydrateSource }): void => {
           rehydrateSource(({ commit }): void => {

@@ -95,7 +95,7 @@ To consume a source, pass it as a parameter into any of the following Relink hoo
 * `useSetRelinkState` - returns just the setter function of the state
 * `useRelinkValue` - returns just the value of the state
 * `useResetRelinkState` - returns a function that sets the state to its default value
-* `useRehydrateRelinkSource` - returns a function that sets the state without invoking the `didSet` lifecycle method
+* `useHydrateRelinkSource` - returns a function that sets the state without invoking the `didSet` lifecycle method
 
 An example with the `useRelinkState` hook:
 
@@ -134,7 +134,7 @@ resetCounter()
 ```
 
 ```js
-const rehydrateCounter = useRehydrateRelinkSource(CounterSource)
+const rehydrateCounter = useHydrateRelinkSource(CounterSource)
 rehydrateCounter(({ commit }) => {
   commit(/* new value */)
 })

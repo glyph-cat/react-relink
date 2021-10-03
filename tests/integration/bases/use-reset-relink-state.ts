@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
-import { IntegrationTestProps } from '../../helpers'
+import { delay, IntegrationTestProps, TIME_GAP } from '../../helpers'
 
 const cleanupRef = createCleanupRef()
 afterEach((): void => { cleanupRef.run() })
@@ -19,7 +19,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
   const TEST_METHOD_NAME = 'useResetRelinkState'
   describe(TEST_METHOD_NAME, (): void => {
 
-    test('Normal + No unnecessary re-rendering', (): void => {
+    test('Normal + No unnecessary re-rendering', async (): Promise<void> => {
 
       const Source = createSource({
         key: `test/${TEST_METHOD_NAME}`,
@@ -60,6 +60,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
       // Reset phase
       hookInterfaceA2.actions('reset')
+      await delay(TIME_GAP(1)) // KIV: Not sure why this needs await
       expect(hookInterfaceB.get('value')).toBe(1)
 
       // Check if A & B, which only uses the setter & resetter, performs any

@@ -3,6 +3,7 @@ import deepCopy from '../deep-copy'
 import { devError, devWarn } from '../dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../errors'
 import {
+  RelinkStateChangeDetails,
   RelinkSource,
   RelinkSourceEntry,
   RelinkSourceKey,
@@ -19,15 +20,7 @@ import { getAutomaticKey, registerKey, unregisterKey } from './key-registry'
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
 // are not mangled by Terser, this causes problems in production build where
-// variable name mangling takes place
-
-// The four horsemen of `flow(...)`:
-// * .getAsync()
-// * .set()
-// * .reset()
-// * .hydrate()
-// DO NOT wrap these functions inside another flow callback, otherwise it will
-// result in a deadlock.
+// variable name mangling takes place.
 
 enum PERF_UPDATE_TYPE {
   M$set = undefined,
@@ -126,7 +119,7 @@ export function createSource<S>({
   const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
   const initialState: S = copyState(defaultState) // (Receive)
   let currentState: S = copyState(defaultState) // (Receive)
-  const stateWatcher = createWatcher<never>()
+  const stateWatcher = createWatcher<[RelinkStateChangeDetails<S>]>()
 
   const isDidResetProvided = isFunction(lifecycle.didReset)
   const isDidSetProvided = isFunction(lifecycle.didSet)
@@ -143,7 +136,9 @@ export function createSource<S>({
         })
       }
     }
-    stateWatcher.M$refresh()
+    stateWatcher.M$refresh({
+      state: copyState(currentState), // (Expose)
+    })
   }
 
 
@@ -159,29 +154,42 @@ export function createSource<S>({
       return // Early exit
     }
     isHydrating = true
+    // TODO: Handle situation when multiple `commit` or `skip` are called
     hydrationGate.M$exec((): void => {
       if (isSuspenseEnabled) {
         suspenseWaiter = createSuspenseWaiter(
           new Promise((resolve): void => {
-            const commit = (hydratedState: S): void => {
-              performUpdate(PERF_UPDATE_TYPE.M$hydrate, hydratedState)
+            const completeHydration = (): void => {
               resolve()
               suspenseWaiter = undefined
               isHydrating = false
               M$hydrationWatcher.M$refresh(false)
             }
+            const commit = (hydratedState: S): void => {
+              performUpdate(PERF_UPDATE_TYPE.M$hydrate, hydratedState)
+              completeHydration()
+            }
             M$hydrationWatcher.M$refresh(true)
-            callback({ commit })
+            callback({
+              commit,
+              skip: completeHydration,
+            })
           })
         )
       } else {
-        const commit = (hydratedState: S): void => {
-          performUpdate(PERF_UPDATE_TYPE.M$hydrate, hydratedState)
+        const completeHydration = (): void => {
           isHydrating = false
           M$hydrationWatcher.M$refresh(false)
         }
+        const commit = (hydratedState: S): void => {
+          performUpdate(PERF_UPDATE_TYPE.M$hydrate, hydratedState)
+          completeHydration()
+        }
         M$hydrationWatcher.M$refresh(true)
-        callback({ commit })
+        callback({
+          commit,
+          skip: completeHydration,
+        })
       }
     })
     // await flow(normalizedKey, (): void => { })

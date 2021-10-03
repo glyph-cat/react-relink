@@ -2,11 +2,16 @@ import { useDebugValue } from 'react'
 import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
 import { useLayoutEffect, useState } from './custom-hooks'
 import deepCopy from './deep-copy'
-import { RelinkSelector, RelinkSource, RelinkSourceKey } from './schema'
+import {
+  RelinkSelector,
+  RelinkSource,
+  RelinkSourceKey,
+  RelinkStateChangeDetails,
+} from './schema'
 import { isFunction } from './type-checker'
 import { unstable_batchedUpdates } from './unstable_batchedUpdates'
 
-function getCurrentValue<S, K>(
+function getInitialState<S, K>(
   source: RelinkSource<S>,
   selector: RelinkSelector<S, K>
 ) {
@@ -16,6 +21,15 @@ function getCurrentValue<S, K>(
   return source[INTERNALS_SYMBOL].M$isMutable
     ? currentValue
     : deepCopy(currentValue)
+}
+
+function getSubsequentState<S, K>(
+  state: S,
+  selector: RelinkSelector<S, K>,
+  isMutable: boolean
+) {
+  const currentValue = isFunction(selector) ? selector(state) : state
+  return isMutable ? currentValue : deepCopy(currentValue)
 }
 
 /**
@@ -42,7 +56,7 @@ export function useRelinkValue<S, K>(
 
   // Use custom state hook
   const [state, setState] = useState(
-    () => getCurrentValue(source, selector),
+    () => getInitialState(source, selector),
     source[INTERNALS_SYMBOL].M$isMutable
   )
 
@@ -69,14 +83,22 @@ export function useRelinkValue<S, K>(
     // NOTE: Virtual batching is implemented at the hook level instead of the
     // source because it used to cause faulty `Source.set()` calls.
     let debounceRef: ReturnType<typeof setTimeout>
-    const triggerUpdateRightAway = (): void => {
+    const triggerUpdateRightAway = (
+      details: RelinkStateChangeDetails<S>
+    ): void => {
       unstable_batchedUpdates(() => {
-        setState(getCurrentValue(source, selector))
+        setState(getSubsequentState(
+          details.state,
+          selector,
+          source[INTERNALS_SYMBOL].M$isMutable)
+        )
       })
     }
-    const triggerUpdateDebounced = (): void => {
+    const triggerUpdateDebounced = (
+      details: RelinkStateChangeDetails<S>
+    ): void => {
       clearTimeout(debounceRef)
-      debounceRef = setTimeout(triggerUpdateRightAway)
+      debounceRef = setTimeout(() => { triggerUpdateRightAway(details) })
     }
     const unwatch = source.watch(
       IS_CLIENT_ENV && source[INTERNALS_SYMBOL].M$isVirtualBatchEnabled
@@ -139,7 +161,7 @@ export function useResetRelinkState<S>(
 /**
  * @public
  */
-export function useRehydrateRelinkSource<S>(
+export function useHydrateRelinkSource<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['hydrate'] {
   source[INTERNALS_SYMBOL].M$suspenseOnHydration()

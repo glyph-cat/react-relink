@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
-import { IntegrationTestProps } from '../../../helpers'
+import { delay, IntegrationTestProps, TIME_GAP } from '../../../helpers'
 
 const cleanupRef = createCleanupRef()
 afterEach((): void => { cleanupRef.run() })
@@ -10,7 +10,7 @@ afterEach((): void => { cleanupRef.run() })
 export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
   const TEST_METHOD_NAME = 'useRelinkState'
-  test('Normal', (): void => {
+  test('Normal', async (): Promise<void> => {
 
     const Source = createSource({
       key: `test/${TEST_METHOD_NAME}`,
@@ -46,6 +46,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
     // Update phase - replace value
     hookInterface.actions('replace')
+    await delay(TIME_GAP(1)) // KIV: Not sure why this needs await
     expect(hookInterface.get('counter')).toBe(5)
 
     // Cleanup
