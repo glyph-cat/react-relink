@@ -6,6 +6,7 @@ import { Watcher } from './watcher'
  */
 export interface RelinkHydrateArgs<S> {
   commit(hydratedState: S): void
+  skip(): void
 }
 
 /**
@@ -23,9 +24,16 @@ export interface RelinkSelector<S, K> {
 /**
  * @public
  */
+export interface RelinkStateChangeDetails<S> {
+  state: S
+}
+
+/**
+ * @public
+ */
 export interface RelinkLifecycleConfig<S> {
   init?: RelinkHydrateCallback<S>
-  didSet?(details: { state: S }): void
+  didSet?(details: RelinkStateChangeDetails<S>): void
   didReset?(): void
 }
 
@@ -34,23 +42,24 @@ export interface RelinkLifecycleConfig<S> {
  */
 export interface RelinkSourceOptions {
   /**
-   * [EXPERIMENTAL] Suspense while hydrating.
-   * False by default.
+   * ## 🚧 EXPERIMENTAL 🚧
+   * Suspense while hydrating.
+   * @defaultValue `false`
    */
   suspense?: boolean
   /**
    * Make the source mutable.
-   * True by default.
+   * @defaultValue `true`
    */
   mutable?: boolean
   /**
    * Enable virtual batching.
-   * False by default.
+   * @defaultValue `false`
    */
   virtualBatch?: boolean
   /**
    * Make this source accessible through React DevTools even in production mode.
-   * False by default.
+   * @defaultValue `false`
    */
   public?: boolean
 }
@@ -88,17 +97,45 @@ export interface RelinkSourceEntry<S> {
  * @public
  */
 export interface RelinkSource<S> {
+  /**
+   * @example Source.get()
+   */
   get(): S
+  /**
+   * @example await Source.getAsync()
+   */
   getAsync(): Promise<S>
   set(partialState: S | ((currentState: S) => S | Promise<S>)): Promise<void>
+  /**
+   * @example Source.reset()
+   * @example await Source.reset()
+   */
   reset(): Promise<void>
   hydrate(callback: RelinkHydrateCallback<S>): void
   /**
    * @example
-   * const unwatchSource = Source.watch(selfDefinedCallback) // Start watching
-   * unwatchSource() // Stop watching
+   * useLayoutEffect(() => {
+   *   const unwatch = Source.watch(({ state }) => {
+   *     // ...
+   *   })
+   *   return () => { unwatch() }
+   * }, [Source])
    */
-  watch: Watcher<never>['M$watch']
+  watch: Watcher<[RelinkStateChangeDetails<S>]>['M$watch']
+  /**
+   * ## 🚧 Experimental 🚧
+   * If sources are dynamically created, it is best to call this
+   * cleanup function when they are no longer needed.
+   * @example
+   * function MyComponent() {
+   *   const Source = useRef(null)
+   *   if (!Source.current) { Source = createSource(...) }
+   *   useEffect(() => {
+   *     return () => { Source.current.UNSTABLE_cleanup() }
+   *   }, [])
+   *   return '...'
+   * }
+   */
   UNSTABLE_cleanup(): void
   /**
    * @internal

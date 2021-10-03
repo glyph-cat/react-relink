@@ -1,7 +1,7 @@
 # Lifecycle
 Sources can be initialized(hydrated), persisted and reset.
 
-Upon creating a new source, the `lifecycle.init` method will be called. This is the first hydration. Subsequent hydrations can be performed with the `useRehydrateRelinkSource` hook. This can be useful, for example, when switching accounts and user preferences need to be rehydrated. If you attempt to use an ordinary "setState" to rehydrate a source, it will call the `didSet` lifecycle method, persisting the just-fetched data back to your server, which is unnecessary.
+Upon creating a new source, the `lifecycle.init` method will be called. This is the first hydration. Subsequent hydrations can be performed with the `useHydrateRelinkSource` hook. This can be useful, for example, when switching accounts and user preferences need to be rehydrated. If you attempt to use an ordinary "setState" to rehydrate a source, it will call the `didSet` lifecycle method, persisting the just-fetched data back to your server, which is unnecessary.
 
 Upon setting a state, the `lifecycle.didSet` method will be called while upon resetting a state, the `lifecycle.didReset` method will be called. You can either persist or reset data here. For example, persisting data into or removing it from localStorage.
 
