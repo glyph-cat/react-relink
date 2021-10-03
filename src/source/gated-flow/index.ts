@@ -8,18 +8,21 @@ export interface GatedFlow {
    */
   M$exec<V>(callback: GatedCallback<V>): Promise<V>
   /**
-   * Get status of whether gate is opened or closed.
+   * Get status of whether gate is currently opened or closed.
    */
   M$getStatus(): boolean
   /**
    * Closes the gate.
    */
-  M$lock(): void
+  M$lock(): Promise<void>
   /**
    * Opens the gate.
    */
-  M$open(): void
+  M$open(): Promise<void>
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const dummyCallback = () => { }
 
 export function createGatedFlow(initialIsOpen: boolean): GatedFlow {
 
@@ -70,23 +73,31 @@ export function createGatedFlow(initialIsOpen: boolean): GatedFlow {
     })
   }
 
-  const M$open = (): void => {
-    if (!isOpen) {
-      isOpen = true
-      M$flush()
-    } else {
-      for (let i = 0; i < queueStack.length; i++) {
-        const [callback] = queueStack[i]
-        if (Object.is(callback, M$lockBase)) {
-          queueStack.splice(i, 1)
-          break
+  const M$open = (): Promise<void> => {
+    // Promise is resolved only when this specific request to open the gate has
+    // been fulfilled.
+    return new Promise((resolve) => {
+      if (!isOpen) {
+        isOpen = true
+        M$flush()
+        resolve()
+      } else {
+        for (let i = 0; i < queueStack.length; i++) {
+          const [callback] = queueStack[i]
+          if (Object.is(callback, M$lockBase)) {
+            // Swap a dummy set inside so that this promise can be resolved.
+            queueStack.splice(i, 1, [dummyCallback, resolve])
+            break
+          }
         }
       }
-    }
+    })
   }
 
-  const M$lock = (): void => {
-    M$exec(M$lockBase)
+  const M$lock = (): Promise<void> => {
+    // Promise is resolved only when this specific request to lock the gate has
+    // been fulfilled.
+    return M$exec(M$lockBase)
   }
 
   return {
