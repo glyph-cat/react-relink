@@ -58,14 +58,14 @@ describe(allDepsAreReady.name, (): void => {
 
   test('Only some deps are ready', (): void => {
     const SourceA = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/a`,
+      key: `test/${allDepsAreReady.name}/some-deps-are-ready/a`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => { commit(1) },
       },
     })
     const SourceB = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/b`,
+      key: `test/${allDepsAreReady.name}/some-deps-are-ready/b`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => {
@@ -76,7 +76,7 @@ describe(allDepsAreReady.name, (): void => {
       },
     })
     const MainSource = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/main`,
+      key: `test/${allDepsAreReady.name}/some-deps-are-ready/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
@@ -86,7 +86,7 @@ describe(allDepsAreReady.name, (): void => {
 
   test('No deps are ready', (): void => {
     const SourceA = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/a`,
+      key: `test/${allDepsAreReady.name}/no-deps-are-ready/a`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => {
@@ -97,7 +97,7 @@ describe(allDepsAreReady.name, (): void => {
       },
     })
     const SourceB = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/b`,
+      key: `test/${allDepsAreReady.name}/no-deps-are-ready/b`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => {
@@ -108,7 +108,7 @@ describe(allDepsAreReady.name, (): void => {
       },
     })
     const MainSource = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/main`,
+      key: `test/${allDepsAreReady.name}/no-deps-are-ready/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })

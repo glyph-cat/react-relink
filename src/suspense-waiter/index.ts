@@ -5,11 +5,18 @@ import { CallbackWithNoParamAndReturnsVoid } from '../helper-types'
 
 export type SuspenseWaiter = CallbackWithNoParamAndReturnsVoid
 
+/**
+ * 0 = success
+ * 1 = pending
+ * 2 = error
+ */
+type SuspenseStatus = 0 | 1 | 2
+
 export function createSuspenseWaiter(
   promise: Promise<void>
 ): SuspenseWaiter {
-  let status = 1 // 0 = success; 1 = pending; 2 = error
-  let res = null
+  let status: SuspenseStatus = 1
+  let res: unknown = null
   const suspender = promise
     .then((r): void => {
       status = 0
@@ -19,7 +26,6 @@ export function createSuspenseWaiter(
       status = 2
       res = e
     })
-
   return (): void => {
     switch (status) {
       case 1: throw suspender

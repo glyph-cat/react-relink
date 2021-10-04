@@ -11,7 +11,7 @@ export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource, useRelinkState } = Relink
   test('With Virtual Batch', async (): Promise<void> => {
 
-    // See Special Note [C] in 'src/index.ts'
+    // Refer to Special Note [C] in 'src/index.ts'
     jest.useRealTimers()
     const Source = createSource({
       key: 'test/virtual-batch',

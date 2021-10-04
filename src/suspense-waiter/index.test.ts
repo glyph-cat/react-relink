@@ -3,8 +3,6 @@ import { TIME_GAP } from '../../tests/helpers'
 
 describe(createSuspenseWaiter.name, (): void => {
 
-  jest.useRealTimers()
-
   test('Pending', (): Promise<void> => {
     const promise: Promise<void> = new Promise((resolve): void => {
       setTimeout((): void => { resolve() }, TIME_GAP(2))

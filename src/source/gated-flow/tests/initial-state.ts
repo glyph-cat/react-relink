@@ -22,7 +22,6 @@ describe(createGatedFlow.name, (): void => {
       })
 
       test('Mixed with asynchronous callbacks', async (): Promise<void> => {
-        jest.useRealTimers()
         const gateKeeper = createGatedFlow(true)
         const callback = jest.fn()
         gateKeeper.M$exec(() => { callback() })
@@ -42,7 +41,7 @@ describe(createGatedFlow.name, (): void => {
     describe('Closed (callbacks should not run right away)', (): void => {
 
       test('Synchronous callbacks only', (): void => {
-        // See Special Note [B] in 'src/index.ts'
+        // Refer to Special Note [B] in 'src/index.ts'
         // jest.useFakeTimers()
         const gateKeeper = createGatedFlow(false)
         const callback = jest.fn()
@@ -55,7 +54,6 @@ describe(createGatedFlow.name, (): void => {
       })
 
       test('Mixed with asynchronous callbacks', async (): Promise<void> => {
-        jest.useRealTimers()
         const gateKeeper = createGatedFlow(false)
         const callback = jest.fn()
         gateKeeper.M$exec((): void => { callback() })

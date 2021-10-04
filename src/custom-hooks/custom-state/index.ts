@@ -9,16 +9,17 @@ const stateCache: WeakMap<
   [unknown, (newState: unknown) => void]
 > = new WeakMap()
 
-type StateHookData<S> = [S, (newState: S) => void]
+type StateHookData<S> = [S, (newState: S) => void, () => void]
 
 /**
  * A custom state hook that has a similar usage pattern to React's, but is
  * highly specialized for Relink's state management workflow.
- * There are, however a few differences:
+ * The differences:
  * - Has customizable equality checking
  * - State values are not exposed in React dev tools
  * - Initial state must be a factory
- * - State setter only accepts new values (no factory functions)
+ * - State setter only accepts new values (no reducers)
+ * - There is a third item in the returned tuple: a `forceUpdate` function
  */
 export function useState<S>(
   initialState: () => S,
@@ -44,6 +45,6 @@ export function useState<S>(
     return (): void => { stateCache.delete(stateId) }
   }, [])
 
-  return stateCache.get(id.current) as StateHookData<S>
+  return [...stateCache.get(id.current), forceUpdate] as StateHookData<S>
 
 }

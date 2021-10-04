@@ -4,8 +4,6 @@ import { createGatedFlow } from '..'
 describe(createGatedFlow.name, (): void => {
   test('Stress test', async (): Promise<void> => {
 
-    jest.useRealTimers()
-
     const gateKeeper = createGatedFlow(true)
     const array: Array<number> = []
 
