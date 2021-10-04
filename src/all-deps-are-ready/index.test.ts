@@ -15,16 +15,17 @@ describe(allDepsAreReady.name, (): void => {
   })
 
   test('All deps don\'t need hydration', (): void => {
+    const scopeName = 'all-deps-no-need-hydration'
     const SourceA = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-no-need-hydration/a`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
     })
     const SourceB = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-no-need-hydration/b`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
     })
     const MainSource = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-no-need-hydration/main`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
@@ -33,22 +34,23 @@ describe(allDepsAreReady.name, (): void => {
   })
 
   test('All deps are ready', (): void => {
+    const scopeName = 'all-deps-are-ready'
     const SourceA = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/a`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => { commit(1) },
       },
     })
     const SourceB = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/b`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => { commit(1) },
       },
     })
     const MainSource = createSource({
-      key: `test/${allDepsAreReady.name}/all-deps-are-ready/main`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
@@ -57,15 +59,16 @@ describe(allDepsAreReady.name, (): void => {
   })
 
   test('Only some deps are ready', (): void => {
+    const scopeName = 'some-deps-are-ready'
     const SourceA = createSource({
-      key: `test/${allDepsAreReady.name}/some-deps-are-ready/a`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => { commit(1) },
       },
     })
     const SourceB = createSource({
-      key: `test/${allDepsAreReady.name}/some-deps-are-ready/b`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => {
@@ -76,7 +79,7 @@ describe(allDepsAreReady.name, (): void => {
       },
     })
     const MainSource = createSource({
-      key: `test/${allDepsAreReady.name}/some-deps-are-ready/main`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
@@ -85,8 +88,9 @@ describe(allDepsAreReady.name, (): void => {
   })
 
   test('No deps are ready', (): void => {
+    const scopeName = 'no-deps-are-ready'
     const SourceA = createSource({
-      key: `test/${allDepsAreReady.name}/no-deps-are-ready/a`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => {
@@ -97,7 +101,7 @@ describe(allDepsAreReady.name, (): void => {
       },
     })
     const SourceB = createSource({
-      key: `test/${allDepsAreReady.name}/no-deps-are-ready/b`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => {
@@ -108,7 +112,7 @@ describe(allDepsAreReady.name, (): void => {
       },
     })
     const MainSource = createSource({
-      key: `test/${allDepsAreReady.name}/no-deps-are-ready/main`,
+      key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })

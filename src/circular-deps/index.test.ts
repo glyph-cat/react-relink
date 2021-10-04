@@ -6,22 +6,20 @@ describe(checkForCircularDeps.name, (): void => {
 
   test('with circular deps', (): void => {
     const callback = (): void => {
-      const MockSourceA = createSource({
-        key: 'test/mock-source/w-cdeps/a',
+      const sourceADeps = []
+      const SourceA = createSource({
+        key: 'test/source-with-circular-deps/a',
         default: 0,
-        deps: [],
+        deps: sourceADeps,
       })
-      const MockSourceB = createSource({
-        key: 'test/mock-source/w-cdeps/b',
+      const SourceB = createSource({
+        key: 'test/source-with-circular-deps/b',
         default: 0,
-        deps: [MockSourceA],
+        deps: [SourceA],
       })
-      // Tamper with the source to create circular dependency. I have no idea
-      // how circular dependencies would be possible in a normal use case, but
-      // still, this check is added as a safeguard.
-      MockSourceA[INTERNALS_SYMBOL].M$parentDeps = [MockSourceB]
-      checkForCircularDeps(MockSourceA[INTERNALS_SYMBOL].M$parentDeps, [
-        MockSourceA[INTERNALS_SYMBOL].M$key,
+      sourceADeps.push(SourceB)
+      checkForCircularDeps(SourceA[INTERNALS_SYMBOL].M$parentDeps, [
+        SourceA[INTERNALS_SYMBOL].M$key,
       ])
     }
     expect(callback).toThrow()
@@ -29,23 +27,23 @@ describe(checkForCircularDeps.name, (): void => {
 
   test('without circular deps', (): void => {
     const callback = (): void => {
-      const MockSourceA = createSource({
-        key: 'test/mock-source/wo-cdeps/a',
+      const SourceA = createSource({
+        key: 'test/source-without-circular-deps/a',
         default: 0,
         deps: [],
       })
-      const MockSourceB = createSource({
-        key: 'test/mock-source/wo-cdeps/b',
+      const SourceB = createSource({
+        key: 'test/source-without-circular-deps/b',
         default: 0,
-        deps: [MockSourceA],
+        deps: [SourceA],
       })
-      const MockSourceC = createSource({
-        key: 'test/mock-source/wo-cdeps/c',
+      const SourceC = createSource({
+        key: 'test/source-without-circular-deps/c',
         default: 0,
-        deps: [MockSourceB],
+        deps: [SourceB],
       })
-      checkForCircularDeps(MockSourceC[INTERNALS_SYMBOL].M$parentDeps, [
-        MockSourceC[INTERNALS_SYMBOL].M$key,
+      checkForCircularDeps(SourceC[INTERNALS_SYMBOL].M$parentDeps, [
+        SourceC[INTERNALS_SYMBOL].M$key,
       ])
     }
     expect(callback).not.toThrow()
