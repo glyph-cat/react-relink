@@ -171,7 +171,7 @@ export function createSource<S>({
     const unwatchDepHydration = dep.watch((event) => {
       // Ignore if event is not caused by hydration
       if (event.type !== RelinkEventType.hydrate) { return }
-      if (event.isHydrating === true) {
+      if (event.isHydrating) {
         // Dependency is entering init status
         gatedFlow.M$lock()
         // Subsequent hydrations are queued here. Every time dependency
