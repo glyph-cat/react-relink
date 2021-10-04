@@ -6,7 +6,7 @@ function devPrint(
 ): void {
   if (IS_DEBUG_ENV) {
     // eslint-disable-next-line no-console
-    console[type](`[Development] ${message}`)
+    console[type](message)
   }
 }
 
@@ -16,4 +16,16 @@ export function devError(message: string): void {
 
 export function devWarn(message: string): void {
   devPrint('warn', message)
+}
+
+export function formatFunctionNotation(fnName: string): string {
+  return `\`${fnName}()\``
+}
+
+export function formatFunctionNotationArray(fnNames: string[]): string {
+  const formattedStack: Array<string> = []
+  for (let i = 0; i < fnNames.length; i++) {
+    formattedStack.push(formatFunctionNotation(fnNames[i]))
+  }
+  return formattedStack.join(', ')
 }

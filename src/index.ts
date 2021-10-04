@@ -3,10 +3,11 @@ import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
 import { useLayoutEffect, useState } from './custom-hooks'
 import deepCopy from './deep-copy'
 import {
+  RelinkEvent,
+  RelinkEventType,
   RelinkSelector,
   RelinkSource,
   RelinkSourceKey,
-  RelinkStateChangeDetails,
 } from './schema'
 import { isFunction } from './type-checker'
 import { unstable_batchedUpdates } from './unstable_batchedUpdates'
@@ -55,7 +56,7 @@ export function useRelinkValue<S, K>(
   source[INTERNALS_SYMBOL].M$suspenseOnHydration()
 
   // Use custom state hook
-  const [state, setState] = useState(
+  const [state, setState, forceUpdate] = useState(
     () => getInitialState(source, selector),
     source[INTERNALS_SYMBOL].M$isMutable
   )
@@ -84,18 +85,26 @@ export function useRelinkValue<S, K>(
     // source because it used to cause faulty `Source.set()` calls.
     let debounceRef: ReturnType<typeof setTimeout>
     const triggerUpdateRightAway = (
-      details: RelinkStateChangeDetails<S>
+      event: RelinkEvent<S>
     ): void => {
-      unstable_batchedUpdates(() => {
-        setState(getSubsequentState(
-          details.state,
-          selector,
-          source[INTERNALS_SYMBOL].M$isMutable)
-        )
-      })
+      if (event.type === RelinkEventType.hydrate) {
+        // Suspense on hydration
+        // But take note, we also need to suspense immediately if source is
+        // hydrating but component using this hook is rendering
+        // May be we should just trigger a force update
+        forceUpdate() // KIV
+      } else {
+        unstable_batchedUpdates(() => {
+          setState(getSubsequentState(
+            event.state,
+            selector,
+            source[INTERNALS_SYMBOL].M$isMutable)
+          )
+        })
+      }
     }
     const triggerUpdateDebounced = (
-      details: RelinkStateChangeDetails<S>
+      details: RelinkEvent<S>
     ): void => {
       clearTimeout(debounceRef)
       debounceRef = setTimeout(() => { triggerUpdateRightAway(details) })
@@ -109,7 +118,7 @@ export function useRelinkValue<S, K>(
       unwatch()
       clearTimeout(debounceRef)
     }
-  }, [source, selector])
+  }, [forceUpdate, selector, setState, source])
 
   return state
 }
@@ -168,16 +177,20 @@ export function useHydrateRelinkSource<S>(
   return source.hydrate
 }
 
+// Prevent accidentally exporting internals by explicitly specifying the
+// intended exports.
 export { VERSION } from './constants'
-export * from './schema'
-export * from './source'
-export * from './wait-for'
+export { isRelinkSource } from './is-relink-source'
+export { createSource } from './source'
+export { waitForAll } from './wait-for'
+export * from './schema' // Everything in this file is meant to be public.
 
 // === Special Notes ===
 // [A] Special case: If unknown is used, there would be errors everywhere else
 //     because all sources have some sort of type that just doesn't overlap
 //     with unknown.
-// [B] It seems that in the same `describe` block, if `jest.useRealTimers()` is
+// [B] (No longer relevant)
+//     It seems that in the same `describe` block, if `jest.useRealTimers()` is
 //     called, then the remaining test that uses fake timers also need
 //     `jest.useFakeTimers()` to be called explicitly.
-// [C] Not sure why fake timers don't work here...
+// [C] (No longer relevant) Not sure why fake timers don't work here...

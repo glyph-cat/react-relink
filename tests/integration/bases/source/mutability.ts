@@ -1,5 +1,7 @@
 import { IntegrationTestProps } from '../../../helpers'
 
+// TODO: Remove this test
+
 export default function ({ Relink }: IntegrationTestProps): void {
 
   const { createSource } = Relink

@@ -2,7 +2,7 @@ import { Config } from '@jest/types'
 
 const config: Config.InitialOptions = {
   testRegex: '.test.(tsx|ts|jsx|js)',
-  timers: 'modern',
+  timers: 'real',
   verbose: true,
 }
 

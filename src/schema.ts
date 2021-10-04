@@ -24,17 +24,41 @@ export interface RelinkSelector<S, K> {
 /**
  * @public
  */
-export interface RelinkStateChangeDetails<S> {
+export enum RelinkEventType {
+  hydrate = 1,
+  set,
+  reset,
+}
+
+/**
+ * @public
+ */
+export interface RelinkStateChangeEvent<S> {
+  type: RelinkEventType.set | RelinkEventType.reset
   state: S
 }
 
 /**
  * @public
  */
+export interface RelinkHydrationEvent<S> {
+  type: RelinkEventType.hydrate
+  state: S
+  isHydrating: boolean
+}
+
+/**
+ * @public
+ */
+export type RelinkEvent<S> = RelinkHydrationEvent<S> | RelinkStateChangeEvent<S>
+
+/**
+ * @public
+ */
 export interface RelinkLifecycleConfig<S> {
   init?: RelinkHydrateCallback<S>
-  didSet?(details: RelinkStateChangeDetails<S>): void
-  didReset?(): void
+  didSet?(event: RelinkStateChangeEvent<S>): void
+  didReset?(event: RelinkStateChangeEvent<S>): void
 }
 
 /**
@@ -86,7 +110,7 @@ export interface RelinkSourceEntry<S> {
   /**
    * Wait for other sources to be hydrated before this one does.
    */
-  // See Special Note [A] in 'src/index.ts'
+  // Refer to Special Note [A] in 'src/index.ts'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deps?: Array<RelinkSource<any>>
   lifecycle?: RelinkLifecycleConfig<S>
@@ -98,30 +122,45 @@ export interface RelinkSourceEntry<S> {
  */
 export interface RelinkSource<S> {
   /**
+   * Get the current state. This is regardless of whether there are any pending
+   * state changes.
    * @example Source.get()
    */
   get(): S
   /**
+   * Get the latest state. The state will only be returned after pending state
+   * changes have completed. Any further state changes will only be triggered
+   * after this promise is resolved.
    * @example await Source.getAsync()
    */
   getAsync(): Promise<S>
+  // TODO
+  /**
+   * ...
+   * @example
+   */
   set(partialState: S | ((currentState: S) => S | Promise<S>)): Promise<void>
   /**
    * @example Source.reset()
    * @example await Source.reset()
    */
   reset(): Promise<void>
+  // TODO
+  /**
+   * ...
+   * @example
+   */
   hydrate(callback: RelinkHydrateCallback<S>): void
   /**
    * @example
    * useLayoutEffect(() => {
-   *   const unwatch = Source.watch(({ state }) => {
+   *   const unwatch = Source.watch((event) => {
    *     // ...
    *   })
    *   return () => { unwatch() }
    * }, [Source])
    */
-  watch: Watcher<[RelinkStateChangeDetails<S>]>['M$watch']
+  watch: Watcher<[RelinkEvent<S>]>['M$watch']
   /**
    * ## 🚧 Experimental 🚧
    * If sources are dynamically created, it is best to call this
@@ -154,7 +193,6 @@ export interface RelinkSource<S> {
      */
     M$childDeps: Record<RelinkSourceKey, true>
     M$directGet(): S
-    M$hydrationWatcher: Watcher<[boolean]>
     M$suspenseOnHydration(): void
     M$getIsReadyStatus(): boolean
   }
