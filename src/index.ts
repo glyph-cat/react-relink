@@ -1,7 +1,7 @@
 import { useDebugValue } from 'react'
 import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
-import { useLayoutEffect, useState } from './custom-hooks'
-import deepCopy from './deep-copy'
+import { useLayoutEffect, useState } from './private/custom-hooks'
+import deepCopy from './private/deep-copy'
 import {
   RelinkEvent,
   RelinkEventType,
@@ -9,8 +9,8 @@ import {
   RelinkSource,
   RelinkSourceKey,
 } from './schema'
-import { isFunction } from './type-checker'
-import { unstable_batchedUpdates } from './unstable_batchedUpdates'
+import { isFunction } from './private/type-checker'
+import { unstable_batchedUpdates } from './private/unstable_batchedUpdates'
 
 function getInitialState<S, K>(
   source: RelinkSource<S>,
@@ -178,13 +178,11 @@ export function useHydrateRelinkSource<S>(
   return source.hydrate
 }
 
-// Prevent accidentally exporting internals by explicitly specifying the
-// intended exports.
 export { VERSION } from './constants'
-export { isRelinkSource } from './is-relink-source'
-export { createSource } from './source'
-export { waitForAll } from './wait-for'
-export * from './schema' // Everything in this file is meant to be public.
+export * from './public/is-relink-source'
+export * from './public/source'
+export * from './public/wait-for'
+export * from './schema'
 
 // === Special Notes ===
 // [A] Special case: If unknown is used, there would be errors everywhere else
