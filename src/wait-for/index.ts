@@ -1,3 +1,4 @@
+import { RelinkEventType } from '..'
 import { INTERNALS_SYMBOL } from '../constants'
 import { devWarn } from '../dev'
 import { RelinkSource, RelinkSourceKey } from '../schema'
@@ -43,18 +44,19 @@ export function waitForAll(...args: any[]): Promise<void> {
           isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
         } else {
           // If not, only then we add a watcher to it
-          const unwatch = source[INTERNALS_SYMBOL].M$hydrationWatcher
-            .M$watch((isIniting): void => {
-              if (isIniting) {
-                delete isReadyTracker[source[INTERNALS_SYMBOL].M$key]
-              } else {
-                isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
-                unwatch()
-                if (Object.keys(isReadyTracker).length === deps.length) {
-                  resolve()
-                }
+          const unwatch = source.watch((event): void => {
+            // Ignore if event is not caused by hydration
+            if (event.type !== RelinkEventType.hydrate) { return }
+            if (event.isHydrating) {
+              delete isReadyTracker[source[INTERNALS_SYMBOL].M$key]
+            } else {
+              isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
+              unwatch()
+              if (Object.keys(isReadyTracker).length === deps.length) {
+                resolve()
               }
-            })
+            }
+          })
         }
       }
     } catch (e) {
