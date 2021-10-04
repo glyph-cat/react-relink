@@ -1,8 +1,6 @@
-import { INTERNALS_SYMBOL } from '../../constants'
-import { ERROR_CIRCULAR_DEPENDENCY } from '../../errors'
-import { RelinkSource, RelinkSourceKey } from '../../schema'
-
-// TODO: Move to './src'
+import { INTERNALS_SYMBOL } from '../constants'
+import { ERROR_CIRCULAR_DEPENDENCY } from '../errors'
+import { RelinkSource, RelinkSourceKey } from '../schema'
 
 export function checkForCircularDeps(
   deps: Array<RelinkSource<unknown>>,

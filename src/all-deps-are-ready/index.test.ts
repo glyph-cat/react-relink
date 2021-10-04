@@ -1,5 +1,5 @@
-import { TIME_GAP } from '../../../tests/helpers'
-import { INTERNALS_SYMBOL } from '../../constants'
+import { TIME_GAP } from '../../tests/helpers'
+import { INTERNALS_SYMBOL } from '../constants'
 import { createSource } from '..'
 import { allDepsAreReady } from '.'
 

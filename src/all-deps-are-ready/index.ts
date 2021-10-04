@@ -1,7 +1,5 @@
-import { INTERNALS_SYMBOL } from '../../constants'
-import { RelinkSource } from '../../schema'
-
-// TODO: Move to './src'
+import { INTERNALS_SYMBOL } from '../constants'
+import { RelinkSource } from '../schema'
 
 export function allDepsAreReady(
   sources: Array<RelinkSource<unknown>>

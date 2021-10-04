@@ -1,4 +1,4 @@
-import { delay, TIME_GAP } from '../../../../tests/helpers'
+import { delay, TIME_GAP } from '../../../tests/helpers'
 import { createGatedFlow } from '..'
 
 describe(createGatedFlow.name, (): void => {

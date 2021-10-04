@@ -1,4 +1,4 @@
-import { INTERNALS_SYMBOL } from '../../constants'
+import { INTERNALS_SYMBOL } from '../constants'
 import { createSource } from '..'
 import { checkForCircularDeps } from '.'
 
