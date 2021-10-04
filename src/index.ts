@@ -87,21 +87,22 @@ export function useRelinkValue<S, K>(
     const triggerUpdateRightAway = (
       event: RelinkEvent<S>
     ): void => {
-      if (event.type === RelinkEventType.hydrate) {
-        // Suspense on hydration
-        // But take note, we also need to suspense immediately if source is
-        // hydrating but component using this hook is rendering
-        // May be we should just trigger a force update
-        forceUpdate() // KIV
-      } else {
-        unstable_batchedUpdates(() => {
+      unstable_batchedUpdates(() => {
+        if (event.type === RelinkEventType.hydrate) {
+          // KIV/NOTE:
+          // `M$suspenseOnHydration` is called at the top level, which means any
+          // time the components re-renders, it will be called. If `event.type`
+          // is `hydrate`, then only force an update on this hook and the rest
+          // should take care of itself.
+          forceUpdate()
+        } else {
           setState(getSubsequentState(
             event.state,
             selector,
             source[INTERNALS_SYMBOL].M$isMutable)
           )
-        })
-      }
+        }
+      })
     }
     const triggerUpdateDebounced = (
       details: RelinkEvent<S>
@@ -189,8 +190,3 @@ export * from './schema' // Everything in this file is meant to be public.
 // [A] Special case: If unknown is used, there would be errors everywhere else
 //     because all sources have some sort of type that just doesn't overlap
 //     with unknown.
-// [B] (No longer relevant)
-//     It seems that in the same `describe` block, if `jest.useRealTimers()` is
-//     called, then the remaining test that uses fake timers also need
-//     `jest.useFakeTimers()` to be called explicitly.
-// [C] (No longer relevant) Not sure why fake timers don't work here...

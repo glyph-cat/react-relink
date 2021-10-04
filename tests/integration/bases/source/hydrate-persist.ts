@@ -5,7 +5,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
   describe('Hydration & Persistence', (): void => {
 
     test('Synchronous', async (): Promise<void> => {
-      jest.useRealTimers()
       let mockStorage = null
       const hydrationValue = 2
 
@@ -44,7 +43,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
 
     test('Synchronous (with Promise.then)', async (): Promise<void> => {
-      jest.useRealTimers()
       let mockStorage = null
       const hydrationValue = 2
 
@@ -92,7 +90,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
 
     test('Asynchronous', async (): Promise<void> => {
-      jest.useRealTimers()
       let mockStorage = null
       const hydrationValue = 2
 

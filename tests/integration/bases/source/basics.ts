@@ -75,8 +75,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
 
     test('States are carried forward in the batches', async (): Promise<void> => {
-      // Refer to Special Note [C] in 'src/index.ts'
-      jest.useRealTimers()
       const Source = createSource({
         key: 'test/batch-carry-forward',
         default: { a: 1, b: 1 },

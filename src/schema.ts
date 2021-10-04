@@ -17,9 +17,7 @@ export type RelinkHydrateCallback<S> = (args: RelinkHydrateArgs<S>) => void
 /**
  * @public
  */
-export interface RelinkSelector<S, K> {
-  (state: S): K
-}
+export type RelinkSelector<S, K> = (state: S) => K
 
 /**
  * @public
