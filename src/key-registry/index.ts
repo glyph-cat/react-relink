@@ -1,5 +1,5 @@
-import { IS_CLIENT_ENV, IS_DEBUG_ENV } from '../../constants'
-import { RelinkSourceKey } from '../../schema'
+import { IS_CLIENT_ENV, IS_DEBUG_ENV } from '../constants'
+import { RelinkSourceKey } from '../schema'
 import { warnDuplicateKey } from './warn-duplicate-key'
 
 export const KEY_REGISTRY: Record<RelinkSourceKey, true> = {}

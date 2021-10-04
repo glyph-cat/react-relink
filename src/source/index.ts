@@ -1,7 +1,11 @@
+import { allDepsAreReady } from '../all-deps-are-ready'
+import { checkForCircularDeps } from '../circular-deps'
 import { INTERNALS_SYMBOL } from '../constants'
 import { $$createRelinkCore } from '../core'
 import { devWarn } from '../dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../errors'
+import { createGatedFlow } from '../gated-flow'
+import { getAutomaticKey, registerKey, unregisterKey } from '../key-registry'
 import {
   createNoUselessHydrationWarner,
   HydrationConcludeType,
@@ -15,10 +19,6 @@ import {
 } from '../schema'
 import { createSuspenseWaiter, SuspenseWaiter } from '../suspense-waiter'
 import { isFunction, isThenable } from '../type-checker'
-import { allDepsAreReady } from './all-deps-are-ready'
-import { checkForCircularDeps } from './circular-deps'
-import { createGatedFlow } from './gated-flow'
-import { getAutomaticKey, registerKey, unregisterKey } from './key-registry'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names

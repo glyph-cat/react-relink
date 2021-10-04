@@ -1,8 +1,6 @@
-import { isThenable } from '../../type-checker'
+import { isThenable } from '../type-checker'
 
 type GatedCallback<V> = (...args: any[]) => V | Promise<V>
-
-// TODO: Move to './src'
 
 export interface GatedFlow {
   /**
