@@ -41,8 +41,6 @@ describe(createGatedFlow.name, (): void => {
     describe('Closed (callbacks should not run right away)', (): void => {
 
       test('Synchronous callbacks only', (): void => {
-        // Refer to Special Note [B] in 'src/index.ts'
-        // jest.useFakeTimers()
         const gateKeeper = createGatedFlow(false)
         const callback = jest.fn()
         gateKeeper.M$exec((): void => { callback() })

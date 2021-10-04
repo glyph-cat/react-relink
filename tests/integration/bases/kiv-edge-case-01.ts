@@ -8,8 +8,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
   const { createSource } = Relink
   test('KIV: Edge case 01', async (): Promise<void> => {
 
-    jest.useRealTimers()
-
     interface ListSourceSchema {
       list: Record<string, string>
     }

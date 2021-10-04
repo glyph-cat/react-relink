@@ -10,7 +10,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
   describe(TEST_METHOD_NAME, (): void => {
 
     test('Normal usage', async (): Promise<void> => {
-      jest.useRealTimers()
       const {
         SourceA,
         SourceB,
@@ -37,12 +36,10 @@ export default function ({ Relink }: IntegrationTestProps): void {
     }, expectedWaitTime + gracePeriod)
 
     test('Empty array', async (): Promise<void> => {
-      jest.useRealTimers()
       await expect(waitForAll([])).resolves.toBe(undefined)
     })
 
     test('Error handling', async (): Promise<void> => {
-      jest.useRealTimers()
       let errObj: Error
       const CorruptedSource = {}
       try {

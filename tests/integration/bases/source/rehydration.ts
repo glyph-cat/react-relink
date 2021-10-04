@@ -49,7 +49,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
 
     test('Asynchronous', async (): Promise<void> => {
-      jest.useRealTimers()
       let mockStorage = null
 
       const getValueFromMockServer = async (
