@@ -1,7 +1,6 @@
-import { RelinkEventType } from '..'
 import { INTERNALS_SYMBOL } from '../constants'
 import { devWarn } from '../dev'
-import { RelinkSource, RelinkSourceKey } from '../schema'
+import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../schema'
 import { isFunction } from '../type-checker'
 
 /**
