@@ -1,7 +1,7 @@
 import { MutableRefObject, useReducer, useRef, useEffect } from 'react'
 import { isEqual } from '../../equality'
 
-const forceUpdateReducer = (c: number): number => c + 1
+export const forceUpdateReducer = (c: number): number => c + 1
 
 type StateId = Record<string, never>
 const stateCache: WeakMap<
@@ -9,7 +9,7 @@ const stateCache: WeakMap<
   [unknown, (newState: unknown) => void]
 > = new WeakMap()
 
-type StateHookData<S> = [S, (newState: S) => void, () => void]
+type StateHookData<S> = [S, (newState: S) => void]
 
 /**
  * A custom state hook that has a similar usage pattern to React's, but is
@@ -19,7 +19,6 @@ type StateHookData<S> = [S, (newState: S) => void, () => void]
  * - State values are not exposed in React dev tools
  * - Initial state must be a factory
  * - State setter only accepts new values (no reducers)
- * - There is a third item in the returned tuple: a `forceUpdate` function
  */
 export function useState<S>(
   initialState: () => S,
@@ -45,6 +44,6 @@ export function useState<S>(
     return (): void => { stateCache.delete(stateId) }
   }, [])
 
-  return [...stateCache.get(id.current), forceUpdate] as StateHookData<S>
+  return stateCache.get(id.current) as StateHookData<S>
 
 }

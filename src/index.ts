@@ -1,6 +1,10 @@
-import { useDebugValue } from 'react'
+import { useCallback, useDebugValue, useReducer } from 'react'
 import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
-import { useLayoutEffect, useState } from './private/custom-hooks'
+import {
+  forceUpdateReducer,
+  useLayoutEffect,
+  useState,
+} from './private/custom-hooks'
 import deepCopy from './private/deep-copy'
 import {
   RelinkEvent,
@@ -33,6 +37,56 @@ function getSubsequentState<S, K>(
   return isMutable ? currentValue : deepCopy(currentValue)
 }
 
+function useSourceWatcher<S = unknown>(
+  source: RelinkSource<S>,
+  callback: ((event: RelinkEvent<S>) => void)
+): void {
+  // Add/remove watcher
+  useLayoutEffect((): (() => void) => {
+    // NOTE: Virtual batching is implemented at the hook level instead of the
+    // source because it used to cause faulty `Source.set()` calls.
+    let debounceRef: ReturnType<typeof setTimeout>
+    const triggerUpdateRightAway = (
+      event: RelinkEvent<S>
+    ): void => {
+      unstable_batchedUpdates(() => {
+        callback(event)
+      })
+    }
+    const triggerUpdateDebounced = (
+      details: RelinkEvent<S>
+    ): void => {
+      clearTimeout(debounceRef)
+      debounceRef = setTimeout(() => { triggerUpdateRightAway(details) })
+    }
+    const unwatch = source.watch(
+      IS_CLIENT_ENV && source[INTERNALS_SYMBOL].M$isVirtualBatchEnabled
+        ? triggerUpdateDebounced
+        : triggerUpdateRightAway
+    )
+    return (): void => {
+      unwatch()
+      clearTimeout(debounceRef)
+    }
+  }, [source, callback])
+}
+
+function useSuspenseWhenRehydrate<S = unknown>(source: RelinkSource<S>): void {
+  // KIV/NOTE:
+  // `M$suspenseOnHydration` is called at the top level, which means any time
+  // the components re-renders, it will be called. If `event.type` is `hydrate`,
+  // then only force an update on this hook and the rest should take care of
+  // itself.
+  source[INTERNALS_SYMBOL].M$suspenseOnHydration()
+  const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
+  const sourceWatcherCallback = useCallback((event: RelinkEvent<S>): void => {
+    if (event.type === RelinkEventType.hydrate) {
+      forceUpdate()
+    }
+  }, [])
+  useSourceWatcher(source, sourceWatcherCallback)
+}
+
 /**
  * @public
  */
@@ -52,11 +106,10 @@ export function useRelinkValue<S, K>(
   selector?: RelinkSelector<S, K>
 ): S | K {
 
-  // Wait for suspense
-  source[INTERNALS_SYMBOL].M$suspenseOnHydration()
+  useSuspenseWhenRehydrate(source)
 
   // Use custom state hook
-  const [state, setState, forceUpdate] = useState(
+  const [state, setState] = useState(
     () => getInitialState(source, selector),
     source[INTERNALS_SYMBOL].M$isMutable
   )
@@ -79,47 +132,16 @@ export function useRelinkValue<S, K>(
     }
   })
 
-  // Add/remove watcher
-  useLayoutEffect((): (() => void) => {
-    // NOTE: Virtual batching is implemented at the hook level instead of the
-    // source because it used to cause faulty `Source.set()` calls.
-    let debounceRef: ReturnType<typeof setTimeout>
-    const triggerUpdateRightAway = (
-      event: RelinkEvent<S>
-    ): void => {
-      unstable_batchedUpdates(() => {
-        if (event.type === RelinkEventType.hydrate) {
-          // KIV/NOTE:
-          // `M$suspenseOnHydration` is called at the top level, which means any
-          // time the components re-renders, it will be called. If `event.type`
-          // is `hydrate`, then only force an update on this hook and the rest
-          // should take care of itself.
-          forceUpdate()
-        } else {
-          setState(getSubsequentState(
-            event.state,
-            selector,
-            source[INTERNALS_SYMBOL].M$isMutable)
-          )
-        }
-      })
+  const sourceWatcherCallback = useCallback((event: RelinkEvent<S>): void => {
+    if (event.type !== RelinkEventType.hydrate) {
+      setState(getSubsequentState(
+        event.state,
+        selector,
+        source[INTERNALS_SYMBOL].M$isMutable)
+      )
     }
-    const triggerUpdateDebounced = (
-      details: RelinkEvent<S>
-    ): void => {
-      clearTimeout(debounceRef)
-      debounceRef = setTimeout(() => { triggerUpdateRightAway(details) })
-    }
-    const unwatch = source.watch(
-      IS_CLIENT_ENV && source[INTERNALS_SYMBOL].M$isVirtualBatchEnabled
-        ? triggerUpdateDebounced
-        : triggerUpdateRightAway
-    )
-    return (): void => {
-      unwatch()
-      clearTimeout(debounceRef)
-    }
-  }, [forceUpdate, selector, setState, source])
+  }, [selector, setState, source])
+  useSourceWatcher<S>(source, sourceWatcherCallback)
 
   return state
 }
@@ -154,7 +176,7 @@ export function useRelinkState<S, K>(
 export function useSetRelinkState<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['set'] {
-  source[INTERNALS_SYMBOL].M$suspenseOnHydration()
+  useSuspenseWhenRehydrate(source)
   return source.set
 }
 
@@ -164,7 +186,7 @@ export function useSetRelinkState<S>(
 export function useResetRelinkState<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['reset'] {
-  source[INTERNALS_SYMBOL].M$suspenseOnHydration()
+  useSuspenseWhenRehydrate(source)
   return source.reset
 }
 
@@ -174,7 +196,7 @@ export function useResetRelinkState<S>(
 export function useHydrateRelinkSource<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['hydrate'] {
-  source[INTERNALS_SYMBOL].M$suspenseOnHydration()
+  useSuspenseWhenRehydrate(source)
   return source.hydrate
 }
 
