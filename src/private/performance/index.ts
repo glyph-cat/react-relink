@@ -3,11 +3,15 @@ import { IS_DEBUG_ENV, IS_DIST_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { devWarn } from '../dev'
 
-// TODO: Check if this code is included minified bundles (they should not be)
+// NOTE: The code in this file should not be included in minified builds because
+// the code is conditionally with `IS_DEBUG_ENV`. A check was made on 5 Oct 2021
+// and so far the code has been bundled with the intended bahaviour.
 
-// For stability purposes we do a check on `typeof window` instead of using the
-// `IS_CLIENT_ENV` constant because we have no control over which builds are
-// used and where they are run in.
+/**
+ * For stability purposes we do a check on `typeof window` instead of using the
+ * `IS_CLIENT_ENV` constant because we have no control over which builds are
+ * used and where they are run in.
+ */
 const isWindowAvailable = typeof window !== 'undefined'
 
 export function performanceNow(): number {
