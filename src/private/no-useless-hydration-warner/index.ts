@@ -5,8 +5,8 @@ import { devError, formatFunctionNotationArray } from '../dev'
 type UselessHydrationWarner = (concludeType: HydrationConcludeType) => boolean
 
 export enum HydrationConcludeType {
-  commit = 'commit',
-  skip = 'skip',
+  M$commit = 'commit',
+  M$skip = 'skip',
 }
 
 export function formatWarningMessageForNoUselessHydration(

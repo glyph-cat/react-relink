@@ -23,10 +23,7 @@ import {
 } from '../schema'
 import { createSuspenseWaiter, SuspenseWaiter } from '../private/suspense-waiter'
 import { isFunction, isThenable } from '../private/type-checker'
-import {
-  performanceNow,
-  warnIfExceedPerformanceThreshold,
-} from '../private/performance'
+import { startMeasuringReducerPerformance } from '../private/performance'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
@@ -123,7 +120,7 @@ export function createSource<S>({
           new Promise((resolve): void => {
             callback({
               commit(hydratedState: S): void {
-                const isFirstHydration = concludeHydration(HydrationConcludeType.commit)
+                const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
                 if (isFirstHydration) {
                   core.M$hydrate(hydratedState)
                   resolve()
@@ -131,7 +128,7 @@ export function createSource<S>({
                 }
               },
               skip(): void {
-                const isFirstHydration = concludeHydration(HydrationConcludeType.skip)
+                const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
                 if (isFirstHydration) {
                   core.M$hydrate(core.M$get())
                   resolve()
@@ -144,13 +141,13 @@ export function createSource<S>({
       } else {
         callback({
           commit(hydratedState: S): void {
-            const isFirstHydration = concludeHydration(HydrationConcludeType.commit)
+            const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
             if (isFirstHydration) {
               core.M$hydrate(hydratedState)
             }
           },
           skip(): void {
-            const isFirstHydration = concludeHydration(HydrationConcludeType.skip)
+            const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
             if (isFirstHydration) {
               core.M$hydrate(core.M$get())
             }
@@ -234,36 +231,21 @@ export function createSource<S>({
     return gatedFlow.M$exec((): void | Promise<void> => {
       let nextState: S
       if (isFunction(stateOrReducer)) {
-        const perfTimeStart = performanceNow()
+        const perfMeasurer = startMeasuringReducerPerformance(normalizedKey)
         const executedReducer = stateOrReducer(core.M$get())
-        /**
-         * This allows the execution to be synchronous if the reducer is also
-         * synchronous. Consider the code below:
-         * ```js
-         * nextState = isThenable(executedReducer)
-         *   ? await executedReducer
-         *   : executedReducer
-         * ```
-         * This would make the execution asynchronous regardless of whether or
-         * not reducer is asynchronous.
-         * `.M$exec(async (): Promise<void> => { ...`
-         * And for unclear reasons, this creates a delay in integration tests
-         * that would result in inaccurate assertions.
-         * At the same time, if, by conditionally making the execution
-         * asynchronous eliminates unnecessary delay, this also means we get a
-         * little bit of performance gain.
-         */
+        // Refer to Local Note [A]
         if (isThenable(executedReducer)) {
+          perfMeasurer.isAsync.current = true
           return new Promise((resolve) => {
             executedReducer.then((fulfilledPartialState) => {
               nextState = fulfilledPartialState // Is an asynchronous reducer
-              warnIfExceedPerformanceThreshold(perfTimeStart, performanceNow(), true)
+              perfMeasurer.stop()
               resolve()
             })
           })
         } else {
           nextState = executedReducer // Is a reducer
-          warnIfExceedPerformanceThreshold(perfTimeStart, performanceNow(), false)
+          perfMeasurer.stop()
         }
       } else {
         nextState = stateOrReducer // Is a state
@@ -328,3 +310,23 @@ export function createSource<S>({
   }
 
 }
+
+// === Local Notes ===
+// [A] This allows the execution to be synchronous if the reducer is also
+//     synchronous. Consider the code below:
+//     ```js
+//     nextState = isThenable(executedReducer)
+//       ? await executedReducer
+//       : executedReducer
+//     ```
+//
+//     This would make the execution asynchronous regardless of whether or not
+//     the reducer is asynchronous and code would look like this:
+//     ```js
+//     .M$exec(async (): Promise<void> => { ...
+//     ```
+//
+//     And for unclear reasons, this creates a delay in integration tests that
+//     would result in inaccurate assertions. At the same time, if, by
+//     conditionally making the execution asynchronous eliminates unnecessary
+//     delay, this also means we get a little bit of performance gain.

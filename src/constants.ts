@@ -11,6 +11,9 @@ export const IS_DIST_ENV = process.env.IS_DIST_ENV === 'true'
  * Here, it is also assumed that the internal debug environment is a client by
  * checking `process.env.IS_DIST_ENV !== 'true'`. This 'internal debug
  * environment' refers to the one used when building this library.
+ *
+ * NOTE: This should only be used to control the library's behaviour in different
+ * environments, NOT for checking whether browser APIs are available.
  */
 export const IS_CLIENT_ENV = !IS_DIST_ENV ||
   process.env.BUILD_ENV === 'react-native' ||
