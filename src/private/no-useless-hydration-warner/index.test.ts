@@ -7,17 +7,17 @@ import {
 
 test(createNoUselessHydrationWarner_DEV.name, (): void => {
   const concludeHydration = createNoUselessHydrationWarner_DEV('foo')
-  const isFirstHydration_1 = concludeHydration(HydrationConcludeType.commit)
+  const isFirstHydration_1 = concludeHydration(HydrationConcludeType.M$commit)
   expect(isFirstHydration_1).toBe(true)
-  const isFirstHydration_2 = concludeHydration(HydrationConcludeType.commit)
+  const isFirstHydration_2 = concludeHydration(HydrationConcludeType.M$commit)
   expect(isFirstHydration_2).toBe(false)
 })
 
 test(createNoUselessHydrationWarner_PROD.name, (): void => {
   const concludeHydration = createNoUselessHydrationWarner_PROD()
-  const isFirstHydration_1 = concludeHydration(HydrationConcludeType.commit)
+  const isFirstHydration_1 = concludeHydration(HydrationConcludeType.M$commit)
   expect(isFirstHydration_1).toBe(true)
-  const isFirstHydration_2 = concludeHydration(HydrationConcludeType.commit)
+  const isFirstHydration_2 = concludeHydration(HydrationConcludeType.M$commit)
   expect(isFirstHydration_2).toBe(false)
 })
 
@@ -25,9 +25,9 @@ test(createNoUselessHydrationWarner_PROD.name, (): void => {
 describe(formatWarningMessageForNoUselessHydration.name, (): void => {
 
   test('Previously concluded once', (): void => {
-    const concludeTypeHistoryStack = [HydrationConcludeType.commit]
+    const concludeTypeHistoryStack = [HydrationConcludeType.M$commit]
     const sourceKey = 'foo'
-    const currentConcludeType = HydrationConcludeType.commit
+    const currentConcludeType = HydrationConcludeType.M$commit
     const warningMessage = formatWarningMessageForNoUselessHydration(
       sourceKey,
       currentConcludeType,
@@ -40,15 +40,15 @@ describe(formatWarningMessageForNoUselessHydration.name, (): void => {
 
   test('Previously concluded multiple times', (): void => {
     const concludeTypeHistoryStack = [
-      HydrationConcludeType.commit,
-      HydrationConcludeType.skip,
-      HydrationConcludeType.commit,
-      HydrationConcludeType.skip,
-      HydrationConcludeType.skip,
-      HydrationConcludeType.commit,
+      HydrationConcludeType.M$commit,
+      HydrationConcludeType.M$skip,
+      HydrationConcludeType.M$commit,
+      HydrationConcludeType.M$skip,
+      HydrationConcludeType.M$skip,
+      HydrationConcludeType.M$commit,
     ]
     const sourceKey = 'foo'
-    const currentConcludeType = HydrationConcludeType.skip
+    const currentConcludeType = HydrationConcludeType.M$skip
     const warningMessage = formatWarningMessageForNoUselessHydration(
       sourceKey,
       currentConcludeType,
