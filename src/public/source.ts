@@ -23,6 +23,10 @@ import {
 } from '../schema'
 import { createSuspenseWaiter, SuspenseWaiter } from '../private/suspense-waiter'
 import { isFunction, isThenable } from '../private/type-checker'
+import {
+  performanceNow,
+  warnIfExceedPerformanceThreshold,
+} from '../private/performance'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
@@ -230,6 +234,7 @@ export function createSource<S>({
     return gatedFlow.M$exec((): void | Promise<void> => {
       let nextState: S
       if (isFunction(stateOrReducer)) {
+        const perfTimeStart = performanceNow()
         const executedReducer = stateOrReducer(core.M$get())
         /**
          * This allows the execution to be synchronous if the reducer is also
@@ -252,11 +257,13 @@ export function createSource<S>({
           return new Promise((resolve) => {
             executedReducer.then((fulfilledPartialState) => {
               nextState = fulfilledPartialState // Is an asynchronous reducer
+              warnIfExceedPerformanceThreshold(perfTimeStart, performanceNow(), true)
               resolve()
             })
           })
         } else {
           nextState = executedReducer // Is a reducer
+          warnIfExceedPerformanceThreshold(perfTimeStart, performanceNow(), false)
         }
       } else {
         nextState = stateOrReducer // Is a state
