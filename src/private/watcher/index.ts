@@ -48,9 +48,14 @@ export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
   }
 
   const M$refresh = (...args: A): void => {
-    Object.values(watcherMap).forEach((callback): void => {
-      callback(...args)
-    })
+    // KIV
+    const callbackStack = Object.values(watcherMap)
+    for (let i = 0; i < callbackStack.length; i++) {
+      callbackStack[i](...args)
+    }
+    // Object.values(watcherMap).forEach((callback): void => {
+    //   callback(...args)
+    // })
   }
 
   return {

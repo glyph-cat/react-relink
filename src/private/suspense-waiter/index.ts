@@ -13,12 +13,12 @@ export type SuspenseWaiter = CallbackWithNoParamAndReturnsVoid
 type SuspenseStatus = 0 | 1 | 2
 
 export function createSuspenseWaiter(
-  promise: Promise<void>
+  promise: Promise<unknown>
 ): SuspenseWaiter {
   let status: SuspenseStatus = 1
   let res: unknown = null
   const suspender = promise
-    .then((r): void => {
+    .then((r: unknown): void => {
       status = 0
       res = r
     })

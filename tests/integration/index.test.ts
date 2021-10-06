@@ -8,6 +8,7 @@ const DEBUG_BUILDS: Array<TestBuildConfig> = [
   {
     buildType: 'es',
     description: 'Debug',
+    isDist: false,
     src: require('../../src/index.ts'),
   },
 ]
@@ -15,11 +16,13 @@ const BUNDLED_BUILDS: Array<TestBuildConfig> = [
   {
     buildType: 'cjs',
     description: 'CJS',
+    isDist: true,
     src: require('../../dist/cjs/index.js'),
   },
   {
     buildType: 'es',
     description: 'EcmaScript',
+    isDist: true,
     src: require('../../dist/es/index.js'),
   },
   // Will fail (unexpected token "import"):
@@ -28,11 +31,13 @@ const BUNDLED_BUILDS: Array<TestBuildConfig> = [
   {
     buildType: 'umd',
     description: 'UMD',
+    isDist: true,
     src: require('../../dist/umd/index.js'),
   },
   {
     buildType: 'umd',
     description: 'UMD (Minified)',
+    isDist: true,
     src: require('../../dist/umd/index.min.js'),
   },
 ]
@@ -50,15 +55,16 @@ const list = fs.readdirSync('./tests/integration/bases', {
 })
 
 for (const build of buildStack) {
-  const { description, src } = build
-  describe(description, async (): Promise<void> => {
+  const { description, isDist, src } = build
+  describe(description, (): void => {
     for (const l of list) {
       const requiredTest = require(`./bases/${l}`)
       const executor = requiredTest.default || requiredTest
       const testProps: IntegrationTestProps = {
         Relink: src,
+        isDist,
       }
-      await executor(testProps)
+      executor(testProps)
     }
   })
 }

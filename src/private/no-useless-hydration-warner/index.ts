@@ -1,6 +1,7 @@
 import { IS_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
-import { devError, formatFunctionNotationArray } from '../dev'
+import { devError } from '../dev'
+import { formatFunctionNotationArray } from '../string-formatting'
 
 type UselessHydrationWarner = (concludeType: HydrationConcludeType) => boolean
 
@@ -14,9 +15,7 @@ export function formatWarningMessageForNoUselessHydration(
   currentConcludeType: HydrationConcludeType,
   concludeTypeHistoryStack: Array<HydrationConcludeType>
 ): string {
-  const firstMessageFragment = `Attempted to ${currentConcludeType} a hydration in '${String(sourceKey)}' even though it has previously been concluded with: ${formatFunctionNotationArray(concludeTypeHistoryStack)}.`
-  const secondMessageFragment = 'Only the first attempt to conclude a hydration is effective while the rest are ignored. If this was intentional, please make separate calls to `Source.hydrate()` instead, otherwise it might indicate a memory leak in your application.'
-  return [firstMessageFragment, secondMessageFragment].join(' ')
+  return `Attempted to ${currentConcludeType} a hydration in '${String(sourceKey)}' even though it has previously been concluded with: ${formatFunctionNotationArray(concludeTypeHistoryStack)}. Only the first attempt to conclude a hydration is effective while the rest are ignored. If this was intentional, please make separate calls to \`Source.hydrate()\` instead, otherwise it might indicate a memory leak in your application.`
 }
 
 export function createNoUselessHydrationWarner_DEV(
