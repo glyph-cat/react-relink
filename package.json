@@ -1,7 +1,7 @@
 {
   "name": "react-relink",
   "version": "1.0.0-beta.3",
-  "description": "A React state management library inspired by Recoil.",
+  "description": "A lightweight state management library for React.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "react-native": "dist/native/index.js",
@@ -28,7 +28,7 @@
   },
   "keywords": [
     "react",
-    "recoil",
+    "reducers",
     "relink",
     "state",
     "set state",

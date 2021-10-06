@@ -87,10 +87,18 @@ function useSuspenseWhenRehydrate<S = unknown>(source: RelinkSource<S>): void {
 }
 
 /**
+ * @example
+ * const state = useRelinkValue(Source)
  * @public
  */
 export function useRelinkValue<S>(source: RelinkSource<S>): S
 /**
+ * @example
+ * const selector = (state) => ({
+ *   propertyA: state.propertyA,
+ *   propertyB: state.propertyB,
+ * })
+ * const filteredState = useRelinkValue(Source, selector)
  * @public
  */
 export function useRelinkValue<S, K>(
@@ -146,12 +154,20 @@ export function useRelinkValue<S, K>(
 }
 
 /**
+ * @example
+ * const [state, setState, resetState] = useRelinkState(Source)
  * @public
  */
 export function useRelinkState<S>(
   source: RelinkSource<S>
 ): [S, RelinkSource<S>['set'], RelinkSource<S>['reset']]
 /**
+ * @example
+ * const selector = (state) => ({
+ *   propertyA: state.propertyA,
+ *   propertyB: state.propertyB,
+ * })
+ * const [filteredState, setState, resetState] = useRelinkState(Source, selector)
  * @public
  */
 export function useRelinkState<S, K>(
@@ -170,6 +186,8 @@ export function useRelinkState<S, K>(
 }
 
 /**
+ * @example
+ * const setState = useSetRelinkState(Source)
  * @public
  */
 export function useSetRelinkState<S>(
@@ -180,6 +198,8 @@ export function useSetRelinkState<S>(
 }
 
 /**
+ * @example
+ * const resetState = useResetRelinkState(Source)
  * @public
  */
 export function useResetRelinkState<S>(
@@ -190,6 +210,8 @@ export function useResetRelinkState<S>(
 }
 
 /**
+ * @example
+ * const hydrateSource = useHydrateRelinkSource(Source)
  * @public
  */
 export function useHydrateRelinkSource<S>(
