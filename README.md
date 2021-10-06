@@ -1,14 +1,15 @@
 <div align="center">
 
 [![React Relink Banner](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/react-relink-wording.svg)](https://github.com/chin98edwin/react-relink)
+*A lightweight state management library for React.*
+
+<br/>
 
 [![Version](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)
 ![Build Status](https://img.shields.io/github/workflow/status/chin98edwin/langutil/Test/main)
 ![Bundle size](https://img.shields.io/bundlephobia/min/react-relink)
-![Downloads](https://img.shields.io/npm/dt/react-relink)
 [![License](https://img.shields.io/github/license/chin98edwin/react-relink)](https://github.com/chin98edwin/react-relink/blob/main/LICENSE)
 
-![Designed for React](https://img.shields.io/static/v1?label&logo=react&logoColor=61DBFB&message=Designed%20for%20React&color=4a4a4a)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/chin98edwin/react-relink)
 [![Support me on Ko-fi](https://img.shields.io/static/v1?label&logo=kofi&logoColor=ffffff&message=Support%20me%20on%20Ko-fi&color=FF5E5B)](https://ko-fi.com/dev_chin98edwin)
 
@@ -16,23 +17,12 @@
 
 <br/>
 
-Relink is a React state management library inspired by [Recoil](https://recoiljs.org). Because of that, Relink has some API names that are similar to Recoil's, however their usage pattern may be completely different. Keep on reading to learn more.
-
-With Relink,
-* There will be less boilerplate code, just like Recoil;
-* There is no need to wrap components in a Provider;
-* States can be shared across different React components trees.
-
-Relink is *not* a replacement for Recoil — it can, however serve as an alternative for projects that do not require the full feature-set of Recoil. Relink also has a few downsides:
-* It might not have APIs advanced enough for edge cases that would otherwise be achievable with Recoil;
-* Server-side rendering is not officially supported;
-* Relink is also experimental — there might be some unforeseen issues.
-
-<br/>
-
-*☕️ Extra Reading: [State Management with React Relink](https://dev.to/chin98edwin/state-management-with-react-relink-3g9)*
-
-*🌀 Miscellaneous: Looking for a specialized package to handle localizations? Check out [Langutil](https://github.com/chin98edwin/langutil).*
+**Key features:**
+* Components don't need to be wrapped in Providers
+* States can be shared across different React components trees
+* Supports asynchronous reducers
+* Declarative lifecycle management
+* Less boilerplate code in general
 
 <br/>
 
@@ -44,6 +34,7 @@ Relink is *not* a replacement for Recoil — it can, however serve as an alterna
 - [Consume a Source](#consume-a-source)
 - [Documentation](#documentation)
 - [Support Me](#support-me)
+- [Miscellaneous](#miscellaneous)
 
 <br/>
 
@@ -60,14 +51,6 @@ With [Yarn](https://yarnpkg.com/package/react-relink):
 ```sh
 yarn add react-relink
 ```
-
-<br/>
-
-With UNPKG:
-```html
-<script src="https://unpkg.com/react-relink@<VERSION>/dist/umd/index.js" crossorigin></script>
-```
-Remember to replace `index.js` with `index.min.js` when deploying.
 
 <br/>
 
@@ -88,10 +71,10 @@ const CounterSource = createSource({
 
 # Consume a Source
 
-In Relink, you can work with the sources right away without needing to wrap your app inside any provider components. This makes accessing them across different React component trees easy, such as when [registering screen components](https://wix.github.io/react-native-navigation/docs/third-party-react-context#register-the-screen) in React Native Navigation.
+You can work with the sources right away without needing to wrap your app inside any provider components. This makes accessing them across different React component trees very easy, such as when [registering screen components](https://wix.github.io/react-native-navigation/docs/third-party-react-context#register-the-screen) in React Native Navigation.
 
 To consume a source, pass it as a parameter into any of the following Relink hooks:
-* `useRelinkState` - returns the state value and a setter function like React's [`useState`](https://reactjs.org/docs/hooks-state.html)
+* `useRelinkState` - returns the state value, a setter, and a resetter function
 * `useSetRelinkState` - returns just the setter function of the state
 * `useRelinkValue` - returns just the value of the state
 * `useResetRelinkState` - returns a function that sets the state to its default value
@@ -159,5 +142,10 @@ rehydrateCounter(({ commit }) => {
 * Ko-fi: [`ko-fi.com/dev_chin98edwin`](https://ko-fi.com/dev_chin98edwin)
 * PayPal: [`paypal.me/chin98edwin`](http://paypal.me/chin98edwin)
 * BTC: [`bc1q5qp6a972l8m0k26ln9deuhup0nmldf86ndu5we`](bitcoin:bc1q5qp6a972l8m0k26ln9deuhup0nmldf86ndu5we)
+
+<br/>
+
+# Miscellaneous
+Looking for a specialized package to handle localizations? Check out [Langutil](https://github.com/chin98edwin/langutil).
 
 <br/>

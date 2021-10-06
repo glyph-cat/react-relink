@@ -254,7 +254,7 @@ export function createSource<S>({
       if (isFunction(stateOrReducer)) {
         const perfMeasurer = startMeasuringReducerPerformance(normalizedKey)
         const executedReducer = stateOrReducer(core.M$get())
-        // Refer to Local Note [A]
+        // Refer to Local Note [A] near end of file
         if (isThenable(executedReducer)) {
           perfMeasurer.isAsync.current = true
           return new Promise((resolve) => {
