@@ -72,11 +72,10 @@ function useSourceWatcher<S = unknown>(
 }
 
 function useSuspenseWhenRehydrate<S = unknown>(source: RelinkSource<S>): void {
-  // KIV/NOTE:
-  // `M$suspenseOnHydration` is called at the top level, which means any time
-  // the components re-renders, it will be called. If `event.type` is `hydrate`,
-  // then only force an update on this hook and the rest should take care of
-  // itself.
+  // NOTE: `M$suspenseOnHydration` is called at the top level, which means any
+  // time the components re-renders, it will be called. If `event.type` is
+  // `hydrate`, then only force an update on this hook and the rest should take
+  // care of itself.
   source[INTERNALS_SYMBOL].M$suspenseOnHydration()
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
   const sourceWatcherCallback = useCallback((event: RelinkEvent<S>): void => {
@@ -210,3 +209,5 @@ export * from './schema'
 // [A] Special case: If unknown is used, there would be errors everywhere else
 //     because all sources have some sort of type that just doesn't overlap
 //     with unknown.
+// [B] In some places '@ts-ignore' is used to test what would happen if the
+//     wrong type is provided in a context JavaScript.

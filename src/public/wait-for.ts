@@ -1,5 +1,6 @@
 import { INTERNALS_SYMBOL } from '../constants'
 import { devWarn } from '../private/dev'
+import { formatSourceKeyArray } from '../private/string-formatting'
 import { isFunction } from '../private/type-checker'
 import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../schema'
 
@@ -26,10 +27,7 @@ export function waitForAll(...args: any[]): Promise<void> {
       depsKeyStack.push(`'${String(dep[INTERNALS_SYMBOL].M$key)}'`)
     }
     devWarn(
-      'Starting from V1, `waitForAll` is just an async function, but it ' +
-      'seems like you have passed a callback to it, which will do nothing. ' +
-      'Instead, use `await waitForAll(...)` or `waitForAll(...).then()`. ' +
-      `You were waiting for these sources: ${depsKeyStack.join(', ')}`
+      'Starting from V1, `waitForAll` is just an async function, but it seems like you have passed a callback to it, which will do nothing. Instead, use `await waitForAll(...)` or `waitForAll(...).then()`. ' + `You were waiting for these sources: ${formatSourceKeyArray(depsKeyStack)}.`
     )
   }
   return new Promise((resolve, reject): void => {

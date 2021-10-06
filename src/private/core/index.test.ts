@@ -1,25 +1,25 @@
 import { RelinkEvent, RelinkEventType } from '../../schema'
-import { $$createRelinkCore } from '.'
+import { createRelinkCore, HYDRATION_SKIP_MARKER } from '.'
 
 // NOTE: This test covers the following aspects:
 // * Testing for mutability - so that we don't have to worry about it anywhere
 //   else anymore.
-// * Ensuring that events are fired appropriately.
+// * Ensuring that events are fired accordingly.
 
-describe($$createRelinkCore.name, (): void => {
+describe(createRelinkCore.name, (): void => {
 
   describe('M$directGet', (): void => {
 
     test('isSourceMutable: true', (): void => {
       const defaultState = { value: 1 }
-      const core = $$createRelinkCore(defaultState, true)
+      const core = createRelinkCore(defaultState, true)
       expect(core.M$directGet()).toStrictEqual({ value: 1 })
       expect(Object.is(core.M$directGet(), defaultState)).toBe(true)
     })
 
     test('isSourceMutable: false', (): void => {
       const defaultState = { value: 1 }
-      const core = $$createRelinkCore(defaultState, false)
+      const core = createRelinkCore(defaultState, false)
       expect(core.M$directGet()).toStrictEqual({ value: 1 })
       expect(Object.is(core.M$directGet(), defaultState)).toBe(false)
       // ^ Because `initialState` is deed-copied from `defaultState`
@@ -31,14 +31,14 @@ describe($$createRelinkCore.name, (): void => {
 
     test('isSourceMutable: true', (): void => {
       const defaultState = { value: 1 }
-      const core = $$createRelinkCore(defaultState, true)
+      const core = createRelinkCore(defaultState, true)
       expect(core.M$get()).toStrictEqual({ value: 1 })
       expect(Object.is(core.M$get(), defaultState)).toBe(true)
     })
 
     test('isSourceMutable: false', (): void => {
       const defaultState = { value: 1 }
-      const core = $$createRelinkCore(defaultState, false)
+      const core = createRelinkCore(defaultState, false)
       expect(core.M$get()).toStrictEqual({ value: 1 })
       expect(Object.is(core.M$get(), defaultState)).toBe(false)
     })
@@ -52,7 +52,7 @@ describe($$createRelinkCore.name, (): void => {
       test('isSourceMutable: true', (): void => {
 
         const defaultState = { value: 1 }
-        const core = $$createRelinkCore(defaultState, true)
+        const core = createRelinkCore(defaultState, true)
         const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
         const unwatchStateChange = core.M$watch((event): void => {
           capturedEventStack.push(event)
@@ -80,7 +80,7 @@ describe($$createRelinkCore.name, (): void => {
       test('isSourceMutable: false', (): void => {
 
         const defaultState = { value: 1 }
-        const core = $$createRelinkCore(defaultState, false)
+        const core = createRelinkCore(defaultState, false)
         const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
         const unwatchStateChange = core.M$watch((event): void => {
           capturedEventStack.push(event)
@@ -112,7 +112,7 @@ describe($$createRelinkCore.name, (): void => {
       test('isSourceMutable: true', (): void => {
 
         const defaultState = { value: 1 }
-        const core = $$createRelinkCore(defaultState, true)
+        const core = createRelinkCore(defaultState, true)
         const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
         const unwatchStateChange = core.M$watch((event): void => {
           capturedEventStack.push(event)
@@ -143,7 +143,7 @@ describe($$createRelinkCore.name, (): void => {
       test('isSourceMutable: false', (): void => {
 
         const defaultState = { value: 1 }
-        const core = $$createRelinkCore(defaultState, false)
+        const core = createRelinkCore(defaultState, false)
         const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
         const unwatchStateChange = core.M$watch((event): void => {
           capturedEventStack.push(event)
@@ -176,40 +176,79 @@ describe($$createRelinkCore.name, (): void => {
 
   })
 
-  test('M$hydrate', (): void => {
+  describe('M$hydrate', (): void => {
 
     interface TestState { value: number }
 
-    const core = $$createRelinkCore({ value: 1 }, false)
-    const capturedEventStack: Array<RelinkEvent<TestState>> = []
-    const unwatchStateChange = core.M$watch((event): void => {
-      capturedEventStack.push(event)
+    test('Commit strategy', (): void => {
+
+      const core = createRelinkCore({ value: 1 }, false)
+      const capturedEventStack: Array<RelinkEvent<TestState>> = []
+      const unwatchStateChange = core.M$watch((event): void => {
+        capturedEventStack.push(event)
+      })
+
+      core.M$hydrate(/* Empty means hydration is starting */)
+      expect(core.M$get()).toStrictEqual({ value: 1 })
+      expect(core.M$getHydrationStatus()).toBe(true)
+      expect(capturedEventStack).toStrictEqual([{
+        type: RelinkEventType.hydrate,
+        isHydrating: true,
+        state: { value: 1 },
+      }])
+
+      core.M$hydrate({ value: 2 })
+      expect(core.M$get()).toStrictEqual({ value: 2 })
+      expect(core.M$getHydrationStatus()).toBe(false)
+      expect(capturedEventStack).toStrictEqual([{
+        type: RelinkEventType.hydrate,
+        isHydrating: true,
+        state: { value: 1 },
+      }, {
+        type: RelinkEventType.hydrate,
+        isHydrating: false,
+        state: { value: 2 },
+      }])
+
+      // Cleanup
+      unwatchStateChange()
+
     })
 
-    core.M$hydrate(/* Empty means hydration is starting */)
-    expect(core.M$get()).toStrictEqual({ value: 1 })
-    expect(core.M$getHydrationStatus()).toBe(true)
-    expect(capturedEventStack).toStrictEqual([{
-      type: RelinkEventType.hydrate,
-      isHydrating: true,
-      state: { value: 1 },
-    }])
+    test('Skip strategy', (): void => {
 
-    core.M$hydrate({ value: 2 })
-    expect(core.M$get()).toStrictEqual({ value: 2 })
-    expect(core.M$getHydrationStatus()).toBe(false)
-    expect(capturedEventStack).toStrictEqual([{
-      type: RelinkEventType.hydrate,
-      isHydrating: true,
-      state: { value: 1 },
-    }, {
-      type: RelinkEventType.hydrate,
-      isHydrating: false,
-      state: { value: 2 },
-    }])
+      const core = createRelinkCore({ value: 1 }, false)
+      const capturedEventStack: Array<RelinkEvent<TestState>> = []
+      const unwatchStateChange = core.M$watch((event): void => {
+        capturedEventStack.push(event)
+      })
 
-    // Cleanup
-    unwatchStateChange()
+      core.M$hydrate(/* Empty means hydration is starting */)
+      expect(core.M$get()).toStrictEqual({ value: 1 })
+      expect(core.M$getHydrationStatus()).toBe(true)
+      expect(capturedEventStack).toStrictEqual([{
+        type: RelinkEventType.hydrate,
+        isHydrating: true,
+        state: { value: 1 },
+      }])
+
+      core.M$hydrate(HYDRATION_SKIP_MARKER)
+      expect(core.M$get()).toStrictEqual({ value: 1 })
+      expect(core.M$getHydrationStatus()).toBe(false)
+      expect(capturedEventStack).toStrictEqual([{
+        type: RelinkEventType.hydrate,
+        isHydrating: true,
+        state: { value: 1 },
+      }, {
+        type: RelinkEventType.hydrate,
+        isHydrating: false,
+        state: { value: 1 },
+      }])
+
+      // Cleanup
+      unwatchStateChange()
+
+    })
 
   })
 

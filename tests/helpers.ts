@@ -3,11 +3,18 @@ import * as __relink__ from '../src'
 export interface TestBuildConfig {
   buildType: 'cjs' | 'es' | 'umd'
   description: string
+  isDist: boolean
   src: typeof __relink__
 }
 
 export interface IntegrationTestProps {
+  isDist: boolean
   Relink: typeof __relink__
+}
+
+export interface SampleSchema {
+  foo: number,
+  bar: number,
 }
 
 /**
@@ -20,3 +27,5 @@ export function delay(timeout: number): Promise<void> {
     setTimeout(resolve, timeout)
   })
 }
+
+// export function mockDatabase() { }

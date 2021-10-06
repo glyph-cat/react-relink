@@ -5,8 +5,10 @@ import {
   UnwatchCallback,
   WatcherCallback,
 } from '../../private/watcher'
+import { ObjectMarker } from '../helper-types'
 
-const OMISSION_MARKER: Record<never, never> = {} as const
+const OMISSION_MARKER: ObjectMarker = {} as const
+export const HYDRATION_SKIP_MARKER: ObjectMarker = {} as const
 
 function isIncomingStateOmitted(
   incomingState: unknown
@@ -14,7 +16,7 @@ function isIncomingStateOmitted(
   return Object.is(incomingState, OMISSION_MARKER)
 }
 
-interface $$RelinkCore<S> {
+interface RelinkCore<S> {
   /**
    * Get the direct reference of the current state.
    */
@@ -48,10 +50,10 @@ interface $$RelinkCore<S> {
 /**
  * A barebones state management setup meant to be used internally only.
  */
-export function $$createRelinkCore<S>(
+export function createRelinkCore<S>(
   defaultState: S,
   isSourceMutable: boolean
-): $$RelinkCore<S> {
+): RelinkCore<S> {
 
   const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
   const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
@@ -72,7 +74,13 @@ export function $$createRelinkCore<S>(
     const isHydrationStart = isIncomingStateOmitted(incomingState)
     isHydrating = isHydrationStart
     if (!isHydrationStart) {
-      currentState = copyState(incomingState) // 📦 (<<<) Receive
+      if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
+        // Assume using the initial state
+        currentState = initialState // 📦 (~~~) Internal transfer
+        // Refer to Local Note [C] near end of file
+      } else {
+        currentState = copyState(incomingState) // 📦 (<<<) Receive
+      }
     }
     watcher.M$refresh({
       isHydrating,
@@ -87,12 +95,8 @@ export function $$createRelinkCore<S>(
   ): void => {
     const isReset = isIncomingStateOmitted(incomingState)
     if (isReset) {
+      // Refer to Local Note [C] near end of file
       currentState = initialState // 📦 (~~~) Internal transfer
-      // NOTE: We do not need `copyState` here because is has already been
-      // called at the declaration of `initialState` as a constant variable.
-      // If source is mutable and user somehow changed the default state, it is
-      // only the natural behaviour that when reset is called, the current state
-      // will 'revert' to the tampered `initialState`.
     } else {
       currentState = copyState(incomingState) // 📦 (<<<) Receive
     }
@@ -121,3 +125,8 @@ export function $$createRelinkCore<S>(
 // [B] By using the getter `M$get()` whenever we need to access the current
 //     state, this guarantees a consistent behaviour every-fucking-where in
 //     terms of mutability —— and this preserves sanity.
+// [C] We do not need `copyState` here because is has already been called at
+//     the declaration of `initialState` as a constant variable. If source is
+//     mutable and user somehow changed the default state, it is only the
+//     natural behaviour that when reset is called, the current state  will
+//     'revert' to the tampered `initialState`.

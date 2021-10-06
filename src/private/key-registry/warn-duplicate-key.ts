@@ -1,5 +1,6 @@
 import { devWarn } from '../dev'
 import { RelinkSourceKey } from '../../schema'
+import { formatSourceKeyArray } from '../string-formatting'
 
 let tempKeyStack: Array<RelinkSourceKey> = []
 let debouncedWarningRef: ReturnType<typeof setTimeout>
@@ -13,7 +14,7 @@ export function warnDuplicateKey(key: RelinkSourceKey): void {
   debouncedWarningRef = setTimeout((): void => {
     const dynamicMessageFragment = tempKeyStack.length === 1
       ? `key '${String(tempKeyStack[0])}'`
-      : `keys: '${tempKeyStack.join('\', \'')}'`
+      : `keys: ${formatSourceKeyArray(tempKeyStack)}`
     devWarn(
       `Duplicate source ${dynamicMessageFragment}. This is a FATAL ERROR in ` +
       'production. But it is safe to ignore this warning if it occurred ' +

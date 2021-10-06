@@ -1,7 +1,4 @@
-import {
-  formatErrorCode,
-  safeConcat,
-} from '.'
+import { formatErrorCode } from '.'
 
 describe(formatErrorCode.name, (): void => {
 
@@ -16,13 +13,4 @@ describe(formatErrorCode.name, (): void => {
     expect(output).toBe('Relink_E1-foo,42,true,false,null,undefined,Symbol(x)')
   })
 
-})
-
-test(safeConcat.name, (): void => {
-  const args = ['foo', 42, true, false, null, undefined]
-  expect(args.join(',')).toBe('foo,42,true,false,,')
-  const argsWithSymbol = [...args, Symbol('x')]
-  expect(safeConcat(argsWithSymbol, ',')).toBe(
-    'foo,42,true,false,null,undefined,Symbol(x)'
-  )
 })

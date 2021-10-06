@@ -1,7 +1,7 @@
 import { INTERNALS_SYMBOL } from '../constants'
 import { allDepsAreReady } from '../private/all-deps-are-ready'
 import { checkForCircularDeps } from '../private/circular-deps'
-import { $$createRelinkCore } from '../private/core'
+import { createRelinkCore, HYDRATION_SKIP_MARKER } from '../private/core'
 import { devWarn } from '../private/dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../private/errors'
 import { createGatedFlow } from '../private/gated-flow'
@@ -14,6 +14,7 @@ import {
   createNoUselessHydrationWarner,
   HydrationConcludeType,
 } from '../private/no-useless-hydration-warner'
+import { safeStringJoin } from '../private/string-formatting'
 import {
   RelinkEventType,
   RelinkSource,
@@ -99,7 +100,7 @@ export function createSource<S>({
   const isSourcePublic = mergedOptions.public
   const isVirtualBatchEnabled = mergedOptions.virtualBatch
   const isSuspenseEnabled = mergedOptions.suspense
-  const core = $$createRelinkCore(defaultState, isSourceMutable)
+  const core = createRelinkCore(defaultState, isSourceMutable)
 
 
   // === Hydration ===
@@ -113,33 +114,36 @@ export function createSource<S>({
 
   const hydrate: RelinkSource<S>['hydrate'] = (callback): Promise<void> => {
     core.M$hydrate(/* Empty means hydration is starting */)
-    return gatedFlow.M$exec((): void => {
+    return gatedFlow.M$exec((): void | Promise<void> => {
       const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
       if (isSuspenseEnabled) {
-        suspenseWaiter = createSuspenseWaiter(
-          new Promise((resolve): void => {
-            callback({
-              commit(hydratedState: S): void {
-                const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
-                if (isFirstHydration) {
-                  core.M$hydrate(hydratedState)
-                  resolve()
-                  suspenseWaiter = undefined
-                }
-              },
-              skip(): void {
-                const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
-                if (isFirstHydration) {
-                  core.M$hydrate(core.M$get())
-                  resolve()
-                  suspenseWaiter = undefined
-                }
-              },
-            })
+        const suspensePromise: Promise<void> = new Promise((resolve): void => {
+          callback({
+            commit(hydratedState: S): void {
+              const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
+              if (isFirstHydration) {
+                core.M$hydrate(hydratedState)
+                resolve()
+                suspenseWaiter = undefined
+              }
+            },
+            skip(): void {
+              const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
+              if (isFirstHydration) {
+                core.M$hydrate(HYDRATION_SKIP_MARKER)
+                resolve()
+                suspenseWaiter = undefined
+              }
+            },
           })
-        )
+        })
+        suspenseWaiter = createSuspenseWaiter(suspensePromise)
+        if (isThenable(suspensePromise)) {
+          // Return the promise so that it can be await-ed
+          return suspensePromise
+        }
       } else {
-        callback({
+        const executedCallback = callback({
           commit(hydratedState: S): void {
             const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
             if (isFirstHydration) {
@@ -153,6 +157,10 @@ export function createSource<S>({
             }
           },
         })
+        if (isThenable(executedCallback)) {
+          // Return the callback so that it can be await-ed
+          return executedCallback
+        }
       }
     })
   }
@@ -165,7 +173,14 @@ export function createSource<S>({
 
   // This runs the first round of hydration for this source as soon as it is
   // deemed that it no longer has parent deps that are still hydrating.
-  hydrateIfLifecycleInitIsProvided()
+  // If not all deps are ready, then the code will never run, instead, the one
+  // in the for-loop where we add the watchers will. This is so that a source
+  // doesn't end up hydrating twice meaninglessly. By right, watch handlers
+  // should only receive ONE event from a source in this case
+  // KIV/TODO: Write a test to make sure only ONE event is received.
+  if (allDepsAreReady(deps)) {
+    hydrateIfLifecycleInitIsProvided()
+  }
 
   // Watchers are used to allow subsequent hydrations if any parent deps are
   // being rehydrated.
@@ -177,18 +192,24 @@ export function createSource<S>({
       // Ignore if event is not caused by hydration
       if (event.type !== RelinkEventType.hydrate) { return }
       if (event.isHydrating) {
-        // Dependency is entering init status
-        gatedFlow.M$lock()
-        // Subsequent hydrations are queued here. Every time dependency
-        // enters init status, it should be init-ed again after that/
-        // Hence, `lifecycle.init` is added to the queue immediately ——
-        // before other methods can be added to the queue.
-        hydrateIfLifecycleInitIsProvided()
-        // Gate is closed before calling `gateExecHydration` so that hydration
-        // is queued deferred until deps have finished hydrating.
+        // Lock gate to prevent further state changes.
+        // gatedFlow.M$lock()
       } else {
+        // Open gate to resume queued state changes.
+        // gatedFlow.M$open()
+        // For each 'M$lock' called, a 'M$open' will be called when the dep
+        // finishes hydrating. Gate will really be open when all locks are
+        // cancelled out by the 'M$open' calls.
+
+        // KIV
+        // Gate is not locked so that pending state changes can complete and we
+        // don't waste time waiting for them to hydrate the current source.
+        // Although it might seem meaningless to execute queued state changes
+        // knowing that they will be overriden by the new hydrated values, it is
+        // important to know that there may be function called by the developer
+        // that are await-ing for those state changes to be completed.
         if (allDepsAreReady(deps)) {
-          gatedFlow.M$open()
+          hydrateIfLifecycleInitIsProvided()
         }
       }
     })
@@ -229,7 +250,7 @@ export function createSource<S>({
     stateOrReducer: S | ((currentState: S) => S | Promise<S>)
   ): Promise<void> => {
     return gatedFlow.M$exec((): void | Promise<void> => {
-      let nextState: S
+      // let nextState: S
       if (isFunction(stateOrReducer)) {
         const perfMeasurer = startMeasuringReducerPerformance(normalizedKey)
         const executedReducer = stateOrReducer(core.M$get())
@@ -238,19 +259,18 @@ export function createSource<S>({
           perfMeasurer.isAsync.current = true
           return new Promise((resolve) => {
             executedReducer.then((fulfilledPartialState) => {
-              nextState = fulfilledPartialState // Is an asynchronous reducer
+              core.M$dynamicSet(fulfilledPartialState) // Is async reducer
               perfMeasurer.stop()
               resolve()
-            })
+            }).catch((e) => { throw e }) // KIV: Is this a good approach?
           })
         } else {
-          nextState = executedReducer // Is a reducer
+          core.M$dynamicSet(executedReducer) // Is reducer
           perfMeasurer.stop()
         }
       } else {
-        nextState = stateOrReducer // Is a state
+        core.M$dynamicSet(stateOrReducer) // Is direct set
       }
-      core.M$dynamicSet(nextState)
     })
   }
 
@@ -268,13 +288,13 @@ export function createSource<S>({
   // use so that we can automatically clean them up, but since for most cases,
   // sources are used for as long as an app is opened, this can be temporarily
   // disregarded.
-  const UNSTABLE_cleanup = (): void => {
+  const cleanup = (): void => {
     const childDepStack = Object.keys(M$childDeps)
     if (childDepStack.length !== 0) {
       devWarn(
-        `Attempted to call \`${UNSTABLE_cleanup.name}()\` on ` +
-        `'${String(normalizedKey)}' while there are still other sources ` +
-        `that depend on it: '${childDepStack.join('\', \'')}'.`
+        `Attempted to cleanup '${String(normalizedKey)}' while there are ` +
+        'still other sources that depend on it: ' +
+        `'${safeStringJoin(childDepStack, '\', \'')}'.`
       )
     }
     for (const dep of deps) {
@@ -306,7 +326,7 @@ export function createSource<S>({
     reset,
     hydrate,
     watch: core.M$watch,
-    UNSTABLE_cleanup,
+    cleanup,
   }
 
 }
