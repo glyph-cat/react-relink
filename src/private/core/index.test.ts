@@ -250,6 +250,64 @@ describe(createRelinkCore.name, (): void => {
 
     })
 
+    describe('Special cases', (): void => {
+
+      describe('Omit firing events for repeated hydration change', (): void => {
+
+        test('Hydration start', (): void => {
+
+          const core = createRelinkCore({ value: 1 }, false)
+          const capturedEventStack: Array<RelinkEvent<TestState>> = []
+          const unwatchStateChange = core.M$watch((event): void => {
+            capturedEventStack.push(event)
+          })
+
+          // If already hydrating, calling 'M$hydrate' will not cause anymore
+          // events to be fired.
+          core.M$hydrate(/* Empty means hydration is starting */)
+          core.M$hydrate(/* Empty means hydration is starting */)
+          expect(capturedEventStack).toStrictEqual([{
+            type: RelinkEventType.hydrate,
+            isHydrating: true,
+            state: { value: 1 },
+          }])
+
+          // Cleanup
+          unwatchStateChange()
+
+        })
+
+        test('Hydration end', (): void => {
+
+          const core = createRelinkCore({ value: 1 }, false)
+          const capturedEventStack: Array<RelinkEvent<TestState>> = []
+          const unwatchStateChange = core.M$watch((event): void => {
+            capturedEventStack.push(event)
+          })
+
+          // If already not hydrating, calling 'M$hydrate' N times will result
+          // in N events being fired.
+          core.M$hydrate({ value: 2 })
+          core.M$hydrate({ value: 3 })
+          expect(capturedEventStack).toStrictEqual([{
+            type: RelinkEventType.hydrate,
+            isHydrating: false,
+            state: { value: 2 },
+          }, {
+            type: RelinkEventType.hydrate,
+            isHydrating: false,
+            state: { value: 3 },
+          }])
+
+          // Cleanup
+          unwatchStateChange()
+
+        })
+
+      })
+
+    })
+
   })
 
 })

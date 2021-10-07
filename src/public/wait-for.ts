@@ -22,9 +22,9 @@ export function waitForAll(...args: any[]): Promise<void> {
   const deps: Array<RelinkSource<any>> = args[0] // Deps are aources
   const deprecatedCallback = args[1]
   if (isFunction(deprecatedCallback)) {
-    const depsKeyStack = []
+    const depsKeyStack: Array<RelinkSourceKey> = []
     for (const dep of deps) {
-      depsKeyStack.push(`'${String(dep[INTERNALS_SYMBOL].M$key)}'`)
+      depsKeyStack.push(dep[INTERNALS_SYMBOL].M$key)
     }
     devWarn(
       'Starting from V1, `waitForAll` is just an async function, but it seems like you have passed a callback to it, which will do nothing. Instead, use `await waitForAll(...)` or `waitForAll(...).then()`. ' + `You were waiting for these sources: ${formatSourceKeyArray(depsKeyStack)}.`
@@ -32,9 +32,12 @@ export function waitForAll(...args: any[]): Promise<void> {
   }
   return new Promise((resolve, reject): void => {
     try {
-      // Resolve and exit right away array is empty
-      if (deps.length <= 0) { return resolve() } // Early exit
       const isReadyTracker: Record<RelinkSourceKey, true> = {}
+      const resolveIfAllAreReady = (): void => {
+        if (Object.keys(isReadyTracker).length === deps.length) {
+          resolve()
+        }
+      }
       for (const source of deps) {
         if (source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
           // If source is already hydrated, no need add watcher
@@ -49,13 +52,12 @@ export function waitForAll(...args: any[]): Promise<void> {
             } else {
               isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
               unwatch()
-              if (Object.keys(isReadyTracker).length === deps.length) {
-                resolve()
-              }
+              resolveIfAllAreReady()
             }
           })
         }
       }
+      resolveIfAllAreReady()
     } catch (e) {
       reject(e)
     }

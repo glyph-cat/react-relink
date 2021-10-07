@@ -10,10 +10,12 @@ import {
   registerKey,
   unregisterKey,
 } from '../private/key-registry'
+import { createNDLogger } from '../private/ndlog'
 import {
   createNoUselessHydrationWarner,
   HydrationConcludeType,
 } from '../private/no-useless-hydration-warner'
+import { startMeasuringReducerPerformance } from '../private/performance'
 import { safeStringJoin } from '../private/string-formatting'
 import {
   RelinkEventType,
@@ -24,7 +26,6 @@ import {
 } from '../schema'
 import { createSuspenseWaiter, SuspenseWaiter } from '../private/suspense-waiter'
 import { isFunction, isThenable } from '../private/type-checker'
-import { startMeasuringReducerPerformance } from '../private/performance'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
@@ -72,7 +73,9 @@ export function createSource<S>({
   } else {
     throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
   }
+
   registerKey(normalizedKey)
+  const NDLogger = createNDLogger(normalizedKey)
 
 
   // === Dependency Handling ===
@@ -100,7 +103,7 @@ export function createSource<S>({
   const isSourcePublic = mergedOptions.public
   const isVirtualBatchEnabled = mergedOptions.virtualBatch
   const isSuspenseEnabled = mergedOptions.suspense
-  const core = createRelinkCore(defaultState, isSourceMutable)
+  const core = createRelinkCore(defaultState, isSourceMutable, normalizedKey)
 
 
   // === Hydration ===
@@ -114,8 +117,14 @@ export function createSource<S>({
 
   const hydrate: RelinkSource<S>['hydrate'] = (callback): Promise<void> => {
     core.M$hydrate(/* Empty means hydration is starting */)
+    NDLogger.echo('Hydration requested')
     return gatedFlow.M$exec((): void | Promise<void> => {
       const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
+      NDLogger.echo('Beginning execution in gated flow')
+      // TODO:
+      // Try to not have different if-else blocks for suspense
+      // Create a promise no matter what
+      // Then, if `suspense:true`, assign that promise to `suspenseWaiter`
       if (isSuspenseEnabled) {
         const suspensePromise: Promise<void> = new Promise((resolve): void => {
           callback({
@@ -143,6 +152,8 @@ export function createSource<S>({
           return suspensePromise
         }
       } else {
+        NDLogger.echo('isSuspenseEnabled: false')
+        NDLogger.echo('Executing hydration callback')
         const executedCallback = callback({
           commit(hydratedState: S): void {
             const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
@@ -158,16 +169,31 @@ export function createSource<S>({
           },
         })
         if (isThenable(executedCallback)) {
+          NDLogger.echo('executedCallback is thenable? - YES')
           // Return the callback so that it can be await-ed
           return executedCallback
+        } else {
+          NDLogger.echo('executedCallback is thenable? - NO')
         }
       }
     })
   }
 
-  const hydrateIfLifecycleInitIsProvided = (): void => {
+  // TOFIX:
+  // `attemptHydration` and the `hydrate` function inside it are not await-ed
+  // This is why `waitForAll` fails
+  const attemptHydration = async (): Promise<void> => {
+    NDLogger.echo('attemptHydration()')
     if (isFunction(lifecycle.init)) {
-      hydrate(lifecycle.init)
+      NDLogger.echo('`lifecycle.init` is function')
+      if (allDepsAreReady(deps)) {
+        NDLogger.echo('allDepsAreReady: true // Hydrating with `lifecycle.init`…')
+        hydrate(lifecycle.init)
+      } else {
+        NDLogger.echo('allDepsAreReady: false')
+      }
+    } else {
+      NDLogger.echo('`lifecycle.init` is NOT a function')
     }
   }
 
@@ -178,9 +204,7 @@ export function createSource<S>({
   // doesn't end up hydrating twice meaninglessly. By right, watch handlers
   // should only receive ONE event from a source in this case
   // KIV/TODO: Write a test to make sure only ONE event is received.
-  if (allDepsAreReady(deps)) {
-    hydrateIfLifecycleInitIsProvided()
-  }
+  attemptHydration()
 
   // Watchers are used to allow subsequent hydrations if any parent deps are
   // being rehydrated.
@@ -194,6 +218,8 @@ export function createSource<S>({
       if (event.isHydrating) {
         // Lock gate to prevent further state changes.
         // gatedFlow.M$lock()
+        // Let it be known that this source is (pending) hydrating
+        core.M$hydrate(/* Empty means hydration is starting */)
       } else {
         // Open gate to resume queued state changes.
         // gatedFlow.M$open()
@@ -208,9 +234,7 @@ export function createSource<S>({
         // knowing that they will be overriden by the new hydrated values, it is
         // important to know that there may be function called by the developer
         // that are await-ing for those state changes to be completed.
-        if (allDepsAreReady(deps)) {
-          hydrateIfLifecycleInitIsProvided()
-        }
+        attemptHydration()
       }
     })
     depWatchers.push(unwatchDepHydration)

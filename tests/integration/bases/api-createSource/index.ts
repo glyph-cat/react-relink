@@ -8,5 +8,6 @@ export default function (testProps: IntegrationTestProps): void {
     require('./key-validity').default(testProps)
     require('./reset').default(testProps)
     require('./set').default(testProps)
+    require('./circular-deps').default(testProps)
   })
 }
