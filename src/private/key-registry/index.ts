@@ -1,4 +1,4 @@
-import { IS_CLIENT_ENV, IS_DEBUG_ENV } from '../../constants'
+import { IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { warnDuplicateKey } from './warn-duplicate-key'
 
@@ -14,7 +14,7 @@ export function registerKey(key: RelinkSourceKey): void {
   if (IS_CLIENT_ENV) {
     if (!KEY_REGISTRY[key]) {
       KEY_REGISTRY[key] = true
-    } else if (IS_DEBUG_ENV) {
+    } else if (IS_DEV_ENV) {
       warnDuplicateKey(key)
     }
   }

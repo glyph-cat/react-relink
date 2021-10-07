@@ -49,7 +49,6 @@ export default function ({ Relink }: IntegrationTestProps): void {
     })
 
     const promise = await waitForAll([SourceA, SourceB, SourceC])
-    await delay(TIME_GAP(2))
     expect(promise).toBe(undefined)
 
     // Cleanup

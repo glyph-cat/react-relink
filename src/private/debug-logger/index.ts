@@ -1,15 +1,15 @@
-import { IS_DIST_ENV } from '../../constants'
+import { IS_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 
 let logStore: Array<string> = []
 
-export function dumpNDlogs(): void {
+export function dumpDebuglogs(): void {
   if (logStore.length > 0) {
     // eslint-disable-next-line no-console
     console.log([
-      '=== ND Logs dump start ===',
+      '=== Debug Logs dump start ===',
       ...logStore,
-      '=== ND Logs dump end ===',
+      '=== Debug Logs dump end ===',
     ].join('\n'))
     logStore = []
   }
@@ -19,15 +19,15 @@ export function dumpNDlogs(): void {
  * Specify source keys here to focus only on them. Logs that belong to other
  * sources will not be logged.
  */
-const ND_LOG_FILTER: Array<RelinkSourceKey> = [
-  'ndlog-test',
+const DEBUG_LOG_FILTER: Array<RelinkSourceKey> = [
+  'debug-logger-test',
   // 'test/waitForAll/some-with-deps/a',
   'test/waitForAll/some-with-deps/b',
   'test/waitForAll/some-with-deps/b/sub-1',
   // 'test/waitForAll/some-with-deps/c',
 ]
 
-export interface NDLogger {
+export interface DebugLogger {
   /**
    * @returns Status on whether log was made.
    */
@@ -47,14 +47,14 @@ function getTimestamp(): string {
 }
 
 /**
- * Create non-distribution (ND) logger.
+ * Instantiate a logger that only runs in the internal debugging environment.
  * Will be omitted in distributable versions of the code bundle.
  */
-export function createNDLogger(sourceKey: RelinkSourceKey): NDLogger {
+export function createDebugLogger(sourceKey: RelinkSourceKey): DebugLogger {
 
   const echo = (message: string): true | void => {
-    if (!IS_DIST_ENV) {
-      if (ND_LOG_FILTER.includes(sourceKey)) {
+    if (IS_DEBUG_ENV) {
+      if (DEBUG_LOG_FILTER.includes(sourceKey)) {
         logStore.push(`${getTimestamp()} ${String(sourceKey)}: ${message}`)
         return true
       }

@@ -1,5 +1,5 @@
 import { MutableRefObject } from 'react'
-import { IS_DEBUG_ENV, IS_DIST_ENV } from '../../constants'
+import { IS_DEV_ENV, IS_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { devWarn } from '../dev'
 
@@ -57,7 +57,7 @@ export function startMeasuringReducerPerformance(
   let isNotResponding = false
   const isAsync: MutableRefObject<boolean> = { current: false }
 
-  if (IS_DEBUG_ENV) {
+  if (IS_DEV_ENV) {
     timeStart = performanceNow()
     timeoutRef = setTimeout((): void => {
       isNotResponding = true
@@ -71,7 +71,7 @@ export function startMeasuringReducerPerformance(
    * internal testing environment, not the distributed ones.
    */
   const stop = (): MarkReducerEndPayload => {
-    if (IS_DEBUG_ENV) {
+    if (IS_DEV_ENV) {
       clearTimeout(timeoutRef)
       const timeEnd = performanceNow()
       const timeDiff = Math.round(timeEnd - timeStart)
@@ -83,7 +83,7 @@ export function startMeasuringReducerPerformance(
       if (isSlow) {
         devWarn(formatReducerSlowWarning(sourceKey, timeDiff, isAsync.current))
       }
-      if (!IS_DIST_ENV) {
+      if (IS_DEBUG_ENV) {
         return [isSlow, isNotResponding]
       }
     }

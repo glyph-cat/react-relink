@@ -1,5 +1,5 @@
 import { useCallback, useDebugValue, useReducer } from 'react'
-import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEBUG_ENV } from './constants'
+import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEV_ENV } from './constants'
 import {
   forceUpdateReducer,
   useLayoutEffect,
@@ -130,7 +130,7 @@ export function useRelinkValue<S, K>(
   useDebugValue(undefined, (): DebugValueReturnType => {
     // In case source contains sensitive information, it is hidden away in
     // production environment by default.
-    if (source[INTERNALS_SYMBOL].M$isPublic || IS_DEBUG_ENV) {
+    if (source[INTERNALS_SYMBOL].M$isPublic || IS_DEV_ENV) {
       return {
         key: source[INTERNALS_SYMBOL].M$key,
         selector,

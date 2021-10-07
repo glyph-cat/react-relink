@@ -2,6 +2,7 @@ import { INTERNALS_SYMBOL } from '../constants'
 import { allDepsAreReady } from '../private/all-deps-are-ready'
 import { checkForCircularDeps } from '../private/circular-deps'
 import { createRelinkCore, HYDRATION_SKIP_MARKER } from '../private/core'
+import { createDebugLogger } from '../private/debug-logger'
 import { devWarn } from '../private/dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../private/errors'
 import { createGatedFlow } from '../private/gated-flow'
@@ -10,7 +11,6 @@ import {
   registerKey,
   unregisterKey,
 } from '../private/key-registry'
-import { createNDLogger } from '../private/ndlog'
 import {
   createNoUselessHydrationWarner,
   HydrationConcludeType,
@@ -75,7 +75,7 @@ export function createSource<S>({
   }
 
   registerKey(normalizedKey)
-  const NDLogger = createNDLogger(normalizedKey)
+  const debugLogger = createDebugLogger(normalizedKey)
 
 
   // === Dependency Handling ===
@@ -117,10 +117,10 @@ export function createSource<S>({
 
   const hydrate: RelinkSource<S>['hydrate'] = (callback): Promise<void> => {
     core.M$hydrate(/* Empty means hydration is starting */)
-    NDLogger.echo('Hydration requested')
+    debugLogger.echo('Hydration requested')
     return gatedFlow.M$exec((): void | Promise<void> => {
       const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
-      NDLogger.echo('Beginning execution in gated flow')
+      debugLogger.echo('Beginning execution in gated flow')
       // TODO:
       // Try to not have different if-else blocks for suspense
       // Create a promise no matter what
@@ -152,8 +152,8 @@ export function createSource<S>({
           return suspensePromise
         }
       } else {
-        NDLogger.echo('isSuspenseEnabled: false')
-        NDLogger.echo('Executing hydration callback')
+        debugLogger.echo('isSuspenseEnabled: false')
+        debugLogger.echo('Executing hydration callback')
         const executedCallback = callback({
           commit(hydratedState: S): void {
             const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
@@ -169,11 +169,11 @@ export function createSource<S>({
           },
         })
         if (isThenable(executedCallback)) {
-          NDLogger.echo('executedCallback is thenable? - YES')
+          debugLogger.echo('executedCallback is thenable? - YES')
           // Return the callback so that it can be await-ed
           return executedCallback
         } else {
-          NDLogger.echo('executedCallback is thenable? - NO')
+          debugLogger.echo('executedCallback is thenable? - NO')
         }
       }
     })
@@ -183,17 +183,17 @@ export function createSource<S>({
   // `attemptHydration` and the `hydrate` function inside it are not await-ed
   // This is why `waitForAll` fails
   const attemptHydration = async (): Promise<void> => {
-    NDLogger.echo('attemptHydration()')
+    debugLogger.echo('attemptHydration()')
     if (isFunction(lifecycle.init)) {
-      NDLogger.echo('`lifecycle.init` is function')
+      debugLogger.echo('`lifecycle.init` is function')
       if (allDepsAreReady(deps)) {
-        NDLogger.echo('allDepsAreReady: true // Hydrating with `lifecycle.init`…')
+        debugLogger.echo('allDepsAreReady: true // Hydrating with `lifecycle.init`…')
         hydrate(lifecycle.init)
       } else {
-        NDLogger.echo('allDepsAreReady: false')
+        debugLogger.echo('allDepsAreReady: false')
       }
     } else {
-      NDLogger.echo('`lifecycle.init` is NOT a function')
+      debugLogger.echo('`lifecycle.init` is NOT a function')
     }
   }
 

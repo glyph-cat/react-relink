@@ -1,5 +1,5 @@
-import { dumpNDlogs } from './src/private/ndlog'
+import { dumpDebuglogs } from './src/private/debug-logger'
 
 afterAll((): void => {
-  dumpNDlogs()
+  dumpDebuglogs()
 })
