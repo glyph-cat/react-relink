@@ -65,10 +65,11 @@ export interface RelinkLifecycleConfig<S> {
 export interface RelinkSourceOptions {
   /**
    * ## 🚧 EXPERIMENTAL 🚧
+   * ### ❌ Currently not supported
    * Suspense while hydrating.
    * @defaultValue `false`
    */
-  suspense?: boolean
+  suspense?: boolean // TODO
   /**
    * Make the source mutable.
    * @defaultValue `true`

@@ -190,7 +190,7 @@ describe(createRelinkCore.name, (): void => {
 
       core.M$hydrate(/* Empty means hydration is starting */)
       expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(core.M$getHydrationStatus()).toBe(true)
+      expect(core.M$getIsHydrating()).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,
@@ -199,7 +199,7 @@ describe(createRelinkCore.name, (): void => {
 
       core.M$hydrate({ value: 2 })
       expect(core.M$get()).toStrictEqual({ value: 2 })
-      expect(core.M$getHydrationStatus()).toBe(false)
+      expect(core.M$getIsHydrating()).toBe(false)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,
@@ -225,7 +225,7 @@ describe(createRelinkCore.name, (): void => {
 
       core.M$hydrate(/* Empty means hydration is starting */)
       expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(core.M$getHydrationStatus()).toBe(true)
+      expect(core.M$getIsHydrating()).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,
@@ -234,7 +234,7 @@ describe(createRelinkCore.name, (): void => {
 
       core.M$hydrate(HYDRATION_SKIP_MARKER)
       expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(core.M$getHydrationStatus()).toBe(false)
+      expect(core.M$getIsHydrating()).toBe(false)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,

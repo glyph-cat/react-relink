@@ -37,7 +37,7 @@ interface RelinkCore<S> {
   /**
    * Retrieve current status on whether core is currently hydrating.
    */
-  M$getHydrationStatus(): boolean
+  M$getIsHydrating(): boolean
   /**
    * The same `M$watch` method from `createWatcher`.
    */
@@ -58,7 +58,7 @@ export function createRelinkCore<S>(
 ): RelinkCore<S> {
 
   const debugLogger = createDebugLogger(sourceKey)
-  debugLogger.echo('Core created')
+  // debugLogger.echo('Core created')
 
   const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
   const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
@@ -70,7 +70,7 @@ export function createRelinkCore<S>(
 
   const M$get = (): S => copyState(currentState) // 📦 (>>>) Expose
 
-  const M$getHydrationStatus = (): boolean => isHydrating
+  const M$getIsHydrating = (): boolean => isHydrating
 
   const M$hydrate = (
     // Refer to Local Note [A] near end of file
@@ -101,6 +101,7 @@ export function createRelinkCore<S>(
     // * An event will also be fired if hydration started, but only if it hasn't
     // already started, if that makes sense.
     if (!isHydrating || isHydrating && hydrationStateDidChange) {
+      debugLogger.echo(`🔥 Firing hydration event (isHydrating: ${isHydrating})`)
       watcher.M$refresh({
         isHydrating,
         type: RelinkEventType.hydrate,
@@ -131,7 +132,7 @@ export function createRelinkCore<S>(
     M$get,
     M$hydrate,
     M$dynamicSet,
-    M$getHydrationStatus,
+    M$getIsHydrating,
     M$watch: watcher.M$watch,
     M$unwatchAll: watcher.M$unwatchAll,
   }

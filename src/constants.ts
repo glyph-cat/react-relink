@@ -16,13 +16,15 @@ export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
  * browser. Even though it is accessible now, there's no guarantee it will stay
  * the same in the future. A more logical and transparent way is to create a
  * separate build for React Native where `IS_CLIENT_ENV` will always be true.
- * Here, it is also assumed that the internal debug environment is a client.
+ * Here, it is also assumed that the internal debug environment and UMD builds
+ * run on a client.
  *
  * NOTE: This should only be used to control the library's behaviour in different
  * environments, NOT for checking whether browser APIs are available.
  */
 export const IS_CLIENT_ENV = IS_DEBUG_ENV ||
-  process.env.BUILD_ENV === 'react-native' ||
+  process.env.BUILD_TYPE === 'react-native' ||
+  process.env.BUILD_TYPE === 'umd' ||
   typeof window !== 'undefined'
 // ^ NOTE: `typeof window !== 'undefined'` must be placed at the last because
 // the value remains unknown at compile time, and will result in dead code not
