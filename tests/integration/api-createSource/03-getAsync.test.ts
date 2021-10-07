@@ -1,10 +1,11 @@
-import { IntegrationTestProps } from '../../../helpers'
+import { IntegrationTestConfig } from '../../helpers'
+import { wrapper } from '../wrapper'
 
-export default function ({ Relink }: IntegrationTestProps): void {
+wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource } = Relink
 
-  test('Source.getAsync()', async (): Promise<void> => {
+  test('main', async (): Promise<void> => {
     const Source = createSource({
       key: 'test/Source.getAsync()',
       default: 1,
@@ -13,4 +14,4 @@ export default function ({ Relink }: IntegrationTestProps): void {
     Source.cleanup()
   })
 
-}
+})

@@ -1,11 +1,12 @@
-import { IntegrationTestProps } from '../../../helpers'
+import { IntegrationTestConfig } from '../../helpers'
+import { wrapper } from '../wrapper'
 
-export default function ({ Relink }: IntegrationTestProps): void {
+wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, waitForAll } = Relink
   const testName = 'waitForAll'
 
-  test('No deps', async (): Promise<void> => {
+  test('main', async (): Promise<void> => {
 
     const SourceA = createSource({
       key: `test/${testName}/no-deps/a`,
@@ -30,4 +31,4 @@ export default function ({ Relink }: IntegrationTestProps): void {
 
   })
 
-}
+})

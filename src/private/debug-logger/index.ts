@@ -1,5 +1,7 @@
+import chalk from 'chalk'
 import { IS_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
+import { getHexFromString } from './get-hex-from-string'
 
 let logStore: Array<string> = []
 
@@ -15,11 +17,13 @@ export function dumpDebuglogs(): void {
   }
 }
 
+const GENERIC_SYMBOL = Symbol('Generic')
 /**
  * Specify source keys here to focus only on them. Logs that belong to other
  * sources will not be logged.
  */
 const DEBUG_LOG_FILTER: Array<RelinkSourceKey> = [
+  GENERIC_SYMBOL,
   'debug-logger-test',
   // 'test/waitForAll/some-with-deps/a',
   'test/waitForAll/some-with-deps/b',
@@ -36,14 +40,16 @@ export interface DebugLogger {
 
 function getTimestamp(): string {
   const now = new Date()
-  const DD = `${now.getDate()}`.padStart(2, '0')
-  const MM = `${now.getMonth() + 1}`.padStart(2, '0')
-  const YYYY = now.getFullYear()
+  // const DD = `${now.getDate()}`.padStart(2, '0')
+  // const MM = `${now.getMonth() + 1}`.padStart(2, '0')
+  // const YYYY = now.getFullYear()
   const hh = `${now.getHours()}`.padStart(2, '0')
   const mm = `${now.getMinutes()}`.padStart(2, '0')
   const ss = `${now.getSeconds()}`.padStart(2, '0')
   const ms = `${now.getMilliseconds()}`.padStart(3, '0')
-  return `${DD}/${MM}/${YYYY} ${hh}:${mm}:${ss}.${ms}`
+  // Date is abbreviated for now to give space to the logged messages
+  // return `${DD}/${MM}/${YYYY} ${hh}:${mm}:${ss}.${ms}`
+  return `${hh}:${mm}:${ss}.${ms}`
 }
 
 /**
@@ -55,7 +61,11 @@ export function createDebugLogger(sourceKey: RelinkSourceKey): DebugLogger {
   const echo = (message: string): true | void => {
     if (IS_DEBUG_ENV) {
       if (DEBUG_LOG_FILTER.includes(sourceKey)) {
-        logStore.push(`${getTimestamp()} ${String(sourceKey)}: ${message}`)
+        logStore.push([
+          chalk.grey(getTimestamp()),
+          chalk.hex(getHexFromString(String(sourceKey)))(String(sourceKey)),
+          message,
+        ].join(' '))
         return true
       }
     }
@@ -66,3 +76,5 @@ export function createDebugLogger(sourceKey: RelinkSourceKey): DebugLogger {
   }
 
 }
+
+export const genericDebugLogger = createDebugLogger(GENERIC_SYMBOL)

@@ -1,9 +1,12 @@
 import { INTERNALS_SYMBOL } from '../constants'
 import { allDepsAreReady } from '../private/all-deps-are-ready'
 import { checkForCircularDeps } from '../private/circular-deps'
-import { createRelinkCore, HYDRATION_SKIP_MARKER } from '../private/core'
+import {
+  createRelinkCore,
+  HYDRATION_SKIP_MARKER,
+} from '../private/core'
 import { createDebugLogger } from '../private/debug-logger'
-import { devWarn } from '../private/dev'
+import { devError, devWarn } from '../private/dev'
 import { TYPE_ERROR_SOURCE_KEY } from '../private/errors'
 import { createGatedFlow } from '../private/gated-flow'
 import {
@@ -24,7 +27,10 @@ import {
   RelinkSourceKey,
   RelinkSourceOptions,
 } from '../schema'
-import { createSuspenseWaiter, SuspenseWaiter } from '../private/suspense-waiter'
+import {
+  createSuspenseWaiter,
+  SuspenseWaiter,
+} from '../private/suspense-waiter'
 import { isFunction, isThenable } from '../private/type-checker'
 
 // NOTE:
@@ -39,7 +45,8 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
   virtualBatch: false,
 } as const
 
-let isSourceKeyAutogenWarningShown = false
+let isWarningShown_sourceKeyAutogen = false
+let isWarningShown_suspenseNotSupported = false
 
 /**
  * @public
@@ -65,8 +72,8 @@ export function createSource<S>({
     }
   } else if (typeofRawKey === 'undefined') {
     normalizedKey = getAutomaticKey()
-    if (!isSourceKeyAutogenWarningShown) {
-      isSourceKeyAutogenWarningShown = true
+    if (!isWarningShown_sourceKeyAutogen) {
+      isWarningShown_sourceKeyAutogen = true
       devWarn('Starting from V1, every source must have a unique key. This is because it helps simplify Relink\'s codebase and makes debugging easier for you at the same time. To facilitate this change, keys will be automatically generated at runtime for sources that do not already have one. This is only a temporary measure. Eventually, you will need to manually add in the keys.')
     }
     devWarn(`Automatically generated a source key: '${String(normalizedKey)}'`)
@@ -105,6 +112,13 @@ export function createSource<S>({
   const isSuspenseEnabled = mergedOptions.suspense
   const core = createRelinkCore(defaultState, isSourceMutable, normalizedKey)
 
+  if (mergedOptions.suspense) {
+    if (!isWarningShown_suspenseNotSupported) {
+      isWarningShown_suspenseNotSupported = true
+      devError('Suspense for data fetching is currently not supported. For now, it\'s safer to assume that this feature will only be reimplemented in Relink at a later date, presumably when this feature is considered stable from React.')
+    }
+  }
+
 
   // === Hydration ===
 
@@ -112,102 +126,91 @@ export function createSource<S>({
    * Self is not hydrating && deps are not hydrating.
    */
   const M$getIsReadyStatus = (): boolean => {
-    return !core.M$getHydrationStatus() && allDepsAreReady(deps)
+    const isHydrating = core.M$getIsHydrating()
+    const areAllDepsReallyReady = allDepsAreReady(deps)
+    const isReady = !isHydrating && areAllDepsReallyReady
+    debugLogger.echo(`(M$getIsReadyStatus) isHydrating: ${isHydrating}, areAllDepsReallyReady: ${areAllDepsReallyReady}, isReady: ${isReady}`)
+    return isReady
   }
 
   const hydrate: RelinkSource<S>['hydrate'] = (callback): Promise<void> => {
     core.M$hydrate(/* Empty means hydration is starting */)
     debugLogger.echo('Hydration requested')
     return gatedFlow.M$exec((): void | Promise<void> => {
+      debugLogger.echo('Begin executing hydration callback in gated flow')
       const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
-      debugLogger.echo('Beginning execution in gated flow')
-      // TODO:
-      // Try to not have different if-else blocks for suspense
-      // Create a promise no matter what
-      // Then, if `suspense:true`, assign that promise to `suspenseWaiter`
+
+      // KIV: Not sure if this is a good way to implement suspense for data fetching
+      // TODO: Rename variables
+      const susRef = { M$resolve: null }
       if (isSuspenseEnabled) {
-        const suspensePromise: Promise<void> = new Promise((resolve): void => {
-          callback({
-            commit(hydratedState: S): void {
-              const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
-              if (isFirstHydration) {
-                core.M$hydrate(hydratedState)
-                resolve()
-                suspenseWaiter = undefined
-              }
-            },
-            skip(): void {
-              const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
-              if (isFirstHydration) {
-                core.M$hydrate(HYDRATION_SKIP_MARKER)
-                resolve()
-                suspenseWaiter = undefined
-              }
-            },
-          })
-        })
-        suspenseWaiter = createSuspenseWaiter(suspensePromise)
-        if (isThenable(suspensePromise)) {
-          // Return the promise so that it can be await-ed
-          return suspensePromise
-        }
-      } else {
-        debugLogger.echo('isSuspenseEnabled: false')
-        debugLogger.echo('Executing hydration callback')
-        const executedCallback = callback({
-          commit(hydratedState: S): void {
-            const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
-            if (isFirstHydration) {
-              core.M$hydrate(hydratedState)
-            }
-          },
-          skip(): void {
-            const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
-            if (isFirstHydration) {
-              core.M$hydrate(core.M$get())
-            }
-          },
-        })
-        if (isThenable(executedCallback)) {
-          debugLogger.echo('executedCallback is thenable? - YES')
-          // Return the callback so that it can be await-ed
-          return executedCallback
-        } else {
-          debugLogger.echo('executedCallback is thenable? - NO')
-        }
+        suspenseWaiter = createSuspenseWaiter(new Promise((resolve): void => {
+          susRef.M$resolve = resolve
+        }))
       }
+
+      const executedCallback = callback({
+        commit(hydratedState: S): void {
+          const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
+          if (isFirstHydration) {
+            core.M$hydrate(hydratedState)
+            if (susRef.M$resolve) { susRef.M$resolve() }
+            suspenseWaiter = null
+          }
+        },
+        skip(): void {
+          const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
+          if (isFirstHydration) {
+            core.M$hydrate(HYDRATION_SKIP_MARKER)
+            if (susRef.M$resolve) { susRef.M$resolve() }
+            suspenseWaiter = null
+          }
+        },
+      })
+
+      // NOTE: `executedCallback` can be either `Promise<void>` or `void` based
+      // how developers declare it. This making await-ing for hydration possible
+      // automatically.
+      // KIV: However, this creates a potential problem: hydration callbacks are
+      // supposed to return `Promise<void>` or `void`, there's a small chance
+      // that developers might run into some problem and need an escape hatch
+      // and end up trying to await for data from this callback. Should we show
+      // a warning message for that?
+      debugLogger.echo(
+        `isThenable(executedCallback): ${isThenable(executedCallback)}`
+      )
+      return executedCallback
     })
   }
 
   // TOFIX:
   // `attemptHydration` and the `hydrate` function inside it are not await-ed
-  // This is why `waitForAll` fails
+  // This is why `waitForAll` fails. In a browser, this might be okay because
+  // the process doesn't end when idle state, but this is in theory, bad, because
+  // guarantees can't be made based on this mechanism and the fact that it fails
+  // in Node shows it.
   const attemptHydration = async (): Promise<void> => {
     debugLogger.echo('attemptHydration()')
     if (isFunction(lifecycle.init)) {
       debugLogger.echo('`lifecycle.init` is function')
-      if (allDepsAreReady(deps)) {
-        debugLogger.echo('allDepsAreReady: true // Hydrating with `lifecycle.init`…')
-        hydrate(lifecycle.init)
-      } else {
-        debugLogger.echo('allDepsAreReady: false')
-      }
+      await hydrate(lifecycle.init)
     } else {
+      await hydrate(({ skip }) => { skip() })
       debugLogger.echo('`lifecycle.init` is NOT a function')
     }
+    debugLogger.echo(`Are parent deps hydration complete: ${allDepsAreReady(deps)}`)
+    debugLogger.echo(`Is self hydration complete: ${core.M$getIsHydrating()}`)
   }
 
-  // This runs the first round of hydration for this source as soon as it is
-  // deemed that it no longer has parent deps that are still hydrating.
-  // If not all deps are ready, then the code will never run, instead, the one
-  // in the for-loop where we add the watchers will. This is so that a source
-  // doesn't end up hydrating twice meaninglessly. By right, watch handlers
-  // should only receive ONE event from a source in this case
-  // KIV/TODO: Write a test to make sure only ONE event is received.
+  // KIV/TODO: Write a test to ensure this behaviour.
+  // This runs the first round of hydration for this source ASAP, even before
+  // all deps are ready. This is because some applications might want to hydrate
+  // from a local storage first, then fetch data from server and attempt another
+  // hydration after a few moments just to make sure the state is up to date.
+  // This is why watchers are used to allow subsequent hydrations if any parent
+  // deps are being rehydrated or just being hydrated for the first time.
   attemptHydration()
 
-  // Watchers are used to allow subsequent hydrations if any parent deps are
-  // being rehydrated.
   const depWatchers: Array<() => void> = []
   for (const dep of deps) {
     // Register child depenency to this source
@@ -215,6 +218,7 @@ export function createSource<S>({
     const unwatchDepHydration = dep.watch((event) => {
       // Ignore if event is not caused by hydration
       if (event.type !== RelinkEventType.hydrate) { return }
+      debugLogger.echo(`💚 depWatchers received hydration event from '${String(dep[INTERNALS_SYMBOL].M$key)}' (isHydrating: ${event.isHydrating})`)
       if (event.isHydrating) {
         // Lock gate to prevent further state changes.
         // gatedFlow.M$lock()
@@ -234,7 +238,12 @@ export function createSource<S>({
         // knowing that they will be overriden by the new hydrated values, it is
         // important to know that there may be function called by the developer
         // that are await-ing for those state changes to be completed.
-        attemptHydration()
+        if (allDepsAreReady(deps)) {
+          debugLogger.echo('allDepsAreReady: true // Calling `attemptHydration()`…')
+          attemptHydration()
+        } else {
+          debugLogger.echo('allDepsAreReady: false')
+        }
       }
     })
     depWatchers.push(unwatchDepHydration)

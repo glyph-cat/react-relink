@@ -16,6 +16,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "debug": "scope=\"debug\" jest -c ./jest.config.ts",
+    "debug:src": "scope=\"debug\" jest ./src -c ./jest.config.ts",
+    "debug:i": "scope=\"debug\" jest ./tests/integration -c ./jest.config.ts",
     "rollup": "rollup -c ./config/rollup.config.js",
     "types": "tsc --declaration",
     "api": "api-extractor run -c ./config/api-extractor.json --local --verbose",

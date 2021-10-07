@@ -1,14 +1,9 @@
 import * as __relink__ from '../src'
 
-export interface TestBuildConfig {
+export interface IntegrationTestConfig {
   buildType: 'cjs' | 'es' | 'umd'
+  buildEnv: 'debug' | 'dev' | 'prod'
   description: string
-  isDist: boolean
-  src: typeof __relink__
-}
-
-export interface IntegrationTestProps {
-  isDist: boolean
   Relink: typeof __relink__
 }
 
