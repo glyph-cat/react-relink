@@ -1,11 +1,12 @@
 import deepCopy from '../deep-copy'
-import { RelinkEvent, RelinkEventType } from '../../schema'
+import { RelinkEvent, RelinkEventType, RelinkSourceKey } from '../../schema'
 import {
   createWatcher,
   UnwatchCallback,
   WatcherCallback,
 } from '../../private/watcher'
 import { ObjectMarker } from '../helper-types'
+import { createNDLogger } from '../ndlog'
 
 const OMISSION_MARKER: ObjectMarker = {} as const
 export const HYDRATION_SKIP_MARKER: ObjectMarker = {} as const
@@ -52,8 +53,12 @@ interface RelinkCore<S> {
  */
 export function createRelinkCore<S>(
   defaultState: S,
-  isSourceMutable: boolean
+  isSourceMutable: boolean,
+  sourceKey?: RelinkSourceKey
 ): RelinkCore<S> {
+
+  const NDlogger = createNDLogger(sourceKey)
+  NDlogger.echo('Core created')
 
   const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
   const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
@@ -72,7 +77,15 @@ export function createRelinkCore<S>(
     incomingState: S | typeof OMISSION_MARKER = OMISSION_MARKER
   ): void => {
     const isHydrationStart = isIncomingStateOmitted(incomingState)
+    const hydrationStateDidChange = isHydrating !== isHydrationStart
     isHydrating = isHydrationStart
+
+    if (isHydrationStart) {
+      NDlogger.echo('Starting hydration')
+    } else {
+      NDlogger.echo('Concluding hydration')
+    }
+
     if (!isHydrationStart) {
       if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
         // Assume using the initial state
@@ -82,11 +95,18 @@ export function createRelinkCore<S>(
         currentState = copyState(incomingState) // 📦 (<<<) Receive
       }
     }
-    watcher.M$refresh({
-      isHydrating,
-      type: RelinkEventType.hydrate,
-      state: M$get(), // Refer to Local Note [B] near end of file
-    })
+
+    // NOTES:
+    // * An event will be fired if hydration ended.
+    // * An event will also be fired if hydration started, but only if it hasn't
+    // already started, if that makes sense.
+    if (!isHydrating || isHydrating && hydrationStateDidChange) {
+      watcher.M$refresh({
+        isHydrating,
+        type: RelinkEventType.hydrate,
+        state: M$get(), // Refer to Local Note [B] near end of file
+      })
+    }
   }
 
   const M$dynamicSet = (

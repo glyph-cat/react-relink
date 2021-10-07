@@ -1,8 +1,9 @@
 import { Config } from '@jest/types'
 
 const config: Config.InitialOptions = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testRegex: '.test.(tsx|ts|jsx|js)',
-  testTimeout: 2000,
+  testTimeout: 1000,
   timers: 'real',
   verbose: true,
 }
