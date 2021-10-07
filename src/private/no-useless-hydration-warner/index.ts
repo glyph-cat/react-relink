@@ -1,4 +1,4 @@
-import { IS_DEBUG_ENV } from '../../constants'
+import { IS_DEV_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { devError } from '../dev'
 import { formatFunctionNotationArray } from '../string-formatting'
@@ -55,7 +55,7 @@ export function createNoUselessHydrationWarner_PROD(): UselessHydrationWarner {
  * Returns a callback that concludes a hydration phase. Returns true if this is
  * the first hydration, otherwise returns false and shows an error message.
  */
-export const createNoUselessHydrationWarner = IS_DEBUG_ENV
+export const createNoUselessHydrationWarner = IS_DEV_ENV
   ? createNoUselessHydrationWarner_DEV
   : createNoUselessHydrationWarner_PROD
 

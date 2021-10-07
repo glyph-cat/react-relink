@@ -5,8 +5,8 @@ import {
   UnwatchCallback,
   WatcherCallback,
 } from '../../private/watcher'
+import { createDebugLogger } from '../debug-logger'
 import { ObjectMarker } from '../helper-types'
-import { createNDLogger } from '../ndlog'
 
 const OMISSION_MARKER: ObjectMarker = {} as const
 export const HYDRATION_SKIP_MARKER: ObjectMarker = {} as const
@@ -57,8 +57,8 @@ export function createRelinkCore<S>(
   sourceKey?: RelinkSourceKey
 ): RelinkCore<S> {
 
-  const NDlogger = createNDLogger(sourceKey)
-  NDlogger.echo('Core created')
+  const debugLogger = createDebugLogger(sourceKey)
+  debugLogger.echo('Core created')
 
   const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
   const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
@@ -81,9 +81,9 @@ export function createRelinkCore<S>(
     isHydrating = isHydrationStart
 
     if (isHydrationStart) {
-      NDlogger.echo('Starting hydration')
+      debugLogger.echo('Starting hydration')
     } else {
-      NDlogger.echo('Concluding hydration')
+      debugLogger.echo('Concluding hydration')
     }
 
     if (!isHydrationStart) {

@@ -1,6 +1,14 @@
 export const INTERNALS_SYMBOL = Symbol()
 
-export const IS_DIST_ENV = process.env.IS_DIST_ENV === 'true'
+/**
+ * Refers to the environment used to develop Relink.
+ */
+export const IS_DEBUG_ENV = process.env.IS_DEBUG_ENV !== 'false'
+
+/**
+ * Refers to the non-production environment where Relink is used by developers.
+ */
+export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
 
 /**
  * Used to be `IS_BROWSER_ENV` which only `typeof window` is checked.
@@ -8,21 +16,17 @@ export const IS_DIST_ENV = process.env.IS_DIST_ENV === 'true'
  * browser. Even though it is accessible now, there's no guarantee it will stay
  * the same in the future. A more logical and transparent way is to create a
  * separate build for React Native where `IS_CLIENT_ENV` will always be true.
- * Here, it is also assumed that the internal debug environment is a client by
- * checking `process.env.IS_DIST_ENV !== 'true'`. This 'internal debug
- * environment' refers to the one used when building this library.
+ * Here, it is also assumed that the internal debug environment is a client.
  *
  * NOTE: This should only be used to control the library's behaviour in different
  * environments, NOT for checking whether browser APIs are available.
  */
-export const IS_CLIENT_ENV = !IS_DIST_ENV ||
+export const IS_CLIENT_ENV = IS_DEBUG_ENV ||
   process.env.BUILD_ENV === 'react-native' ||
   typeof window !== 'undefined'
 // ^ NOTE: `typeof window !== 'undefined'` must be placed at the last because
 // the value remains unknown at compile time, and will result in dead code not
 // trimmed even when `IS_CLIENT_ENV` is undoubtedly true.
-
-export const IS_DEBUG_ENV = process.env.NODE_ENV !== 'production'
 
 /**
  * @public
