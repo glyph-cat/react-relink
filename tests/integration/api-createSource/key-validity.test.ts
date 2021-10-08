@@ -48,7 +48,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     const callback = (): void => {
       createSource({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore; Refer to Special Note [B] in 'src/index.ts'
+        // @ts-ignore; // Refer to Special Note 'B' in 'src/README.md'
         key: false,
         default: null,
       })
