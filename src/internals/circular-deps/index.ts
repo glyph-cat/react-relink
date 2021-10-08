@@ -1,5 +1,5 @@
 import { INTERNALS_SYMBOL } from '../../constants'
-import { ERROR_CIRCULAR_DEPENDENCY } from '../../private/errors'
+import { ERROR_CIRCULAR_DEPENDENCY } from '../../internals/errors'
 import { RelinkSource, RelinkSourceKey } from '../../schema'
 
 export function checkForCircularDeps(

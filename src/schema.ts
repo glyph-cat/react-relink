@@ -1,5 +1,5 @@
 import { INTERNALS_SYMBOL } from './constants'
-import { Watcher } from './private/watcher/schema'
+import { Watcher } from './internals/watcher/schema'
 
 /**
  * @public

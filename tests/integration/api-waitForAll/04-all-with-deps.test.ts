@@ -1,4 +1,4 @@
-import { genericDebugLogger } from '../../../src/private/debug-logger'
+import { genericDebugLogger } from '../../../src/internals/debug-logger'
 import { delay, IntegrationTestConfig, TIME_GAP } from '../../helpers'
 import { wrapper } from '../wrapper'
 

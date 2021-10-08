@@ -1,4 +1,4 @@
-import { dumpDebuglogs } from './src/private/debug-logger'
+import { dumpDebuglogs } from './src/internals/debug-logger'
 
 jest.mock('scheduler', (): unknown => require('scheduler/unstable_mock'))
 

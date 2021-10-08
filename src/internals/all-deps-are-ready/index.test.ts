@@ -1,6 +1,6 @@
 import { TIME_GAP } from '../../../tests/helpers'
 import { INTERNALS_SYMBOL } from '../../constants'
-import { createSource } from '../../public/source'
+import { createSource } from '../../api/source'
 import { allDepsAreReady } from '.'
 
 describe(allDepsAreReady.name, (): void => {

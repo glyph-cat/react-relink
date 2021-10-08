@@ -1,6 +1,6 @@
 import { INTERNALS_SYMBOL } from '../../constants'
-import { isRelinkSource } from '../../public/is-relink-source'
-import { createSource } from '../../public/source'
+import { isRelinkSource } from '../../api/is-relink-source'
+import { createSource } from '../../api/source'
 import { RelinkSource } from '../../schema'
 import { checkForCircularDeps } from '.'
 

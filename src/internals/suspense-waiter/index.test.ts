@@ -1,5 +1,5 @@
-import { createSuspenseWaiter } from '../../private/suspense-waiter'
 import { TIME_GAP } from '../../../tests/helpers'
+import { createSuspenseWaiter } from '../../internals/suspense-waiter'
 
 describe(createSuspenseWaiter.name, (): void => {
 
