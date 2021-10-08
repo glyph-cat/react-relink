@@ -1,7 +1,8 @@
-import { MutableRefObject, useRef } from 'react'
+import { MutableRefObject, useReducer, useRef } from 'react'
 import { waitFor } from '../../api/wait-for'
+import { INTERNALS_SYMBOL } from '../../constants'
 import { RelinkSource, RelinkEventType } from '../../schema'
-import { useLayoutEffect } from '../custom-hooks'
+import { forceUpdateReducer, useLayoutEffect } from '../custom-hooks'
 import { CallbackWithNoParamAndReturnsVoid } from '../helper-types'
 
 // Modified based from ovieokeh's `wrapPromise` method. Reference:
@@ -70,6 +71,13 @@ export function useSuspenseForDataFetching(
   source: RelinkSource<unknown>
 ): void {
   const waitPromise: MutableRefObject<Promise<void>> = useRef(null)
+  const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
+  // [Point A] Don't wait until component mounts, create promise for suspension
+  // immediately if source is not ready.
+  if (!source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
+    waitPromise.current = waitFor(source)
+  }
+  // If `promise.current` is not null, create suspense waiter out of it.
   if (waitPromise.current) {
     createSuspenseWaiter(waitPromise.current)()
   }
@@ -78,7 +86,8 @@ export function useSuspenseForDataFetching(
       // Ignore if event is not caused by hydration
       if (event.type !== RelinkEventType.hydrate) { return }
       if (event.isHydrating) {
-        waitPromise.current = waitFor(source)
+        // If hydration starts, trigger an update so that we can go to [Point A]
+        forceUpdate()
       }
     })
     return (): void => {
