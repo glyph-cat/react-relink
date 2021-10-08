@@ -1,8 +1,10 @@
-import { RelinkSource } from '../../../src'
-import { IntegrationTestConfig, SampleSchema } from '../../helpers'
+import { RelinkEventType, RelinkSource } from '../../../src'
+import {
+  createEventPromise,
+  IntegrationTestConfig,
+  SampleSchema,
+} from '../../helpers'
 import { wrapper } from '../wrapper'
-
-// TODO: Test with watchers
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
@@ -25,7 +27,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   describe('Without await', (): void => {
 
     test('Direct set', async (): Promise<void> => {
-      const promise = Source.set({
+      const eventPromise = createEventPromise(Source)
+      const setPromise = Source.set({
         foo: 2,
         bar: 2
       })
@@ -33,11 +36,16 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       // changes and this is a direct set.
       expect(Source.get()).toStrictEqual({ foo: 2, bar: 2 })
       expect(await (Source.getAsync())).toStrictEqual({ foo: 2, bar: 2 })
-      expect(await promise).toBe(undefined)
+      expect(await setPromise).toBe(undefined)
+      expect(await eventPromise).toStrictEqual({
+        type: RelinkEventType.set,
+        state: { foo: 2, bar: 2 },
+      })
     })
 
     test('Reducer', async (): Promise<void> => {
-      const promise = Source.set((state) => ({
+      const eventPromise = createEventPromise(Source)
+      const setPromise = Source.set((state) => ({
         ...state,
         bar: state.bar + 1,
       }))
@@ -45,10 +53,15 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       // changes and this a synchronous reducer.
       expect(Source.get()).toStrictEqual({ foo: 1, bar: 2 })
       expect(await (Source.getAsync())).toStrictEqual({ foo: 1, bar: 2 })
-      expect(await promise).toBe(undefined)
+      expect(await setPromise).toBe(undefined)
+      expect(await eventPromise).toStrictEqual({
+        type: RelinkEventType.set,
+        state: { foo: 1, bar: 2 },
+      })
     })
 
     test('Async reducer', async (): Promise<void> => {
+      const eventPromise = createEventPromise(Source)
       const promise = Source.set(async (state) => ({
         ...state,
         bar: state.bar + 1,
@@ -58,6 +71,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       expect(Source.get()).toStrictEqual({ foo: 1, bar: 1 })
       expect(await (Source.getAsync())).toStrictEqual({ foo: 1, bar: 2 })
       expect(await promise).toBe(undefined)
+      expect(await eventPromise).toStrictEqual({
+        type: RelinkEventType.set,
+        state: { foo: 1, bar: 2 },
+      })
     })
 
   })
@@ -65,6 +82,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   describe('With await', (): void => {
 
     test('Direct set', async (): Promise<void> => {
+      const eventPromise = createEventPromise(Source)
       const awaitedPromise = await Source.set({
         foo: 2,
         bar: 2,
@@ -73,9 +91,14 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       expect(Source.get()).toStrictEqual({ foo: 2, bar: 2 })
       expect(await (Source.getAsync())).toStrictEqual({ foo: 2, bar: 2 })
       expect(awaitedPromise).toBe(undefined)
+      expect(await eventPromise).toStrictEqual({
+        type: RelinkEventType.set,
+        state: { foo: 2, bar: 2 },
+      })
     })
 
     test('Reducer', async (): Promise<void> => {
+      const eventPromise = createEventPromise(Source)
       const awaitedPromise = await Source.set((state) => ({
         ...state,
         bar: state.bar + 1
@@ -84,9 +107,14 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       expect(Source.get()).toStrictEqual({ foo: 1, bar: 2 })
       expect(await (Source.getAsync())).toStrictEqual({ foo: 1, bar: 2 })
       expect(awaitedPromise).toBe(undefined)
+      expect(await eventPromise).toStrictEqual({
+        type: RelinkEventType.set,
+        state: { foo: 1, bar: 2 },
+      })
     })
 
     test('Async reducer', async (): Promise<void> => {
+      const eventPromise = createEventPromise(Source)
       const awaitedPromise = await Source.set(async (state) => ({
         ...state,
         bar: state.bar + 1
@@ -95,6 +123,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       expect(Source.get()).toStrictEqual({ foo: 1, bar: 2 })
       expect(await (Source.getAsync())).toStrictEqual({ foo: 1, bar: 2 })
       expect(awaitedPromise).toBe(undefined)
+      expect(await eventPromise).toStrictEqual({
+        type: RelinkEventType.set,
+        state: { foo: 1, bar: 2 },
+      })
     })
 
   })

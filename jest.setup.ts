@@ -1,7 +1,7 @@
 import { dumpDebuglogs } from './src/private/debug-logger'
 
-jest.mock('scheduler', () => require('scheduler/unstable_mock'))
+jest.mock('scheduler', (): unknown => require('scheduler/unstable_mock'))
 
-afterAll((): void => {
+afterEach((): void => {
   dumpDebuglogs()
 })

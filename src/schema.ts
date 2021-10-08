@@ -1,5 +1,5 @@
 import { INTERNALS_SYMBOL } from './constants'
-import { Watcher } from './private/watcher'
+import { Watcher } from './private/watcher/schema'
 
 /**
  * @public
@@ -214,6 +214,7 @@ export interface RelinkSource<S> {
     M$isMutable: boolean
     M$isPublic: boolean
     M$isVirtualBatchEnabled: boolean
+    M$isSuspenseEnabled: boolean
     /**
      * Sources that this one depend on before it can hydrate itself.
      */
@@ -223,7 +224,7 @@ export interface RelinkSource<S> {
      */
     M$childDeps: Record<RelinkSourceKey, true>
     M$directGet(): S
-    M$suspenseOnHydration(): void
+    // M$suspenseOnHydration(): void
     M$getIsReadyStatus(): boolean
   }
 }

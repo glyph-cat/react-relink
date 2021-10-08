@@ -27,10 +27,10 @@ import {
   RelinkSourceKey,
   RelinkSourceOptions,
 } from '../schema'
-import {
-  createSuspenseWaiter,
-  SuspenseWaiter,
-} from '../private/suspense-waiter'
+// import {
+//   createSuspenseWaiter,
+//   SuspenseWaiter,
+// } from '../private/suspense-waiter'
 import { isFunction, isThenable } from '../private/type-checker'
 
 // NOTE:
@@ -96,12 +96,12 @@ export function createSource<S>({
    */
   const gatedFlow = createGatedFlow(deps.length <= 0)
 
-  let suspenseWaiter: SuspenseWaiter
-  const M$suspenseOnHydration = (): void => {
-    if (suspenseWaiter) {
-      suspenseWaiter()
-    }
-  }
+  // let suspenseWaiter: SuspenseWaiter
+  // const M$suspenseOnHydration = (): void => {
+  //   if (suspenseWaiter) {
+  //     suspenseWaiter()
+  //   }
+  // }
 
 
   // === Local Variables & Methods ===
@@ -126,6 +126,8 @@ export function createSource<S>({
    * Self is not hydrating && deps are not hydrating.
    */
   const M$getIsReadyStatus = (): boolean => {
+    // NOTE: If this source's `lifecycle.init` is not provided, `isHydrating`
+    // should always be false.
     const isHydrating = core.M$getIsHydrating()
     const areAllDepsReallyReady = allDepsAreReady(deps)
     const isReady = !isHydrating && areAllDepsReallyReady
@@ -142,28 +144,36 @@ export function createSource<S>({
 
       // KIV: Not sure if this is a good way to implement suspense for data fetching
       // TODO: Rename variables
-      const susRef = { M$resolve: null }
-      if (isSuspenseEnabled) {
-        suspenseWaiter = createSuspenseWaiter(new Promise((resolve): void => {
-          susRef.M$resolve = resolve
-        }))
-      }
+      // const susRef = { M$resolve: null }
+      // KIV: Should self also be suspended if parent dep is hydrating?
+      // Would be a problem if parent has `suspense:true` but self doesn't
+      // KIV: May be relocate suspense logic into hook. Add a listener that
+      // listens for `isHydrating:false`
+      // if (isSuspenseEnabled) {
+      //   suspenseWaiter = createSuspenseWaiter(new Promise((resolve): void => {
+      //     susRef.M$resolve = resolve
+      //   }))
+      // }
 
       const executedCallback = callback({
         commit(hydratedState: S): void {
+          // console.log('Received hydrated state', hydratedState)
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
+          // console.log('isFirstHydration', isFirstHydration)
           if (isFirstHydration) {
             core.M$hydrate(hydratedState)
-            if (susRef.M$resolve) { susRef.M$resolve() }
-            suspenseWaiter = null
+            // if (susRef.M$resolve) { susRef.M$resolve() }
+            // suspenseWaiter = null
           }
         },
         skip(): void {
+          // console.log('Skipping hydration')
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
+          // console.log('isFirstHydration', isFirstHydration)
           if (isFirstHydration) {
             core.M$hydrate(HYDRATION_SKIP_MARKER)
-            if (susRef.M$resolve) { susRef.M$resolve() }
-            suspenseWaiter = null
+            // if (susRef.M$resolve) { susRef.M$resolve() }
+            // suspenseWaiter = null
           }
         },
       })
@@ -195,8 +205,8 @@ export function createSource<S>({
       debugLogger.echo('`lifecycle.init` is function')
       await hydrate(lifecycle.init)
     } else {
-      await hydrate(({ skip }) => { skip() })
       debugLogger.echo('`lifecycle.init` is NOT a function')
+      // await hydrate(({ skip }) => { skip() })
     }
     debugLogger.echo(`Are parent deps hydration complete: ${allDepsAreReady(deps)}`)
     debugLogger.echo(`Is self hydration complete: ${core.M$getIsHydrating()}`)
@@ -322,6 +332,9 @@ export function createSource<S>({
   // sources are used for as long as an app is opened, this can be temporarily
   // disregarded.
   const cleanup = (): void => {
+    // Check if there are any child dependants and proceed to cleanup anyway,
+    // but show a warning if there are child dependants so that developers will
+    // be aware that there might be unintended behaviours.
     const childDepStack = Object.keys(M$childDeps)
     if (childDepStack.length !== 0) {
       devWarn(
@@ -346,11 +359,12 @@ export function createSource<S>({
       M$key: normalizedKey,
       M$isMutable: isSourceMutable,
       M$isPublic: isSourcePublic,
+      M$isSuspenseEnabled: isSuspenseEnabled,
       M$isVirtualBatchEnabled: isVirtualBatchEnabled,
       M$parentDeps: deps,
       M$childDeps,
       M$directGet: core.M$directGet,
-      M$suspenseOnHydration,
+      // M$suspenseOnHydration,
       M$getIsReadyStatus,
     },
     get,

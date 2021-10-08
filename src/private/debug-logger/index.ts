@@ -8,11 +8,7 @@ let logStore: Array<string> = []
 export function dumpDebuglogs(): void {
   if (logStore.length > 0) {
     // eslint-disable-next-line no-console
-    console.log([
-      '=== Debug Logs dump start ===',
-      ...logStore,
-      '=== Debug Logs dump end ===',
-    ].join('\n'))
+    console.log(logStore.join('\n'))
     logStore = []
   }
 }
@@ -23,12 +19,20 @@ const GENERIC_SYMBOL = Symbol('Generic')
  * sources will not be logged.
  */
 const DEBUG_LOG_FILTER: Array<RelinkSourceKey> = [
+
+  // === Defaults ===
   GENERIC_SYMBOL,
   'debug-logger-test',
-  // 'test/waitForAll/some-with-deps/a',
-  'test/waitForAll/some-with-deps/b',
-  'test/waitForAll/some-with-deps/b/sub-1',
-  // 'test/waitForAll/some-with-deps/c',
+
+  // === `waitForAll` ===
+  // // 'test/waitForAll/some-with-deps/a',
+  // 'test/waitForAll/some-with-deps/b',
+  // 'test/waitForAll/some-with-deps/b/sub-1',
+  // // 'test/waitForAll/some-with-deps/c',
+
+  // === 01-lifecycle.init ===
+  'test/Source/lifecycle.init/async',
+
 ]
 
 export interface DebugLogger {
@@ -40,15 +44,10 @@ export interface DebugLogger {
 
 function getTimestamp(): string {
   const now = new Date()
-  // const DD = `${now.getDate()}`.padStart(2, '0')
-  // const MM = `${now.getMonth() + 1}`.padStart(2, '0')
-  // const YYYY = now.getFullYear()
   const hh = `${now.getHours()}`.padStart(2, '0')
   const mm = `${now.getMinutes()}`.padStart(2, '0')
   const ss = `${now.getSeconds()}`.padStart(2, '0')
   const ms = `${now.getMilliseconds()}`.padStart(3, '0')
-  // Date is abbreviated for now to give space to the logged messages
-  // return `${DD}/${MM}/${YYYY} ${hh}:${mm}:${ss}.${ms}`
   return `${hh}:${mm}:${ss}.${ms}`
 }
 
@@ -61,11 +60,15 @@ export function createDebugLogger(sourceKey: RelinkSourceKey): DebugLogger {
   const echo = (message: string): true | void => {
     if (IS_DEBUG_ENV) {
       if (DEBUG_LOG_FILTER.includes(sourceKey)) {
-        logStore.push([
-          chalk.grey(getTimestamp()),
-          chalk.hex(getHexFromString(String(sourceKey)))(String(sourceKey)),
-          message,
-        ].join(' '))
+        const timestamp = chalk.grey(getTimestamp())
+        if (Object.is(sourceKey, GENERIC_SYMBOL)) {
+          logStore.push(`${timestamp} ${message}`)
+        } else {
+          const colorizedSourceKey = chalk.hex(
+            getHexFromString(String(sourceKey))
+          )(String(sourceKey))
+          logStore.push(`${timestamp} ${colorizedSourceKey} ${message}`)
+        }
         return true
       }
     }

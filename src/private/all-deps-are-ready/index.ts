@@ -1,9 +1,12 @@
 import { INTERNALS_SYMBOL } from '../../constants'
 import { RelinkSource } from '../../schema'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { genericDebugLogger } from '../debug-logger'
 
 export function allDepsAreReady(
   sources: Array<RelinkSource<unknown>>
 ): boolean {
+  // genericDebugLogger.echo(`sources.length: ${sources.length}`)
   for (const source of sources) {
     if (!source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
       return false // Early exit
