@@ -1,16 +1,16 @@
 import { useDebugValue } from 'react'
 import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEV_ENV } from '../constants'
-import { useLayoutEffect, useState } from '../private/custom-hooks'
-import deepCopy from '../private/deep-copy'
+import { useLayoutEffect, useState } from '../internals/custom-hooks'
+import deepCopy from '../internals/deep-copy'
 import {
   RelinkEvent,
   RelinkSelector,
   RelinkSource,
   RelinkSourceKey,
 } from '../schema'
-import { isFunction } from '../private/type-checker'
-import { unstable_batchedUpdates } from '../private/unstable_batchedUpdates'
-import { CallbackWithNoParamAndReturnsVoid } from '../private/helper-types'
+import { isFunction } from '../internals/type-checker'
+import { unstable_batchedUpdates } from '../internals/unstable_batchedUpdates'
+import { CallbackWithNoParamAndReturnsVoid } from '../internals/helper-types'
 
 function getInitialState<S, K>(
   source: RelinkSource<S>,

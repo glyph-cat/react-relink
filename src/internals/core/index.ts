@@ -1,10 +1,7 @@
 import deepCopy from '../deep-copy'
 import { RelinkEvent, RelinkEventType, RelinkSourceKey } from '../../schema'
-import {
-  createWatcher,
-  UnwatchCallback,
-  WatcherCallback,
-} from '../../private/watcher'
+import { createWatcher } from '../../internals/watcher'
+import { UnwatchCallback, WatcherCallback } from '../../internals/watcher/schema'
 import { createDebugLogger } from '../debug-logger'
 import { ObjectMarker } from '../helper-types'
 

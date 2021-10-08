@@ -1,8 +1,8 @@
 import { INTERNALS_SYMBOL } from '../constants'
-import { createDebugLogger, genericDebugLogger } from '../private/debug-logger'
-import { devWarn } from '../private/dev'
-import { formatSourceKeyArray } from '../private/string-formatting'
-import { isFunction } from '../private/type-checker'
+import { createDebugLogger, genericDebugLogger } from '../internals/debug-logger'
+import { devWarn } from '../internals/dev'
+import { formatSourceKeyArray } from '../internals/string-formatting'
+import { isFunction } from '../internals/type-checker'
 import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../schema'
 
 /**

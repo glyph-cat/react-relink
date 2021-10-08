@@ -55,7 +55,6 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  // TODO: Use `act()`
   test('Synchronous skip', async (): Promise<void> => {
 
     Source = createSource({
