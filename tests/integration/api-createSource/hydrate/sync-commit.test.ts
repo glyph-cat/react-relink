@@ -1,9 +1,6 @@
-import { RelinkEventType, RelinkSource } from '../../../../src'
-import {
-  createEventStackPromise,
-  IntegrationTestConfig,
-  SampleSchema,
-} from '../../../helpers'
+import { createEventStackPromise } from '../../../../src/debugging'
+import { RelinkEventType, RelinkSource } from '../../../../src/schema'
+import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {

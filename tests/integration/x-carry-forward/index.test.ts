@@ -1,4 +1,5 @@
-import { delay, IntegrationTestConfig, SampleSchema, TIME_GAP } from '../../helpers'
+import { delay, TIME_GAP } from '../../../src/debugging'
+import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {

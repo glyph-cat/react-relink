@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
-import { RelinkSource } from '../../../src'
+import { RelinkSource } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 

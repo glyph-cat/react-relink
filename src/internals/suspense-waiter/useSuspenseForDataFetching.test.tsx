@@ -3,10 +3,9 @@ import { act, create, ReactTestRenderer } from 'react-test-renderer'
 import { createSource } from '../../api/source'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { RelinkSource } from '../../schema'
-import { delay, TIME_GAP } from '../../../tests/helpers'
-import { genericDebugLogger } from '../debug-logger'
+import { delay, genericDebugLogger, TIME_GAP } from '../../debugging'
 
-describe(useSuspenseForDataFetching.name, (): void => {
+describe.skip(useSuspenseForDataFetching.name, (): void => {
 
   let root: ReactTestRenderer
   let Source: RelinkSource<number>

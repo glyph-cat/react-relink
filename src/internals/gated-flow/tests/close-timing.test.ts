@@ -1,4 +1,4 @@
-import { delay, TIME_GAP } from '../../../../tests/helpers'
+import { delay, TIME_GAP } from '../../../debugging'
 import { createGatedFlow } from '..'
 
 // Elaboration: Gate only closes when all currently queued callbacks have been

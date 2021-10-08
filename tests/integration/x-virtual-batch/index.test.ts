@@ -3,8 +3,9 @@ import {
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
 import { act } from 'react-test-renderer'
-import { RelinkSource } from '../../../src'
-import { delay, IntegrationTestConfig, TIME_GAP } from '../../helpers'
+import { delay, TIME_GAP } from '../../../src/debugging'
+import { RelinkSource } from '../../../src/schema'
+import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {

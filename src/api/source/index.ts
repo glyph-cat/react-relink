@@ -1,11 +1,11 @@
 import { INTERNALS_SYMBOL, IS_DEV_ENV } from '../../constants'
+import { createDebugLogger } from '../../debugging'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { checkForCircularDeps } from '../../internals/circular-deps'
 import {
   createRelinkCore,
   HYDRATION_SKIP_MARKER,
 } from '../../internals/core'
-import { createDebugLogger } from '../../internals/debug-logger'
 import { devError, devWarn } from '../../internals/dev'
 import {
   getWarningForForwardedHydrationCallbackValue,

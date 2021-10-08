@@ -10,7 +10,7 @@ const NODE_RESOLVE_CONFIG_BASE = {
   extensions: ['.ts', '.js'],
 }
 
-const INPUT_FILE = 'src/index.ts'
+const INPUT_FILE = 'src/bundle.ts'
 
 const UMD_GLOBALS = {
   react: 'React',
