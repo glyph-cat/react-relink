@@ -1,4 +1,4 @@
-import { delay, TIME_GAP } from '../../../../tests/helpers'
+import { delay, TIME_GAP } from '../../../debugging'
 import { createGatedFlow } from '..'
 
 test('Stress test', async (): Promise<void> => {

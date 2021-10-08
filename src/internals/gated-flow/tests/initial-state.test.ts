@@ -1,4 +1,4 @@
-import { delay, TIME_GAP } from '../../../../tests/helpers'
+import { delay, TIME_GAP } from '../../../debugging'
 import { createGatedFlow } from '..'
 
 // NOTE: Every time `M$exec` is called, so is `M$flush`, but the callbacks

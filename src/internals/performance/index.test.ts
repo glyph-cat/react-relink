@@ -1,4 +1,4 @@
-import { TIME_GAP } from '../../../tests/helpers'
+import { TIME_GAP } from '../../debugging'
 import {
   formatReducerNotRespondingWarning,
   formatReducerSlowWarning,

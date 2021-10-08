@@ -1,5 +1,5 @@
-import { genericDebugLogger } from '../../../src/internals/debug-logger'
-import { delay, IntegrationTestConfig, TIME_GAP } from '../../helpers'
+import { delay, genericDebugLogger, TIME_GAP } from '../../../src/debugging'
+import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {

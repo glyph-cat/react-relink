@@ -6,7 +6,7 @@ const DEBUG_BUILDS: Array<IntegrationTestConfig> = [
     buildEnv: 'debug',
     buildType: 'es',
     description: 'Debug',
-    Relink: require('../../src/index.ts'),
+    Relink: require('../../src/bundle.ts'),
   },
 ]
 const DISTRIBUTABLE_BUILDS: Array<IntegrationTestConfig> = [
