@@ -1,36 +1,36 @@
-import { INTERNALS_SYMBOL, IS_DEV_ENV } from '../constants'
-import { allDepsAreReady } from '../internals/all-deps-are-ready'
-import { checkForCircularDeps } from '../internals/circular-deps'
+import { INTERNALS_SYMBOL, IS_DEV_ENV } from '../../constants'
+import { allDepsAreReady } from '../../internals/all-deps-are-ready'
+import { checkForCircularDeps } from '../../internals/circular-deps'
 import {
   createRelinkCore,
   HYDRATION_SKIP_MARKER,
-} from '../internals/core'
-import { createDebugLogger } from '../internals/debug-logger'
-import { devError, devWarn } from '../internals/dev'
+} from '../../internals/core'
+import { createDebugLogger } from '../../internals/debug-logger'
+import { devError, devWarn } from '../../internals/dev'
 import {
   getWarningForForwardedHydrationCallbackValue,
   TYPE_ERROR_SOURCE_KEY,
-} from '../internals/errors'
-import { createGatedFlow } from '../internals/gated-flow'
+} from '../../internals/errors'
+import { createGatedFlow } from '../../internals/gated-flow'
 import {
   getAutomaticKey,
   registerKey,
   unregisterKey,
-} from '../internals/key-registry'
+} from '../../internals/key-registry'
 import {
   createNoUselessHydrationWarner,
   HydrationConcludeType,
-} from '../internals/no-useless-hydration-warner'
-import { startMeasuringReducerPerformance } from '../internals/performance'
-import { safeStringJoin } from '../internals/string-formatting'
+} from '../../internals/no-useless-hydration-warner'
+import { startMeasuringReducerPerformance } from '../../internals/performance'
+import { safeStringJoin } from '../../internals/string-formatting'
 import {
   RelinkEventType,
   RelinkSource,
   RelinkSourceEntry,
   RelinkSourceKey,
   RelinkSourceOptions,
-} from '../schema'
-import { isFunction, isThenable } from '../internals/type-checker'
+} from '../../schema'
+import { isFunction, isThenable } from '../../internals/type-checker'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names

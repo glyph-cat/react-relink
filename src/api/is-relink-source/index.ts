@@ -1,5 +1,5 @@
-import { INTERNALS_SYMBOL } from '../constants'
-import { RelinkSource } from '../schema'
+import { INTERNALS_SYMBOL } from '../../constants'
+import { RelinkSource } from '../../schema'
 
 /**
  * @public

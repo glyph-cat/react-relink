@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { genericDebugLogger } from '../debug-logger'
 import { Watcher, WatcherCallback, UnwatchCallback } from './schema'
 
 /**
@@ -13,6 +11,11 @@ import { Watcher, WatcherCallback, UnwatchCallback } from './schema'
  */
 export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
 
+  // KIV: Consider using a linked list as it is a better representation of how
+  // listeners should be added, removed and fired in sequence.
+  // The linked list needs to have the following characteristics:
+  // * Elements are always added to end of list
+  // * Elements can be removed at any position
   let watcherCollection: Record<number, CallableFunction> = {}
   let incrementalWatchId = 1
 
@@ -32,12 +35,11 @@ export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
   }
 
   const M$refresh = (...args: A): void => {
-    // KIV
     const callbackStack = Object.values(watcherCollection)
-    // genericDebugLogger.echo(`callbackStack.length: ${callbackStack.length}`)
     for (let i = 0; i < callbackStack.length; i++) {
       callbackStack[i](...args)
     }
+    // KIV: Old implementation below
     // Object.values(watcherMap).forEach((callback): void => {
     //   callback(...args)
     // })
