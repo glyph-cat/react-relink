@@ -3,7 +3,7 @@ import {
   createCleanupRef,
 } from '@chin98edwin/react-test-utils'
 import { act } from 'react-test-renderer'
-import { RelinkSource, useRelinkValue } from '../../../src'
+import { RelinkSource } from '../../../src'
 import {
   createEventPromise,
   delay,
@@ -14,7 +14,7 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, RelinkEventType } = Relink
+  const { createSource, RelinkEventType, useRelinkValue } = Relink
 
   let Source: RelinkSource<number>
   const cleanupRef = createCleanupRef()

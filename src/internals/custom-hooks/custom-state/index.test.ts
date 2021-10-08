@@ -4,12 +4,12 @@ import {
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
 
-const cleanupRef = createCleanupRef()
-afterEach((): void => { cleanupRef.run() })
-
 // Test sets: Primitive/Object × Mutable/Immutable
 
 describe(useState.name, (): void => {
+
+  const cleanupRef = createCleanupRef()
+  afterEach((): void => { cleanupRef.run() })
 
   describe('Primitive data', (): void => {
 
