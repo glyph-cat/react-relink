@@ -2,9 +2,6 @@ import { genericDebugLogger } from '../../../src/private/debug-logger'
 import { delay, IntegrationTestConfig, TIME_GAP } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-// TOFIX: Test failing
-// Apparently the watcher callback isn't even invoked at all
-
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, waitForAll } = Relink
@@ -16,7 +13,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       key: `test/${testName}/some-with-deps/a/sub-1`,
       default: 0,
       lifecycle: {
-        init: ({ commit }) => {
+        init: ({ commit }): void => {
           commit(1)
         },
       },
@@ -26,7 +23,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       key: `test/${testName}/some-with-deps/b/sub-1`,
       default: 0,
       lifecycle: {
-        init: async ({ commit }) => {
+        init: async ({ commit }): Promise<void> => {
           await delay(TIME_GAP(1))
           commit(1)
         },

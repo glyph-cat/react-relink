@@ -1,4 +1,4 @@
-import { useCallback, useDebugValue, useReducer } from 'react'
+import { useCallback, useDebugValue, useReducer, useRef } from 'react'
 import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEV_ENV } from './constants'
 import {
   forceUpdateReducer,
@@ -15,6 +15,7 @@ import {
 } from './schema'
 import { isFunction } from './private/type-checker'
 import { unstable_batchedUpdates } from './private/unstable_batchedUpdates'
+import { createDebugLogger } from './private/debug-logger'
 
 function getInitialState<S, K>(
   source: RelinkSource<S>,
@@ -41,50 +42,56 @@ function useSourceWatcher<S = unknown>(
   source: RelinkSource<S>,
   callback: ((event: RelinkEvent<S>) => void)
 ): void {
+  // TODO: Remove `debugLogger`
+  const debugLogger = useRef(createDebugLogger(source[INTERNALS_SYMBOL].M$key))
   // Add/remove watcher
   useLayoutEffect((): (() => void) => {
     // NOTE: Virtual batching is implemented at the hook level instead of the
     // source because it used to cause faulty `Source.set()` calls.
     let debounceRef: ReturnType<typeof setTimeout>
-    const triggerUpdateRightAway = (
-      event: RelinkEvent<S>
-    ): void => {
-      unstable_batchedUpdates(() => {
+    const triggerUpdateRightAway = (event: RelinkEvent<S>): void => {
+      unstable_batchedUpdates((): void => {
         callback(event)
       })
     }
-    const triggerUpdateDebounced = (
-      details: RelinkEvent<S>
-    ): void => {
+    const triggerUpdateDebounced = (details: RelinkEvent<S>): void => {
       clearTimeout(debounceRef)
-      debounceRef = setTimeout(() => { triggerUpdateRightAway(details) })
+      debounceRef = setTimeout((): void => {
+        triggerUpdateRightAway(details)
+      })
     }
+    debugLogger.current.echo('Adding watcher')
+    const debugLoggerCurrent = debugLogger.current
     const unwatch = source.watch(
       IS_CLIENT_ENV && source[INTERNALS_SYMBOL].M$isVirtualBatchEnabled
         ? triggerUpdateDebounced
         : triggerUpdateRightAway
     )
     return (): void => {
+      debugLoggerCurrent.echo('Removing watcher')
       unwatch()
       clearTimeout(debounceRef)
     }
   }, [source, callback])
 }
 
-function useSuspenseWhenRehydrate<S = unknown>(source: RelinkSource<S>): void {
-  // NOTE: `M$suspenseOnHydration` is called at the top level, which means any
-  // time the components re-renders, it will be called. If `event.type` is
-  // `hydrate`, then only force an update on this hook and the rest should take
-  // care of itself.
-  source[INTERNALS_SYMBOL].M$suspenseOnHydration()
-  const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
-  const sourceWatcherCallback = useCallback((event: RelinkEvent<S>): void => {
-    if (event.type === RelinkEventType.hydrate) {
-      forceUpdate()
-    }
-  }, [])
-  useSourceWatcher(source, sourceWatcherCallback)
-}
+// function useSuspenseWhenRehydrate<S = unknown>(source: RelinkSource<S>): void {
+//   // NOTE: `M$suspenseOnHydration` is called at the top level, which means any
+//   // time the components re-renders, it will be called. If `event.type` is
+//   // `hydrate`, then only force an update on this hook and the rest should take
+//   // care of itself.
+//   source[INTERNALS_SYMBOL].M$suspenseOnHydration()
+//   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
+//   // TODO: Remove `debugLogger`
+//   const debugLogger = useRef(createDebugLogger(source[INTERNALS_SYMBOL].M$key))
+//   const sourceWatcherCallback = useCallback((event: RelinkEvent<S>): void => {
+//     debugLogger.current.echo(JSON.stringify(event))
+//     if (event.type === RelinkEventType.hydrate) {
+//       forceUpdate()
+//     }
+//   }, [])
+//   useSourceWatcher(source, sourceWatcherCallback)
+// }
 
 /**
  * @example
@@ -113,11 +120,12 @@ export function useRelinkValue<S, K>(
   selector?: RelinkSelector<S, K>
 ): S | K {
 
-  useSuspenseWhenRehydrate(source)
+  // useSuspenseWhenRehydrate(source)
+  // source[INTERNALS_SYMBOL].M$suspenseOnHydration()
 
   // Use custom state hook
   const [state, setState] = useState(
-    () => getInitialState(source, selector),
+    (): S | K => getInitialState(source, selector),
     source[INTERNALS_SYMBOL].M$isMutable
   )
 
@@ -140,13 +148,16 @@ export function useRelinkValue<S, K>(
   })
 
   const sourceWatcherCallback = useCallback((event: RelinkEvent<S>): void => {
-    if (event.type !== RelinkEventType.hydrate) {
-      setState(getSubsequentState(
-        event.state,
-        selector,
-        source[INTERNALS_SYMBOL].M$isMutable)
-      )
-    }
+    // if (event.type === RelinkEventType.hydrate) { forceUpdate() }
+    // By not differentiating between events, we allow components to be updated
+    // all the time (actually that is most likely what we want in the end
+    // because otherwise how are components supposed to suspense on data
+    // fetching?)
+    setState(getSubsequentState(
+      event.state,
+      selector,
+      source[INTERNALS_SYMBOL].M$isMutable)
+    )
   }, [selector, setState, source])
   useSourceWatcher<S>(source, sourceWatcherCallback)
 
@@ -193,7 +204,7 @@ export function useRelinkState<S, K>(
 export function useSetRelinkState<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['set'] {
-  useSuspenseWhenRehydrate(source)
+  // useSuspenseWhenRehydrate(source)
   return source.set
 }
 
@@ -205,7 +216,7 @@ export function useSetRelinkState<S>(
 export function useResetRelinkState<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['reset'] {
-  useSuspenseWhenRehydrate(source)
+  // useSuspenseWhenRehydrate(source)
   return source.reset
 }
 
@@ -217,7 +228,7 @@ export function useResetRelinkState<S>(
 export function useHydrateRelinkSource<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['hydrate'] {
-  useSuspenseWhenRehydrate(source)
+  // useSuspenseWhenRehydrate(source)
   return source.hydrate
 }
 

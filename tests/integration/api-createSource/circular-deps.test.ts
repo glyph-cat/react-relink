@@ -2,6 +2,8 @@ import { RelinkSource } from '../../../src'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
+// KIV: There used to be a problem where `allDepsAreReady` will be called
+// infinitely.
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, isRelinkSource } = Relink
@@ -15,7 +17,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     if (isRelinkSource(SourceC)) { SourceC.cleanup() }
   })
 
-  test.skip('main', (): void => {
+  test('main', (): void => {
     const callback = (): void => {
       const sourceADeps = []
       SourceA = createSource({
@@ -35,7 +37,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
         deps: [SourceB],
       })
     }
-    expect(callback).toThrow() // TODO: Check error message
+    expect(callback).toThrow(
+      /test\/createSource\/circular-deps\/c -> test\/createSource\/circular-deps\/b -> test\/createSource\/circular-deps\/a -> test\/createSource\/circular-deps\/b/
+    )
   })
 
 })

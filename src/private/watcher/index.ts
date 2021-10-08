@@ -1,24 +1,6 @@
-import { CallbackWithNoParamAndReturnsVoid } from '../helper-types'
-
-export type WatcherCallback<A extends Array<unknown>> = (...args: A) => void
-
-export type UnwatchCallback = CallbackWithNoParamAndReturnsVoid
-
-export interface Watcher<A extends Array<unknown>> {
-  /**
-   * Accepts a callback and start watching for changes. The callback will be
-   * invoked whenever a refresh is triggered.
-   */
-  M$watch(callback: WatcherCallback<A>): UnwatchCallback
-  /**
-   * Forcecully remove all watchers.
-   */
-  M$unwatchAll(): void
-  /**
-   * Triggers a refresh.
-   */
-  M$refresh: WatcherCallback<A>
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { genericDebugLogger } from '../debug-logger'
+import { Watcher, WatcherCallback, UnwatchCallback } from './schema'
 
 /**
  * Creates a Watcher.
@@ -31,25 +13,28 @@ export interface Watcher<A extends Array<unknown>> {
  */
 export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
 
-  let watcherMap: Record<number, CallableFunction> = {}
+  let watcherCollection: Record<number, CallableFunction> = {}
   let incrementalWatchId = 1
 
   const M$watch = (callback: WatcherCallback<A>): UnwatchCallback => {
     const newId = incrementalWatchId++
-    watcherMap[newId] = callback
+    watcherCollection[newId] = callback
+    // genericDebugLogger.echo(`Added watcher (ID: ${newId})`)
     const unwatch = (): void => {
-      delete watcherMap[newId]
+      delete watcherCollection[newId]
+      // genericDebugLogger.echo(`Removed watcher (ID: ${newId})`)
     }
     return unwatch
   }
 
   const M$unwatchAll = (): void => {
-    watcherMap = {}
+    watcherCollection = {}
   }
 
   const M$refresh = (...args: A): void => {
     // KIV
-    const callbackStack = Object.values(watcherMap)
+    const callbackStack = Object.values(watcherCollection)
+    // genericDebugLogger.echo(`callbackStack.length: ${callbackStack.length}`)
     for (let i = 0; i < callbackStack.length; i++) {
       callbackStack[i](...args)
     }

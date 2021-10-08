@@ -1,22 +1,31 @@
 import { INTERNALS_SYMBOL } from '../../constants'
+import { isRelinkSource } from '../../public/is-relink-source'
 import { createSource } from '../../public/source'
+import { RelinkSource } from '../../schema'
 import { checkForCircularDeps } from '.'
 
 describe(checkForCircularDeps.name, (): void => {
 
-  // TOFIX: There is an infinite loop in cause by this test, by right, an error
-  // should be thrown and the loop should break.
+  let SourceA: RelinkSource<number>
+  let SourceB: RelinkSource<number>
+  let SourceC: RelinkSource<number>
+  afterEach((): void => {
+    if (isRelinkSource(SourceA)) { SourceA.cleanup() }
+    if (isRelinkSource(SourceB)) { SourceB.cleanup() }
+    if (isRelinkSource(SourceC)) { SourceC.cleanup() }
+  })
 
-  // TODO: Remove `.skip` when `waitForAll` is fixed
-  test.skip('with circular deps', (): void => {
+  // KIV: There used to be a problem where `allDepsAreReady` will be called
+  // infinitely.
+  test('with circular deps', (): void => {
     const callback = (): void => {
       const sourceADeps = []
-      const SourceA = createSource({
+      SourceA = createSource({
         key: 'test/source-with-circular-deps/a',
         default: 0,
         deps: sourceADeps,
       })
-      const SourceB = createSource({
+      SourceB = createSource({
         key: 'test/source-with-circular-deps/b',
         default: 0,
         deps: [SourceA],
@@ -26,22 +35,24 @@ describe(checkForCircularDeps.name, (): void => {
         SourceA[INTERNALS_SYMBOL].M$key,
       ])
     }
-    expect(callback).toThrow()
+    expect(callback).toThrow(
+      /test\/source-with-circular-deps\/a -> test\/source-with-circular-deps\/b/
+    )
   })
 
   test('without circular deps', (): void => {
     const callback = (): void => {
-      const SourceA = createSource({
+      SourceA = createSource({
         key: 'test/source-without-circular-deps/a',
         default: 0,
         deps: [],
       })
-      const SourceB = createSource({
+      SourceB = createSource({
         key: 'test/source-without-circular-deps/b',
         default: 0,
         deps: [SourceA],
       })
-      const SourceC = createSource({
+      SourceC = createSource({
         key: 'test/source-without-circular-deps/c',
         default: 0,
         deps: [SourceB],

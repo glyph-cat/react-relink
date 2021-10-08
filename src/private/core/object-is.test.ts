@@ -4,9 +4,9 @@ import { createRelinkCore } from '.'
  * A control set to make sure `Object.is` can be relied upon for mutability
  * testing.
  */
-describe('Object.is', () => {
+describe('Object.is', (): void => {
 
-  test('Reference comparison', () => {
+  test('Reference comparison', (): void => {
     const defaultState = { value: 1 }
     const mutablecore = createRelinkCore(defaultState, true)
     const immutablecore = createRelinkCore(defaultState, false)
