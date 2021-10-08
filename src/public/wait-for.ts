@@ -9,7 +9,7 @@ import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../schema'
  * @public
  */
 export function waitForAll(
-  // Refer to Special Note [A] in 'src/index.ts'
+  // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sources: Array<RelinkSource<any>>
 ): Promise<void>
@@ -18,7 +18,7 @@ export function waitForAll(
  * @public
  */
 export function waitForAll(...args: any[]): Promise<void> {
-  // Refer to Special Note [A] in 'src/index.ts'
+  // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const deps: Array<RelinkSource<any>> = args[0] // Deps are aources
   const deprecatedCallback = args[1]

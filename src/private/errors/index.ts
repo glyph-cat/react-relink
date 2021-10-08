@@ -31,3 +31,9 @@ export function ERROR_CIRCULAR_DEPENDENCY(
       : formatErrorCode(2, joinedKeyPathStack)
   )
 }
+
+export function getWarningForForwardedHydrationCallbackValue(
+  typeofPayload: string
+): string {
+  return `Expected the callback passed to \`Source.hydrate()\` or declared for \`lifecycle.init\` to return undefined but got ${typeofPayload}. You should not rely on hydration callbacks to return any value as this just happens to be an unintended feature. If Relink's internal implementation changes in the future, then so will this behaviour.`
+}

@@ -1,4 +1,4 @@
-import { INTERNALS_SYMBOL } from '../constants'
+import { INTERNALS_SYMBOL, IS_DEV_ENV } from '../constants'
 import { allDepsAreReady } from '../private/all-deps-are-ready'
 import { checkForCircularDeps } from '../private/circular-deps'
 import {
@@ -7,7 +7,10 @@ import {
 } from '../private/core'
 import { createDebugLogger } from '../private/debug-logger'
 import { devError, devWarn } from '../private/dev'
-import { TYPE_ERROR_SOURCE_KEY } from '../private/errors'
+import {
+  getWarningForForwardedHydrationCallbackValue,
+  TYPE_ERROR_SOURCE_KEY,
+} from '../private/errors'
 import { createGatedFlow } from '../private/gated-flow'
 import {
   getAutomaticKey,
@@ -27,10 +30,6 @@ import {
   RelinkSourceKey,
   RelinkSourceOptions,
 } from '../schema'
-// import {
-//   createSuspenseWaiter,
-//   SuspenseWaiter,
-// } from '../private/suspense-waiter'
 import { isFunction, isThenable } from '../private/type-checker'
 
 // NOTE:
@@ -45,8 +44,8 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
   virtualBatch: false,
 } as const
 
-let isWarningShown_sourceKeyAutogen = false
-let isWarningShown_suspenseNotSupported = false
+let isWarningShown_sourceKeyAutogen = false // KIV
+let isWarningShown_suspenseNotSupported = false // KIV
 
 /**
  * @public
@@ -83,28 +82,16 @@ export function createSource<S>({
 
   registerKey(normalizedKey)
   const debugLogger = createDebugLogger(normalizedKey)
-
-
-  // === Dependency Handling ===
-
   checkForCircularDeps(deps, [normalizedKey])
 
+
+  // === Local Variables & Methods ===
   /**
    * Gate being opened DOES NOT MEAN the source has been hydrated and is ready
    * to use, but rather, it means that the source can finally hydrate itself.
    * Also, gate is opened right away if there are no dependencies.
    */
   const gatedFlow = createGatedFlow(deps.length <= 0)
-
-  // let suspenseWaiter: SuspenseWaiter
-  // const M$suspenseOnHydration = (): void => {
-  //   if (suspenseWaiter) {
-  //     suspenseWaiter()
-  //   }
-  // }
-
-
-  // === Local Variables & Methods ===
   const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
   const isSourceMutable = mergedOptions.mutable
   const isSourcePublic = mergedOptions.public
@@ -142,74 +129,59 @@ export function createSource<S>({
       debugLogger.echo('Begin executing hydration callback in gated flow')
       const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
 
-      // KIV: Not sure if this is a good way to implement suspense for data fetching
-      // TODO: Rename variables
-      // const susRef = { M$resolve: null }
-      // KIV: Should self also be suspended if parent dep is hydrating?
-      // Would be a problem if parent has `suspense:true` but self doesn't
-      // KIV: May be relocate suspense logic into hook. Add a listener that
-      // listens for `isHydrating:false`
-      // if (isSuspenseEnabled) {
-      //   suspenseWaiter = createSuspenseWaiter(new Promise((resolve): void => {
-      //     susRef.M$resolve = resolve
-      //   }))
-      // }
-
       const executedCallback = callback({
         commit(hydratedState: S): void {
-          // console.log('Received hydrated state', hydratedState)
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
-          // console.log('isFirstHydration', isFirstHydration)
           if (isFirstHydration) {
             core.M$hydrate(hydratedState)
-            // if (susRef.M$resolve) { susRef.M$resolve() }
-            // suspenseWaiter = null
           }
         },
         skip(): void {
-          // console.log('Skipping hydration')
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
-          // console.log('isFirstHydration', isFirstHydration)
           if (isFirstHydration) {
             core.M$hydrate(HYDRATION_SKIP_MARKER)
-            // if (susRef.M$resolve) { susRef.M$resolve() }
-            // suspenseWaiter = null
           }
         },
       })
 
       // NOTE: `executedCallback` can be either `Promise<void>` or `void` based
-      // how developers declare it. This making await-ing for hydration possible
-      // automatically.
-      // KIV: However, this creates a potential problem: hydration callbacks are
-      // supposed to return `Promise<void>` or `void`, there's a small chance
-      // that developers might run into some problem and need an escape hatch
-      // and end up trying to await for data from this callback. Should we show
-      // a warning message for that?
-      debugLogger.echo(
-        `isThenable(executedCallback): ${isThenable(executedCallback)}`
-      )
+      // how developers declare the hydration callback. This making await-ing
+      // for hydration automatically possible but creates a potential problem.
+      // Hydration callbacks are supposed to return `Promise<undefined>` or
+      // `undefined`. There's a small chance that developers might run into some
+      // problem and need an escape hatch and end up trying to await for data
+      // from this callback.
+      if (IS_DEV_ENV) {
+        if (isThenable(executedCallback)) {
+          executedCallback.then((executedCallbackPayload) => {
+            const typeofExecutedCallbackPayload = typeof executedCallbackPayload
+            if (typeofExecutedCallbackPayload !== 'undefined') {
+              devWarn(getWarningForForwardedHydrationCallbackValue(typeofExecutedCallbackPayload))
+            }
+
+          })
+        } else {
+          const typeofExecutedCallback = typeof executedCallback
+          if (typeofExecutedCallback !== 'undefined') {
+            devWarn(getWarningForForwardedHydrationCallbackValue(typeofExecutedCallback))
+          }
+        }
+      }
+
       return executedCallback
     })
   }
 
-  // TOFIX:
-  // `attemptHydration` and the `hydrate` function inside it are not await-ed
-  // This is why `waitForAll` fails. In a browser, this might be okay because
-  // the process doesn't end when idle state, but this is in theory, bad, because
-  // guarantees can't be made based on this mechanism and the fact that it fails
-  // in Node shows it.
   const attemptHydration = async (): Promise<void> => {
     debugLogger.echo('attemptHydration()')
+    debugLogger.echo(`Are parent deps hydration complete: ${allDepsAreReady(deps)}`)
+    debugLogger.echo(`Is self hydration complete: ${core.M$getIsHydrating()}`)
     if (isFunction(lifecycle.init)) {
       debugLogger.echo('`lifecycle.init` is function')
       await hydrate(lifecycle.init)
     } else {
       debugLogger.echo('`lifecycle.init` is NOT a function')
-      // await hydrate(({ skip }) => { skip() })
     }
-    debugLogger.echo(`Are parent deps hydration complete: ${allDepsAreReady(deps)}`)
-    debugLogger.echo(`Is self hydration complete: ${core.M$getIsHydrating()}`)
   }
 
   // KIV/TODO: Write a test to ensure this behaviour.
