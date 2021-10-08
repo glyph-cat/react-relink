@@ -1,16 +1,16 @@
 import { useDebugValue } from 'react'
-import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEV_ENV } from '../constants'
-import { useLayoutEffect, useState } from '../internals/custom-hooks'
-import deepCopy from '../internals/deep-copy'
+import { INTERNALS_SYMBOL, IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
+import { useLayoutEffect, useState } from '../../internals/custom-hooks'
+import deepCopy from '../../internals/deep-copy'
 import {
   RelinkEvent,
   RelinkSelector,
   RelinkSource,
   RelinkSourceKey,
-} from '../schema'
-import { isFunction } from '../internals/type-checker'
-import { unstable_batchedUpdates } from '../internals/unstable_batchedUpdates'
-import { CallbackWithNoParamAndReturnsVoid } from '../internals/helper-types'
+} from '../../schema'
+import { isFunction } from '../../internals/type-checker'
+import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
+import { CallbackWithNoParamAndReturnsVoid } from '../../internals/helper-types'
 
 function getInitialState<S, K>(
   source: RelinkSource<S>,
@@ -119,72 +119,4 @@ export function useRelinkValue<S, K>(
   }, [source, selector])
 
   return state
-}
-
-/**
- * @example
- * const [state, setState, resetState] = useRelinkState(Source)
- * @public
- */
-export function useRelinkState<S>(
-  source: RelinkSource<S>
-): [S, RelinkSource<S>['set'], RelinkSource<S>['reset']]
-/**
- * @example
- * const selector = (state) => ({
- *   propertyA: state.propertyA,
- *   propertyB: state.propertyB,
- * })
- * const [filteredState, setState, resetState] = useRelinkState(Source, selector)
- * @public
- */
-export function useRelinkState<S, K>(
-  source: RelinkSource<S>,
-  selector: RelinkSelector<S, K>
-): [K, RelinkSource<S>['set'], RelinkSource<S>['reset']]
-/**
- * @public
- */
-export function useRelinkState<S, K>(
-  source: RelinkSource<S>,
-  selector?: RelinkSelector<S, K>
-): [S | K, RelinkSource<S>['set'], RelinkSource<S>['reset']] {
-  const state = useRelinkValue(source, selector)
-  return [state, source.set, source.reset]
-}
-
-/**
- * @example
- * const setState = useSetRelinkState(Source)
- * @public
- */
-export function useSetRelinkState<S>(
-  source: RelinkSource<S>
-): RelinkSource<S>['set'] {
-  // TODO: Suspense on hydrate start
-  return source.set
-}
-
-/**
- * @example
- * const resetState = useResetRelinkState(Source)
- * @public
- */
-export function useResetRelinkState<S>(
-  source: RelinkSource<S>
-): RelinkSource<S>['reset'] {
-  // TODO: Suspense on hydrate start
-  return source.reset
-}
-
-/**
- * @example
- * const hydrateSource = useHydrateRelinkSource(Source)
- * @public
- */
-export function useHydrateRelinkSource<S>(
-  source: RelinkSource<S>
-): RelinkSource<S>['hydrate'] {
-  // TODO: Suspense on hydrate start
-  return source.hydrate
 }
