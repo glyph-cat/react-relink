@@ -114,7 +114,11 @@ export function createSource<S>({
   }
 
   const hydrate: RelinkSource<S>['hydrate'] = (callback): Promise<void> => {
-    core.M$hydrate(/* Empty means hydration is starting */)
+    // NOTE: `core.M$hydrate` was previously not wrapped in 'M$exec'. Firing
+    // multiple `.hydrate()` calls will most likely cause bugs because of this.
+    gatedFlow.M$exec((): void => {
+      core.M$hydrate(/* Empty means hydration is starting */)
+    })
     return gatedFlow.M$exec((): void | Promise<void> => {
       const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
 

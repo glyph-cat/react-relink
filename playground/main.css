@@ -9,7 +9,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
+code, .code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
@@ -22,12 +22,14 @@ button {
   border-radius: 10px;
   color: inherit;
   cursor: pointer;
-  font-size: 18pt;
-  min-height: 48px;
+  font-size: 16pt;
+  min-height: 54px;
 }
 
 button:hover {
-  background-color: #88888844;
+  background-color: #88888833;
+  border-color: #ffffff88;
+  color: #ffffff;
 }
 
 button:active {

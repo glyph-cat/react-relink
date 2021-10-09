@@ -3,9 +3,7 @@ import { createSource } from '../../../src/api/source'
 import { useRelinkValue } from '../../../src/api/use-relink-value'
 import { delay, TIME_GAP } from '../../../src/debugging'
 
-// TOFIX: If 2 hydrations are fired at the same time (the 2nd is queued by the gate keeper naturally), components will not suspense for the second hydration
-
-const localTimeGap = TIME_GAP(5)
+const localTimeGap = TIME_GAP(25)
 
 const CounterSource = createSource({
   key: 'counter',
@@ -36,6 +34,13 @@ const StateVisibilitySource = createSource({
 })
 
 const actions = {
+  toggleVisibility(): void {
+    StateVisibilitySource.set(s => !s)
+  },
+  createConsoleSeparator(): void {
+    console.log('='.repeat(30))
+  },
+  clearConsole: console.clear,
   reset: CounterSource.reset,
   async hydrate(): Promise<void> {
     const res = await CounterSource.hydrate(async ({ commit }) => {
@@ -57,6 +62,15 @@ const actions = {
       a: state.a + 1,
     }))
   },
+  bumpADelayed(): void {
+    CounterSource.set(async (state) => {
+      await delay(1000)
+      return {
+        ...state,
+        a: state.a + 1,
+      }
+    })
+  },
   bumpB(): void {
     CounterSource.set((state) => ({
       ...state,
@@ -70,21 +84,44 @@ const actions = {
       b: state.b + 1,
     }))
   },
-  toggleVisibility(): void {
-    StateVisibilitySource.set(s => !s)
+  simulateUnreponsiveReducer(): void {
+    CounterSource.set(async (state) => {
+      await delay(18000 + Math.round(Math.random() * 1000))
+      return {
+        ...state,
+        a: state.a + 1,
+        b: state.b + 1,
+      }
+    })
   },
 }
+
+let isFallbackMounted = false
+let isStateMounted = false
 
 function Fallback(): JSX.Element {
   console.log('Fallback rendering...')
   useLayoutEffect(() => {
-    console.log('Fallback mounted')
-    return () => { console.log('Fallback unmounting') }
+    isFallbackMounted = true
+    console.log('Fallback mounted', { isFallbackMounted, isStateMounted })
+    return () => {
+      isFallbackMounted = false
+      console.log('Fallback unmounting', { isFallbackMounted, isStateMounted })
+    }
   }, [])
   return <h1>Loading...</h1>
 }
 
 function StateDisplay(): JSX.Element {
+  // console.log('StateDisplay rendering...')
+  useLayoutEffect(() => {
+    isStateMounted = true
+    console.log('StateDisplay mounted', { isFallbackMounted, isStateMounted })
+    return () => {
+      isStateMounted = false
+      console.log('StateDisplay unmounting', { isFallbackMounted, isStateMounted })
+    }
+  }, [])
   const counterState = useRelinkValue(CounterSource)
   return (
     <h1>
@@ -99,8 +136,12 @@ export function Playground(): JSX.Element {
   for (const actionName in actions) {
     const action = actions[actionName]
     renderStack.push(
-      <button key={actionName} onClick={action}>
-        {actionName}
+      <button
+        key={actionName}
+        className='code'
+        onClick={action}
+      >
+        {`${actionName}()`}
       </button>
     )
   }
@@ -112,7 +153,7 @@ export function Playground(): JSX.Element {
         </Suspense>
       )}
       <hr />
-      <div style={{ display: 'grid', gap: 10 }}>
+      <div style={{ display: 'grid', gap: 5 }}>
         {renderStack}
       </div>
     </div>
