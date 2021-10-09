@@ -1,7 +1,11 @@
 import React, { Suspense, useLayoutEffect } from 'react'
 import { createSource } from '../../../src/api/source'
 import { useRelinkValue } from '../../../src/api/use-relink-value'
-import { delay } from '../../../src/debugging'
+import { delay, TIME_GAP } from '../../../src/debugging'
+
+// TOFIX: If 2 hydrations are fired at the same time (the 2nd is queued by the gate keeper naturally), components will not suspense for the second hydration
+
+const localTimeGap = TIME_GAP(5)
 
 const CounterSource = createSource({
   key: 'counter',
@@ -12,11 +16,11 @@ const CounterSource = createSource({
   lifecycle: {
     async init({ commit }) {
       console.log('Comitting in 3...')
-      await delay(1000)
+      await delay(localTimeGap)
       console.log('Comitting in 2...')
-      await delay(1000)
+      await delay(localTimeGap)
       console.log('Comitting in 1...')
-      await delay(1000)
+      await delay(localTimeGap)
       console.log('Comitting in 0...')
       commit({ a: 3, b: 3 })
     },
@@ -26,20 +30,26 @@ const CounterSource = createSource({
   },
 })
 
+const StateVisibilitySource = createSource({
+  key: 'visibility',
+  default: true,
+})
+
 const actions = {
   reset: CounterSource.reset,
-  hydrate(): void {
-    // TOFIX
-    CounterSource.hydrate(async ({ commit }) => {
+  async hydrate(): Promise<void> {
+    const res = await CounterSource.hydrate(async ({ commit }) => {
       console.log('Comitting in 3...')
-      await delay(1000)
+      await delay(localTimeGap)
       console.log('Comitting in 2...')
-      await delay(1000)
+      await delay(localTimeGap)
       console.log('Comitting in 1...')
-      await delay(1000)
+      await delay(localTimeGap)
       console.log('Comitting in 0...')
       commit({ a: 3, b: 3 })
+      return 'lorem-ipsum'
     })
+    console.log(res)
   },
   bumpA(): void {
     CounterSource.set((state) => ({
@@ -59,6 +69,9 @@ const actions = {
       a: state.a + 1,
       b: state.b + 1,
     }))
+  },
+  toggleVisibility(): void {
+    StateVisibilitySource.set(s => !s)
   },
 }
 
@@ -81,6 +94,7 @@ function StateDisplay(): JSX.Element {
 }
 
 export function Playground(): JSX.Element {
+  const showState = useRelinkValue(StateVisibilitySource)
   const renderStack = []
   for (const actionName in actions) {
     const action = actions[actionName]
@@ -92,9 +106,11 @@ export function Playground(): JSX.Element {
   }
   return (
     <div style={{ padding: 20 }}>
-      <Suspense fallback={<Fallback />}>
-        <StateDisplay />
-      </Suspense>
+      {showState && (
+        <Suspense fallback={<Fallback />}>
+          <StateDisplay />
+        </Suspense>
+      )}
       <hr />
       <div style={{ display: 'grid', gap: 10 }}>
         {renderStack}

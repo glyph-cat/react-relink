@@ -76,7 +76,12 @@ export function useSuspenseForDataFetching(
     // [Point A] Don't wait until component mounts, create promise for suspension
     // immediately if source is not ready.
     if (!source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
-      waitPromise.current = waitFor(source)
+      waitPromise.current = (async () => {
+        await waitFor(source)
+        // Nullify the promise reference, otherwise it will still be there on
+        // next render and result in infinite rendering.
+        waitPromise.current = null
+      })()
     }
     // If `promise.current` is not null, create suspense waiter out of it.
     if (waitPromise.current) {

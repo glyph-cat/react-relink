@@ -8,6 +8,10 @@ import { RelinkSource } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
+// Test objectives:
+// * Make sure using virtual batch reduces the render count when state changes
+// happen very frequently.
+
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, useRelinkState } = Relink
