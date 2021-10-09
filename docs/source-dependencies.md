@@ -41,4 +41,15 @@ async function asyncMethod() {
 }
 ```
 
+To wait for only one source to hydrate, you can use the `waitFor()` method.
+
+```js
+import { waitFor } from 'react-relink'
+
+async function asyncMethod() {
+  await waitFor(SourceA)
+  // Continue to do something here
+}
+```
+
 <br/>

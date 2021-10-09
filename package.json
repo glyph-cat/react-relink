@@ -12,7 +12,7 @@
   ],
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "clean": "rm -rf ./dist ./temp ./yarn-error.log && mkdir temp dist",
+    "clean": "rm -rf .cache ./dist ./temp ./yarn-error.log && mkdir temp dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "playground": "parcel playground/index.html --port 3000",
