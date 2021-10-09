@@ -8,8 +8,8 @@ import { wrapper } from '../wrapper'
 
 // Test objectives:
 // * Make sure the returned hook data is a setter; Use `Object.is` to check
-// * Check if components go into suspense or have unnecessary renders
-// KIV ^
+// * Check if components have unnecessary renders (it should not watch for state
+//   changes)
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
@@ -22,13 +22,19 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  test('main', (): void => {
+  test('main', async (): Promise<void> => {
     Source = createSource({
       key: 'test/',
       default: 1,
     })
     const hookInterface = createHookInterface({
       useHook: () => useSetRelinkState(Source),
+      actions: {
+        async setState({ hookData }): Promise<void> {
+          const setState = hookData
+          await setState(c => c + 1)
+        }
+      },
       values: {
         main({ hookData }) {
           return hookData
@@ -36,6 +42,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     }, cleanupRef)
     expect(Object.is(hookInterface.get('main'), Source.set)).toBe(true)
+    await hookInterface.actionsAsync('setState')
+    expect(hookInterface.getRenderCount()).toBe(1)
   })
 
 })

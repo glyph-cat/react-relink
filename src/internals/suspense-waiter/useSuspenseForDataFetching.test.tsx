@@ -5,7 +5,7 @@ import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { RelinkSource } from '../../schema'
 import { delay, genericDebugLogger, TIME_GAP } from '../../debugging'
 
-describe.skip(useSuspenseForDataFetching.name, (): void => {
+describe(useSuspenseForDataFetching.name, (): void => {
 
   let root: ReactTestRenderer
   let Source: RelinkSource<number>
@@ -94,35 +94,17 @@ describe.skip(useSuspenseForDataFetching.name, (): void => {
     })
 
     // Check if component enters suspense mode again if source rehydrates
-    genericDebugLogger.echo('A')
     act((): void => {
-      genericDebugLogger.echo('B')
       Source.hydrate(async ({ commit }): Promise<void> => {
-        genericDebugLogger.echo('C')
         await delay(TIME_GAP(2))
-        genericDebugLogger.echo('D')
         act((): void => {
-          genericDebugLogger.echo('E')
           commit(2)
-          genericDebugLogger.echo('F')
         })
-        genericDebugLogger.echo('G')
       })
-      genericDebugLogger.echo('H')
     })
-    genericDebugLogger.echo('I')
     await act(async (): Promise<void> => {
-      genericDebugLogger.echo('J')
       await delay(TIME_GAP(1))
-      genericDebugLogger.echo('K')
     })
-    genericDebugLogger.echo('L')
-    await act(async (): Promise<void> => {
-      genericDebugLogger.echo('M')
-      await delay(TIME_GAP(1))
-      genericDebugLogger.echo('N')
-    })
-    genericDebugLogger.echo('O')
     expect(getComponentMountStatus()).toStrictEqual({
       isFallbackComponentMounted: true,
       isInnerComponentMounted: false,
@@ -131,35 +113,3 @@ describe.skip(useSuspenseForDataFetching.name, (): void => {
   })
 
 })
-
-
-// 01:07:51.908 FallbackComponent mounted
-// 01:07:51.909 {"isFallbackComponentMounted":true,"isInnerComponentMounted":false}
-// 01:07:51.955 FallbackComponent unmounting
-// 01:07:51.955 {"isFallbackComponentMounted":false,"isInnerComponentMounted":false}
-// 01:07:51.955 InnerComponent mounted
-// 01:07:51.955 {"isFallbackComponentMounted":false,"isInnerComponentMounted":true}
-// 01:07:51.957 A
-// 01:07:51.957 B
-// 01:07:51.957 C
-// 01:07:51.958 H
-// 01:07:51.959 FallbackComponent mounted
-// 01:07:51.959 {"isFallbackComponentMounted":true,"isInnerComponentMounted":true}
-// 01:07:51.959 I
-// 01:07:51.959 J
-// 01:07:51.979 K
-// 01:07:51.979 L
-// 01:07:51.979 M
-// 01:07:51.999 D
-// 01:07:51.999 E
-// 01:07:51.999 F
-// 01:07:51.999 G
-// 01:07:51.999 N
-// 01:07:52.872 InnerComponent unmounting
-// 01:07:52.872 {"isFallbackComponentMounted":true,"isInnerComponentMounted":false}
-// 01:07:52.872 FallbackComponent unmounting
-// 01:07:52.872 {"isFallbackComponentMounted":false,"isInnerComponentMounted":false}
-
-// Questions:
-// * How can there be so long of a delay and nothing happens?
-// * Why did the timestamp went backwards after '01:07:51.999 N'?

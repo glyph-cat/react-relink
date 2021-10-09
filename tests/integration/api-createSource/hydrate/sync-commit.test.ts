@@ -20,14 +20,16 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
+    const conclusionRef = { current: null }
     const eventStackPromise = createEventStackPromise(Source, 2)
-
     const hydrationPromise = Source.hydrate(({ commit }): void => {
+      conclusionRef.current = commit
       commit({ foo: 2, bar: 2 })
     })
 
     expect(Source.get()).toStrictEqual({ foo: 2, bar: 2 })
     expect((await Source.getAsync())).toStrictEqual({ foo: 2, bar: 2 })
+    expect(await hydrationPromise).toBe(undefined)
     expect(await eventStackPromise).toStrictEqual([{
       type: RelinkEventType.hydrate,
       state: { foo: 1, bar: 1 },
@@ -37,7 +39,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       state: { foo: 2, bar: 2 },
       isHydrating: false,
     }])
-    expect(await hydrationPromise).toBe(undefined)
+
+    // Try trigger commit again (nothing should happen)
+    conclusionRef.current({ foo: 2, bar: 2 })
+    expect((await eventStackPromise).length).toBe(2)
 
   })
 

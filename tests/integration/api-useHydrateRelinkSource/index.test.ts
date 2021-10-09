@@ -8,8 +8,8 @@ import { wrapper } from '../wrapper'
 
 // Test objectives:
 // * Make sure the returned hook data is a setter; Use `Object.is` to check
-// * Check if components go into suspense or have unnecessary renders
-// KIV ^
+// * Check if components have unnecessary renders (it should not watch for state
+//   changes)
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
@@ -22,13 +22,23 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  test('main', (): void => {
+  test('main', async (): Promise<void> => {
     Source = createSource({
       key: 'test/',
       default: 1,
     })
     const hookInterface = createHookInterface({
       useHook: () => useHydrateRelinkSource(Source),
+      actions: {
+        async hydrateCommit({ hookData }): Promise<void> {
+          const hydrate = hookData
+          await hydrate(({ commit }) => { commit(2) })
+        },
+        async hydrateSkip({ hookData }): Promise<void> {
+          const hydrate = hookData
+          await hydrate(({ skip }) => { skip() })
+        },
+      },
       values: {
         main({ hookData }) {
           return hookData
@@ -36,6 +46,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     }, cleanupRef)
     expect(Object.is(hookInterface.get('main'), Source.hydrate)).toBe(true)
+    await hookInterface.actionsAsync('hydrateCommit')
+    await hookInterface.actionsAsync('hydrateSkip')
+    expect(hookInterface.getRenderCount()).toBe(1)
   })
 
 })

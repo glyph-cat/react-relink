@@ -68,6 +68,7 @@
     "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-node-resolve": "^13.0.5",
     "@rollup/plugin-replace": "^3.0.0",
+    "@testing-library/jest-dom": "^5.14.1",
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.10.3",

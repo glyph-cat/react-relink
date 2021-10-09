@@ -8,10 +8,8 @@ import { wrapper } from '../wrapper'
 
 // Test objectives:
 // * Make sure the returned hook data is a setter; Use `Object.is` to check
-// * Check if components go into suspense or have unnecessary renders
-// KIV ^
-
-// TODO: Check if selector is passed into the `useRelinkValue` hook under the hood
+// * Check if selector is passed into the `useRelinkValue` hook under the hood
+// TODO ^
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 

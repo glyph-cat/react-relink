@@ -6,7 +6,7 @@ import {
   createRelinkCore,
   HYDRATION_SKIP_MARKER,
 } from '../../internals/core'
-import { devError, devWarn } from '../../internals/dev'
+import { devWarn } from '../../internals/dev'
 import {
   getWarningForForwardedHydrationCallbackValue,
   TYPE_ERROR_SOURCE_KEY,
@@ -45,7 +45,6 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
 } as const
 
 let isWarningShown_sourceKeyAutogen = false // KIV
-let isWarningShown_suspenseNotSupported = false // KIV
 
 /**
  * @public
@@ -99,13 +98,6 @@ export function createSource<S>({
   const isSuspenseEnabled = mergedOptions.suspense
   const core = createRelinkCore(defaultState, isSourceMutable)
 
-  if (mergedOptions.suspense) {
-    if (!isWarningShown_suspenseNotSupported) {
-      isWarningShown_suspenseNotSupported = true
-      devError('Suspense for data fetching is currently not supported. For now, it\'s safer to assume that this feature will only be reimplemented in Relink at a later date, presumably when this feature is considered stable from React.')
-    }
-  }
-
 
   // === Hydration ===
 
@@ -150,6 +142,7 @@ export function createSource<S>({
       // from this callback.
       if (IS_DEV_ENV) {
         if (isThenable(executedCallback)) {
+          // Await is not used here, otherwise it affects the flow of execution
           executedCallback.then((executedCallbackPayload) => {
             const typeofExecutedCallbackPayload = typeof executedCallbackPayload
             if (typeofExecutedCallbackPayload !== 'undefined') {

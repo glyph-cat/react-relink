@@ -20,9 +20,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
+    const conclusionRef = { current: null }
     const eventStackPromise = createEventStackPromise(Source, 2)
-
     const hydrationPromise = Source.hydrate(({ skip }): void => {
+      conclusionRef.current = skip
       skip()
     })
 
@@ -38,6 +39,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       isHydrating: false,
     }])
     expect(await hydrationPromise).toBe(undefined)
+
+    // Try trigger commit again (nothing should happen)
+    conclusionRef.current()
+    expect((await eventStackPromise).length).toBe(2)
 
   })
 
