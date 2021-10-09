@@ -3,6 +3,9 @@ import { IS_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { getHexFromString } from './get-hex-from-string'
 
+// KIV: Seems like code in this file will be included in the bundle, going to
+// stop using this temporarily.
+
 let logStore: Array<string> = []
 
 export function dumpDebuglogs(): void {
