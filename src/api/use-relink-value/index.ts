@@ -11,6 +11,7 @@ import {
 import { isFunction } from '../../internals/type-checker'
 import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
 import { CallbackWithNoParamAndReturnsVoid } from '../../internals/helper-types'
+import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 
 function getInitialState<S, K>(
   source: RelinkSource<S>,
@@ -59,6 +60,8 @@ export function useRelinkValue<S, K>(
   source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
 ): S | K {
+
+  useSuspenseForDataFetching(source)
 
   // Use custom state hook
   const [state, setState] = useState(

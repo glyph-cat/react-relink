@@ -1,3 +1,4 @@
+import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { RelinkSource } from '../../schema'
 
 /**
@@ -8,6 +9,6 @@ import { RelinkSource } from '../../schema'
 export function useSetRelinkState<S>(
   source: RelinkSource<S>
 ): RelinkSource<S>['set'] {
-  // TODO: Suspense on hydrate start
+  useSuspenseForDataFetching(source)
   return source.set
 }

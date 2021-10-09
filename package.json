@@ -15,6 +15,7 @@
     "clean": "rm -rf ./dist ./temp ./yarn-error.log && mkdir temp dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "playground": "parcel playground/index.html --port 3000",
     "debug": "scope=\"debug\" jest -c ./jest.config.ts",
     "debug:src": "scope=\"debug\" jest ./src -c ./jest.config.ts",
     "debug:i": "scope=\"debug\" jest ./tests/integration -c ./jest.config.ts",
@@ -74,6 +75,7 @@
     "@types/react-test-renderer": "^17.0.1",
     "eslint": "^7.32.0",
     "jest": "^27.2.4",
+    "parcel-bundler": "^1.12.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-native": "^0.66.0",
@@ -84,5 +86,17 @@
     "ts-node": "^10.2.1",
     "tsc": "^2.0.3",
     "typescript": "^4.4.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
