@@ -1,6 +1,5 @@
 import deepCopy from '../deep-copy'
-import { createDebugLogger } from '../../debugging'
-import { RelinkEvent, RelinkEventType, RelinkSourceKey } from '../../schema'
+import { RelinkEvent, RelinkEventType } from '../../schema'
 import { createWatcher } from '../../internals/watcher'
 import { UnwatchCallback, WatcherCallback } from '../../internals/watcher/schema'
 import { ObjectMarker } from '../helper-types'
@@ -50,12 +49,8 @@ interface RelinkCore<S> {
  */
 export function createRelinkCore<S>(
   defaultState: S,
-  isSourceMutable: boolean,
-  sourceKey?: RelinkSourceKey
+  isSourceMutable: boolean
 ): RelinkCore<S> {
-
-  const debugLogger = createDebugLogger(sourceKey)
-  // debugLogger.echo('Core created')
 
   const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
   const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
@@ -77,12 +72,6 @@ export function createRelinkCore<S>(
     const hydrationStateDidChange = isHydrating !== isHydrationStart
     isHydrating = isHydrationStart
 
-    if (isHydrationStart) {
-      debugLogger.echo('Starting hydration')
-    } else {
-      debugLogger.echo('Concluding hydration')
-    }
-
     if (!isHydrationStart) {
       if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
         // Assume using the initial state
@@ -98,7 +87,6 @@ export function createRelinkCore<S>(
     // * An event will also be fired if hydration started, but only if it hasn't
     // already started, if that makes sense.
     if (!isHydrating || isHydrating && hydrationStateDidChange) {
-      debugLogger.echo(`🔥 Firing hydration event (isHydrating: ${isHydrating})`)
       watcher.M$refresh({
         isHydrating,
         type: RelinkEventType.hydrate,

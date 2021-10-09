@@ -6,6 +6,7 @@ import { RelinkSource } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
+// TODO
 // Test objectives:
 // * ...
 
@@ -20,6 +21,20 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  test.skip('Not ready', (): void => { expect('').toBe('') })
+  test.skip('Not ready', (): void => {
+    Source = createSource({
+      key: 'test/api-useRelinkValue',
+      default: null,
+    })
+    const hookInterface = createHookInterface({
+      useHook: () => useRelinkValue(Source),
+      values: {
+        main() {
+          return null
+        },
+      },
+    }, cleanupRef)
+    expect(hookInterface.get('main')).toBe(null)
+  })
 
 })

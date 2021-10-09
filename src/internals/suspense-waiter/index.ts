@@ -72,26 +72,30 @@ export function useSuspenseForDataFetching(
 ): void {
   const waitPromise: MutableRefObject<Promise<void>> = useRef(null)
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
-  // [Point A] Don't wait until component mounts, create promise for suspension
-  // immediately if source is not ready.
-  if (!source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
-    waitPromise.current = waitFor(source)
-  }
-  // If `promise.current` is not null, create suspense waiter out of it.
-  if (waitPromise.current) {
-    createSuspenseWaiter(waitPromise.current)()
+  if (source[INTERNALS_SYMBOL].M$isSuspenseEnabled) {
+    // [Point A] Don't wait until component mounts, create promise for suspension
+    // immediately if source is not ready.
+    if (!source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
+      waitPromise.current = waitFor(source)
+    }
+    // If `promise.current` is not null, create suspense waiter out of it.
+    if (waitPromise.current) {
+      createSuspenseWaiter(waitPromise.current)()
+    }
   }
   useLayoutEffect((): CallbackWithNoParamAndReturnsVoid => {
-    const unwatch = source.watch((event): void => {
-      // Ignore if event is not caused by hydration
-      if (event.type !== RelinkEventType.hydrate) { return }
-      if (event.isHydrating) {
-        // If hydration starts, trigger an update so that we can go to [Point A]
-        forceUpdate()
+    if (source[INTERNALS_SYMBOL].M$isSuspenseEnabled) {
+      const unwatch = source.watch((event): void => {
+        // Ignore if event is not caused by hydration
+        if (event.type !== RelinkEventType.hydrate) { return }
+        if (event.isHydrating) {
+          // If hydration starts, trigger an update so that we can go to [Point A]
+          forceUpdate()
+        }
+      })
+      return (): void => {
+        unwatch()
       }
-    })
-    return (): void => {
-      unwatch()
     }
   }, [source])
 }

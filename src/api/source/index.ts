@@ -1,5 +1,5 @@
 import { INTERNALS_SYMBOL, IS_DEV_ENV } from '../../constants'
-import { createDebugLogger } from '../../debugging'
+// import { createDebugLogger } from '../../debugging'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { checkForCircularDeps } from '../../internals/circular-deps'
 import {
@@ -81,7 +81,7 @@ export function createSource<S>({
   }
 
   registerKey(normalizedKey)
-  const debugLogger = createDebugLogger(normalizedKey)
+  // const debugLogger = createDebugLogger(normalizedKey)
   checkForCircularDeps(deps, [normalizedKey])
 
 
@@ -97,7 +97,7 @@ export function createSource<S>({
   const isSourcePublic = mergedOptions.public
   const isVirtualBatchEnabled = mergedOptions.virtualBatch
   const isSuspenseEnabled = mergedOptions.suspense
-  const core = createRelinkCore(defaultState, isSourceMutable, normalizedKey)
+  const core = createRelinkCore(defaultState, isSourceMutable)
 
   if (mergedOptions.suspense) {
     if (!isWarningShown_suspenseNotSupported) {
@@ -118,15 +118,12 @@ export function createSource<S>({
     const isHydrating = core.M$getIsHydrating()
     const areAllDepsReallyReady = allDepsAreReady(deps)
     const isReady = !isHydrating && areAllDepsReallyReady
-    debugLogger.echo(`(M$getIsReadyStatus) isHydrating: ${isHydrating}, areAllDepsReallyReady: ${areAllDepsReallyReady}, isReady: ${isReady}`)
     return isReady
   }
 
   const hydrate: RelinkSource<S>['hydrate'] = (callback): Promise<void> => {
     core.M$hydrate(/* Empty means hydration is starting */)
-    debugLogger.echo('Hydration requested')
     return gatedFlow.M$exec((): void | Promise<void> => {
-      debugLogger.echo('Begin executing hydration callback in gated flow')
       const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
 
       const executedCallback = callback({
@@ -173,14 +170,8 @@ export function createSource<S>({
   }
 
   const attemptHydration = async (): Promise<void> => {
-    debugLogger.echo('attemptHydration()')
-    debugLogger.echo(`Are parent deps hydration complete: ${allDepsAreReady(deps)}`)
-    debugLogger.echo(`Is self hydration complete: ${core.M$getIsHydrating()}`)
     if (isFunction(lifecycle.init)) {
-      debugLogger.echo('`lifecycle.init` is function')
       await hydrate(lifecycle.init)
-    } else {
-      debugLogger.echo('`lifecycle.init` is NOT a function')
     }
   }
 
@@ -200,7 +191,6 @@ export function createSource<S>({
     const unwatchDepHydration = dep.watch((event) => {
       // Ignore if event is not caused by hydration
       if (event.type !== RelinkEventType.hydrate) { return }
-      debugLogger.echo(`💚 depWatchers received hydration event from '${String(dep[INTERNALS_SYMBOL].M$key)}' (isHydrating: ${event.isHydrating})`)
       if (event.isHydrating) {
         // Lock gate to prevent further state changes.
         // gatedFlow.M$lock()
@@ -221,10 +211,7 @@ export function createSource<S>({
         // important to know that there may be function called by the developer
         // that are await-ing for those state changes to be completed.
         if (allDepsAreReady(deps)) {
-          debugLogger.echo('allDepsAreReady: true // Calling `attemptHydration()`…')
           attemptHydration()
-        } else {
-          debugLogger.echo('allDepsAreReady: false')
         }
       }
     })
@@ -307,13 +294,15 @@ export function createSource<S>({
     // Check if there are any child dependants and proceed to cleanup anyway,
     // but show a warning if there are child dependants so that developers will
     // be aware that there might be unintended behaviours.
-    const childDepStack = Object.keys(M$childDeps)
-    if (childDepStack.length !== 0) {
-      devWarn(
-        `Attempted to cleanup '${String(normalizedKey)}' while there are ` +
-        'still other sources that depend on it: ' +
-        `'${safeStringJoin(childDepStack, '\', \'')}'.`
-      )
+    if (IS_DEV_ENV) {
+      const childDepStack = Object.keys(M$childDeps)
+      if (childDepStack.length !== 0) {
+        devWarn(
+          `Attempted to cleanup '${String(normalizedKey)}' while there are ` +
+          'still other sources that depend on it: ' +
+          `'${safeStringJoin(childDepStack, '\', \'')}'.`
+        )
+      }
     }
     for (const dep of deps) {
       // Unregister child depenency from this source

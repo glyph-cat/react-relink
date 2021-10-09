@@ -27,6 +27,7 @@
     "postbuild": "rm -r ./temp/tsc",
     "test": "jest -c ./jest.config.ts",
     "test:bundled": "scope=\"bundled\" jest -c ./jest.config.ts",
+    "preall": "yarn clean",
     "all": "yarn lint:fix && yarn build && yarn test && yarn pack",
     "ci:test": "yarn lint && yarn build && yarn test"
   },

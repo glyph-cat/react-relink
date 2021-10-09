@@ -2,6 +2,7 @@ import { INTERNALS_SYMBOL } from './constants'
 import { Watcher } from './internals/watcher/schema'
 
 /**
+ * Arguments passed to the hydration callback.
  * @public
  */
 export interface RelinkHydrateArgs<S> {
@@ -29,6 +30,7 @@ export enum RelinkEventType {
 }
 
 /**
+ * The event fired when a Relink state is changed by `.set()` or `.reset()`.
  * @public
  */
 export interface RelinkStateChangeEvent<S> {
@@ -37,6 +39,7 @@ export interface RelinkStateChangeEvent<S> {
 }
 
 /**
+ * The event fired when a Relink state is changed by `.hydrate()`.
  * @public
  */
 export interface RelinkHydrationEvent<S> {
@@ -54,8 +57,20 @@ export type RelinkEvent<S> = RelinkHydrationEvent<S> | RelinkStateChangeEvent<S>
  * @public
  */
 export interface RelinkLifecycleConfig<S> {
+  /**
+   * Equivalent of `Source.hydrate()`. But it runs automatically when the source
+   * is created and after its dependencies rehydrated (if any).
+   */
   init?: RelinkHydrateCallback<S>
+  /**
+   * Runs when the state changes. You can use this to persist data to a local
+   * storage or database.
+   */
   didSet?(event: RelinkStateChangeEvent<S>): void
+  /**
+   * Runs when the state resets. You can use this to remove data from the local
+   * storage or database.
+   */
   didReset?(event: RelinkStateChangeEvent<S>): void
 }
 
@@ -65,23 +80,38 @@ export interface RelinkLifecycleConfig<S> {
 export interface RelinkSourceOptions {
   /**
    * ## 🚧 EXPERIMENTAL 🚧
-   * ### ❌ Currently not supported
-   * Suspense while hydrating.
+   * This is an experimental feature in React. Further reading: https://reactjs.org/docs/concurrent-mode-suspense.html
+   *
+   * ---------------------------------------------------------------------------
+   *
+   * Suspense components that consume this source while it (or any of its
+   * dependencies) is(are) hydrating.
    * @defaultValue `false`
    */
-  suspense?: boolean // TODO
+  suspense?: boolean
   /**
    * Make the source mutable.
+   * - When `true`:
+   *   - State values are passed by reference.
+   *   - Previous and next states are compared with [`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is).
+   * - When `false`:
+   *   - State values are deep copied with [`fast-copy`](https://github.com/planttheidea/fast-copy) every time they need to be read.
+   *   - Previous and next states are compared with [`react-fast-compare`](https://github.com/FormidableLabs/react-fast-compare).
    * @defaultValue `true`
    */
   mutable?: boolean
   /**
    * Enable virtual batching.
+   * - NOT suitable for states consumed by UI components that need to be
+   * responsive. You will notice a delay when typing very quickly, for example.
+   * - Suitable for states consumed by UI components that update almost too
+   * frequently but actualy doesn't need to re-render that often. For example:
+   * a long list discussion threads that updates in real-time.
    * @defaultValue `false`
    */
   virtualBatch?: boolean
   /**
-   * Make this source accessible through React DevTools even in production mode.
+   * Make the state of this source readable through [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) even in production mode. State values will always be readable from the devtools in debug mode.
    * @defaultValue `false`
    */
   public?: boolean
@@ -112,7 +142,14 @@ export interface RelinkSourceEntry<S> {
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deps?: Array<RelinkSource<any>>
+  /**
+   * A hooks to this source to run certain callbacks when certain events are
+   * fired.
+   */
   lifecycle?: RelinkLifecycleConfig<S>
+  /**
+   * Additional options to configure the source.
+   */
   options?: RelinkSourceOptions
 }
 
@@ -193,6 +230,10 @@ export interface RelinkSource<S> {
   watch: Watcher<[RelinkEvent<S>]>['M$watch']
   /**
    * ## 🚧 Experimental 🚧
+   * This method might behave differently or be removed in future versions.
+   *
+   * ---------------------------------------------------------------------------
+   *
    * If sources are dynamically created, it is best to call this
    * cleanup function when they are no longer needed.
    * @example
@@ -224,7 +265,6 @@ export interface RelinkSource<S> {
      */
     M$childDeps: Record<RelinkSourceKey, true>
     M$directGet(): S
-    // M$suspenseOnHydration(): void
     M$getIsReadyStatus(): boolean
   }
 }
