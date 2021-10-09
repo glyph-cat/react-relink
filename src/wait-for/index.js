@@ -1,5 +1,10 @@
+import { deprecationWarn } from '../dev'
+
 export async function waitForAll(sources = [], callback, onError) {
   if (callback) {
+    deprecationWarn(
+      'Starting from V1, `waitForAll` will be just an async function, but it seems like you have passed a callback to it, which will do nothing. Instead, try using `await waitForAll(...)` or `waitForAll(...).then()`.'
+    )
     waitForAllBase(sources).then(callback).catch(onError)
   } else {
     await waitForAllBase(sources)
