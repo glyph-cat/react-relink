@@ -1,4 +1,4 @@
-import { INTERNALS_SYMBOL } from './constants'
+import { SOURCE_INTERNAL_SYMBOL } from './constants'
 import { Watcher } from './internals/watcher/schema'
 
 /**
@@ -17,8 +17,9 @@ export type RelinkHydrateCallback<S> = (args: RelinkHydrateArgs<S>) => void
 
 /**
  * @public
+ * @deprecated
  */
-export type RelinkSelector<S, K> = (state: S) => K
+export type RelinkLegacySelector<S, K> = (state: S) => K
 
 /**
  * @public
@@ -90,6 +91,10 @@ export interface RelinkSourceOptions {
    */
   suspense?: boolean
   /**
+   * ## 🚨 Deprecated 🚨
+   *
+   * ---------------------------------------------------------------------------
+   *
    * Make the source mutable.
    * - When `true`:
    *   - State values are passed by reference.
@@ -98,6 +103,7 @@ export interface RelinkSourceOptions {
    *   - State values are deep copied with [`fast-copy`](https://github.com/planttheidea/fast-copy) every time they need to be read.
    *   - Previous and next states are compared with [`react-fast-compare`](https://github.com/FormidableLabs/react-fast-compare).
    * @defaultValue `true`
+   * @deprecated 
    */
   mutable?: boolean
   /**
@@ -250,7 +256,7 @@ export interface RelinkSource<S> {
   /**
    * @internal
    */
-  [INTERNALS_SYMBOL]: {
+  [SOURCE_INTERNAL_SYMBOL]: {
     M$key: RelinkSourceKey
     M$isMutable: boolean
     M$isPublic: boolean

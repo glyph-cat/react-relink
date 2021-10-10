@@ -11,3 +11,14 @@ export interface SampleSchema {
   foo: number,
   bar: number,
 }
+
+export interface PlayerSetSchema {
+  player1: {
+    nickname: string
+    score: number,
+  },
+  player2: {
+    nickname: string
+    score: number,
+  },
+}

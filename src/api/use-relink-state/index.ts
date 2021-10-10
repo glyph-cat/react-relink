@@ -1,4 +1,8 @@
-import { RelinkSelector, RelinkSource, } from '../../schema'
+import { RelinkSelector } from '../selector'
+import {
+  RelinkLegacySelector, // eslint-disable-line import/no-deprecated
+  RelinkSource,
+} from '../../schema'
 import { useRelinkValue } from '../use-relink-value'
 
 /**
@@ -21,7 +25,8 @@ export function useRelinkState<S>(
  */
 export function useRelinkState<S, K>(
   source: RelinkSource<S>,
-  selector: RelinkSelector<S, K>
+  // eslint-disable-next-line import/no-deprecated
+  selector: RelinkSelector<S, K> | RelinkLegacySelector<S, K>
 ): [K, RelinkSource<S>['set'], RelinkSource<S>['reset']]
 
 /**
@@ -29,7 +34,8 @@ export function useRelinkState<S, K>(
  */
 export function useRelinkState<S, K>(
   source: RelinkSource<S>,
-  selector?: RelinkSelector<S, K>
+  // eslint-disable-next-line import/no-deprecated
+  selector?: RelinkSelector<S, K> | RelinkLegacySelector<S, K>
 ): [S | K, RelinkSource<S>['set'], RelinkSource<S>['reset']] {
   const state = useRelinkValue(source, selector)
   return [state, source.set, source.reset]

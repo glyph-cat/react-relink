@@ -1,4 +1,4 @@
-import { INTERNALS_SYMBOL, IS_DEV_ENV } from '../../constants'
+import { SOURCE_INTERNAL_SYMBOL, IS_DEV_ENV } from '../../constants'
 // import { createDebugLogger } from '../../debugging'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { checkForCircularDeps } from '../../internals/circular-deps'
@@ -31,6 +31,7 @@ import {
   RelinkSourceOptions,
 } from '../../schema'
 import { isFunction, isThenable } from '../../internals/type-checker'
+import { hasSymbol } from '../../internals/has-symbol'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
@@ -45,6 +46,7 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
 } as const
 
 let isWarningShown_sourceKeyAutogen = false // KIV
+let isWarningShown_dropImmutableSupport = false // KIV
 
 /**
  * @public
@@ -97,6 +99,13 @@ export function createSource<S>({
   const isVirtualBatchEnabled = mergedOptions.virtualBatch
   const isSuspenseEnabled = mergedOptions.suspense
   const core = createRelinkCore(defaultState, isSourceMutable)
+
+  if (!mergedOptions.mutable) {
+    if (!isWarningShown_dropImmutableSupport) {
+      isWarningShown_dropImmutableSupport = true
+      devWarn('') // TODO
+    }
+  }
 
 
   // === Hydration ===
@@ -184,7 +193,7 @@ export function createSource<S>({
   const depWatchers: Array<() => void> = []
   for (const dep of deps) {
     // Register child depenency to this source
-    dep[INTERNALS_SYMBOL].M$childDeps[normalizedKey] = true
+    dep[SOURCE_INTERNAL_SYMBOL].M$childDeps[normalizedKey] = true
     const unwatchDepHydration = dep.watch((event) => {
       // Ignore if event is not caused by hydration
       if (event.type !== RelinkEventType.hydrate) { return }
@@ -303,7 +312,7 @@ export function createSource<S>({
     }
     for (const dep of deps) {
       // Unregister child depenency from this source
-      delete dep[INTERNALS_SYMBOL].M$childDeps[normalizedKey]
+      delete dep[SOURCE_INTERNAL_SYMBOL].M$childDeps[normalizedKey]
     }
     core.M$unwatchAll()
     unregisterKey(normalizedKey)
@@ -313,7 +322,7 @@ export function createSource<S>({
   }
 
   return {
-    [INTERNALS_SYMBOL]: {
+    [SOURCE_INTERNAL_SYMBOL]: {
       M$key: normalizedKey,
       M$isMutable: isSourceMutable,
       M$isPublic: isSourcePublic,
@@ -334,6 +343,15 @@ export function createSource<S>({
     cleanup,
   }
 
+}
+
+/**
+ * @public
+ */
+export function isRelinkSource<S = unknown>(
+  value: unknown
+): value is RelinkSource<S> {
+  return hasSymbol(value, SOURCE_INTERNAL_SYMBOL)
 }
 
 // === Local Notes ===

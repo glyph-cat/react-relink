@@ -1,5 +1,5 @@
 import { createSource } from '../../api/source'
-import { INTERNALS_SYMBOL } from '../../constants'
+import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { TIME_GAP } from '../../debugging'
 import { allDepsAreReady } from '.'
 
@@ -10,7 +10,7 @@ describe(allDepsAreReady.name, (): void => {
       key: `test/${allDepsAreReady.name}/no-deps`,
       default: 1,
     })
-    const output = allDepsAreReady(MainSource[INTERNALS_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
     expect(output).toBe(true)
   })
 
@@ -29,7 +29,7 @@ describe(allDepsAreReady.name, (): void => {
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[INTERNALS_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
     expect(output).toBe(true)
   })
 
@@ -54,7 +54,7 @@ describe(allDepsAreReady.name, (): void => {
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[INTERNALS_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
     expect(output).toBe(true)
   })
 
@@ -83,7 +83,7 @@ describe(allDepsAreReady.name, (): void => {
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[INTERNALS_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
     expect(output).toBe(false)
   })
 
@@ -116,7 +116,7 @@ describe(allDepsAreReady.name, (): void => {
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[INTERNALS_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
     expect(output).toBe(false)
   })
 
