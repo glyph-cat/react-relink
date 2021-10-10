@@ -1,4 +1,4 @@
-import { INTERNALS_SYMBOL } from '../../constants'
+import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../../schema'
 
 /**
@@ -10,7 +10,7 @@ export function waitFor(
   source: RelinkSource<any>
 ): Promise<void> {
   return new Promise((resolve): void => {
-    if (source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
+    if (source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
       resolve()
     } else {
       const unwatch = source.watch((event): void => {
@@ -44,9 +44,9 @@ export function waitForAll(
         }
       }
       for (const source of deps) {
-        if (source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
+        if (source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
           // If source is already hydrated, no need add watcher
-          isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
+          isReadyTracker[source[SOURCE_INTERNAL_SYMBOL].M$key] = true
         } else {
           // If not, only then we add a watcher to it
           const unwatch = source.watch((event): void => {
@@ -56,9 +56,9 @@ export function waitForAll(
               // If a hydrated source suddenly enters hydration again while
               // waiting for other sources to hydrate, remove its key from the
               // tracker.
-              delete isReadyTracker[source[INTERNALS_SYMBOL].M$key]
+              delete isReadyTracker[source[SOURCE_INTERNAL_SYMBOL].M$key]
             } else {
-              isReadyTracker[source[INTERNALS_SYMBOL].M$key] = true
+              isReadyTracker[source[SOURCE_INTERNAL_SYMBOL].M$key] = true
               unwatch()
               resolveIfAllAreReady()
             }

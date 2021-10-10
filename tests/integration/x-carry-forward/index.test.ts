@@ -2,12 +2,14 @@ import { delay, TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
+// Test objectives:
+// * States are carried forward from one reducer to the next
+
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource } = Relink
-  const testDescription = 'States are carried forward from one reducer to the next'
 
-  test(testDescription, async (): Promise<void> => {
+  test('Carry forward', async (): Promise<void> => {
 
     const Source = createSource<SampleSchema>({
       key: 'test/x-carry-forward',

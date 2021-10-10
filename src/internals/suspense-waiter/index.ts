@@ -1,6 +1,6 @@
 import { MutableRefObject, useReducer, useRef } from 'react'
 import { waitFor } from '../../api/wait-for'
-import { INTERNALS_SYMBOL } from '../../constants'
+import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { RelinkSource, RelinkEventType } from '../../schema'
 import { forceUpdateReducer, useLayoutEffect } from '../custom-hooks'
 import { CallbackWithNoParamAndReturnsVoid } from '../helper-types'
@@ -72,10 +72,10 @@ export function useSuspenseForDataFetching(
 ): void {
   const waitPromise: MutableRefObject<Promise<void>> = useRef(null)
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
-  if (source[INTERNALS_SYMBOL].M$isSuspenseEnabled) {
+  if (source[SOURCE_INTERNAL_SYMBOL].M$isSuspenseEnabled) {
     // [Point A] Don't wait until component mounts, create promise for suspension
     // immediately if source is not ready.
-    if (!source[INTERNALS_SYMBOL].M$getIsReadyStatus()) {
+    if (!source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
       waitPromise.current = (async () => {
         await waitFor(source)
         // Nullify the promise reference, otherwise it will still be there on
@@ -89,7 +89,7 @@ export function useSuspenseForDataFetching(
     }
   }
   useLayoutEffect((): CallbackWithNoParamAndReturnsVoid => {
-    if (source[INTERNALS_SYMBOL].M$isSuspenseEnabled) {
+    if (source[SOURCE_INTERNAL_SYMBOL].M$isSuspenseEnabled) {
       const unwatch = source.watch((event): void => {
         // Ignore if event is not caused by hydration
         if (event.type !== RelinkEventType.hydrate) { return }

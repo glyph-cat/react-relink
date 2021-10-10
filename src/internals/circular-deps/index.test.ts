@@ -1,6 +1,5 @@
-import { INTERNALS_SYMBOL } from '../../constants'
-import { isRelinkSource } from '../../api/is-relink-source'
-import { createSource } from '../../api/source'
+import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
+import { createSource, isRelinkSource } from '../../api/source'
 import { RelinkSource } from '../../schema'
 import { checkForCircularDeps } from '.'
 
@@ -31,8 +30,8 @@ describe(checkForCircularDeps.name, (): void => {
         deps: [SourceA],
       })
       sourceADeps.push(SourceB)
-      checkForCircularDeps(SourceA[INTERNALS_SYMBOL].M$parentDeps, [
-        SourceA[INTERNALS_SYMBOL].M$key,
+      checkForCircularDeps(SourceA[SOURCE_INTERNAL_SYMBOL].M$parentDeps, [
+        SourceA[SOURCE_INTERNAL_SYMBOL].M$key,
       ])
     }
     expect(callback).toThrow(
@@ -57,8 +56,8 @@ describe(checkForCircularDeps.name, (): void => {
         default: 0,
         deps: [SourceB],
       })
-      checkForCircularDeps(SourceC[INTERNALS_SYMBOL].M$parentDeps, [
-        SourceC[INTERNALS_SYMBOL].M$key,
+      checkForCircularDeps(SourceC[SOURCE_INTERNAL_SYMBOL].M$parentDeps, [
+        SourceC[SOURCE_INTERNAL_SYMBOL].M$key,
       ])
     }
     expect(callback).not.toThrow()
