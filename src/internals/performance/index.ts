@@ -68,7 +68,7 @@ export function startMeasuringReducerPerformance(
   /**
    * Shows a warning if elapsed time exceeds the executed threshold.
    * @returns True if exceeded the threshold, otherwise false, but only in
-   * internal testing environment, not the distributed ones.
+   * internal testing environment, not the bundled ones.
    */
   const stop = (): MarkReducerEndPayload => {
     if (IS_DEV_ENV) {

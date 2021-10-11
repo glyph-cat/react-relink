@@ -12,7 +12,7 @@
     // `untrimmedFilePath` defaults to 'dist' folder, must use empty string to
     // disable it
     "untrimmedFilePath": "",
-    "publicTrimmedFilePath": "<projectFolder>/dist/types/index.d.ts",
+    "publicTrimmedFilePath": "<projectFolder>/lib/types/index.d.ts",
     "omitTrimmingComments": true
   },
   "tsdocMetadata": {
