@@ -8,8 +8,9 @@ yarn-error.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Builds
-dist
 *.tgz
+dist
+lib
 
 # Dependency directories
 node_modules

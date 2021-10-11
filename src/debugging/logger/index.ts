@@ -56,7 +56,7 @@ function getTimestamp(): string {
 
 /**
  * Instantiate a logger that only runs in the internal debugging environment.
- * Will be omitted in distributable versions of the code bundle.
+ * Will be omitted in bundled versions of the code bundle.
  */
 export function createDebugLogger(sourceKey: RelinkSourceKey): DebugLogger {
 

@@ -93,7 +93,7 @@ const config = [
     // CommonJS
     input: INPUT_FILE,
     output: {
-      file: 'dist/cjs/index.js',
+      file: 'lib/cjs/index.js',
       format: 'cjs',
       exports: 'named',
     },
@@ -104,7 +104,7 @@ const config = [
     // EcmaScript
     input: INPUT_FILE,
     output: {
-      file: 'dist/es/index.js',
+      file: 'lib/es/index.js',
       format: 'es',
       exports: 'named',
     },
@@ -115,7 +115,7 @@ const config = [
     // EcmaScript for browsers
     input: INPUT_FILE,
     output: {
-      file: 'dist/es/index.mjs',
+      file: 'lib/es/index.mjs',
       format: 'es',
       exports: 'named',
     },
@@ -126,7 +126,7 @@ const config = [
     // React Native
     input: INPUT_FILE,
     output: {
-      file: 'dist/native/index.js',
+      file: 'lib/native/index.js',
       format: 'es',
       exports: 'named',
     },
@@ -151,7 +151,7 @@ const config = [
     // UMD
     input: INPUT_FILE,
     output: {
-      file: 'dist/umd/index.js',
+      file: 'lib/umd/index.js',
       format: 'umd',
       name: 'Relink',
       exports: 'named',
@@ -167,7 +167,7 @@ const config = [
     // UMD (Production)
     input: INPUT_FILE,
     output: {
-      file: 'dist/umd/index.min.js',
+      file: 'lib/umd/index.min.js',
       format: 'umd',
       name: 'Relink',
       exports: 'named',

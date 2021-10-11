@@ -9,30 +9,30 @@ const DEBUG_BUILDS: Array<IntegrationTestConfig> = [
     Relink: require('../../src/bundle.ts'),
   },
 ]
-const DISTRIBUTABLE_BUILDS: Array<IntegrationTestConfig> = [
+const BUNDLED_BUILDS: Array<IntegrationTestConfig> = [
   {
     buildEnv: 'dev',
     buildType: 'cjs',
     description: 'CJS',
-    Relink: require('../../dist/cjs/index.js'),
+    Relink: require('../../lib/cjs/index.js'),
   },
   {
     buildEnv: 'dev',
     buildType: 'es',
     description: 'EcmaScript',
-    Relink: require('../../dist/es/index.js'),
+    Relink: require('../../lib/es/index.js'),
   },
   {
     buildEnv: 'dev',
     buildType: 'umd',
     description: 'UMD',
-    Relink: require('../../dist/umd/index.js'),
+    Relink: require('../../lib/umd/index.js'),
   },
   {
     buildEnv: 'prod',
     buildType: 'umd',
     description: 'UMD (Minified)',
-    Relink: require('../../dist/umd/index.min.js'),
+    Relink: require('../../lib/umd/index.min.js'),
   },
 ]
 
@@ -44,7 +44,7 @@ if (!SCOPE || SCOPE === 'debug') {
   testConfigStack.push(...DEBUG_BUILDS)
 }
 if (!SCOPE || SCOPE === 'bundled') {
-  testConfigStack.push(...DISTRIBUTABLE_BUILDS)
+  testConfigStack.push(...BUNDLED_BUILDS)
 }
 
 export function wrapper(
