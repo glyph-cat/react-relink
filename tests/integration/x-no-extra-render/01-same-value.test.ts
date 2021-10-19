@@ -15,7 +15,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  describe('Mmutable', (): void => {
+  describe.skip('Mutable', (): void => {
 
     test('Without selector', async (): Promise<void> => {
 
@@ -225,7 +225,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  describe('Immutable', (): void => {
+  describe.skip('Immutable', (): void => {
 
     test('Without selector', async (): Promise<void> => {
 
