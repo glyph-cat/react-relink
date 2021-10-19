@@ -103,7 +103,7 @@ export function createSource<S>({
   if (!mergedOptions.mutable) {
     if (!isWarningShown_dropImmutableSupport) {
       isWarningShown_dropImmutableSupport = true
-      devWarn('') // TODO
+      devWarn('Relink will be dropping support for immutability in the next major version. Read more: https://git.io/JWfDY')
     }
   }
 

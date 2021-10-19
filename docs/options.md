@@ -29,6 +29,8 @@ Components that consume the source will be suspended while hydrating.
 
 Setting the value to `false` prevents the state from being tampered by accidentally modifying its value, but can slightly compromise performance. This is because the state is deep-copied. Take note, however that values passes to selectors directly reference to the original state — selectors are for selecting values, you should not include any complex logic or try to change the state there.
 
+NOTE: Relink will be dropping support for immutability in the next major version. This decision has been made because immutability has ended up being more of a liability than a essential feature. Removing this feature can help shrink Relink's package size and increase stability. Besides, what better way is there to achieve immutability for various data types in your projects other than through a custom set of code optimized for them?
+
 <br/>
 
 ## `virtualBatch`

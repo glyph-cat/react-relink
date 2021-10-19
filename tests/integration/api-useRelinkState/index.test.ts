@@ -13,7 +13,7 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, useHydrateRelinkSource } = Relink
+  const { createSource, useRelinkState } = Relink
 
   let Source: RelinkSource<number>
   const cleanupRef = createCleanupRef()
@@ -24,11 +24,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('main', (): void => {
     Source = createSource({
-      key: 'test/',
+      key: 'test/use-relink-state',
       default: 1,
     })
     const hookInterface = createHookInterface({
-      useHook: () => useHydrateRelinkSource(Source),
+      useHook: () => useRelinkState(Source),
       values: {
         main({ hookData }) {
           return hookData

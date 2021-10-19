@@ -3,7 +3,7 @@ import {
   createHookInterface,
 } from '@chin98edwin/react-test-utils'
 import { RelinkSource } from '../../../src/schema'
-import { IntegrationTestConfig } from '../../helpers'
+import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // TODO
@@ -17,27 +17,34 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, useRelinkValue } = Relink
 
-  let Source: RelinkSource<number>
+  let Source: RelinkSource<SampleSchema>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     Source.cleanup()
     cleanupRef.run()
   })
 
-  test.skip('Not ready', (): void => {
-    Source = createSource({
+  // KIV
+  test('Not ready', (): void => {
+    Source = createSource<SampleSchema>({
       key: 'test/api-useRelinkValue',
-      default: null,
+      default: {
+        foo: 1,
+        bar: 1,
+      },
     })
     const hookInterface = createHookInterface({
       useHook: () => useRelinkValue(Source),
       values: {
-        main() {
-          return null
+        main({ hookData }) {
+          return hookData
         },
       },
     }, cleanupRef)
-    expect(hookInterface.get('main')).toBe(null)
+    expect(hookInterface.get('main')).toStrictEqual({
+      foo: 1,
+      bar: 1,
+    })
   })
 
 })

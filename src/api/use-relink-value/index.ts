@@ -57,7 +57,7 @@ export function useRelinkValue<S, K>(
  *   get: (state) => ({
  *     propertyA: state.propertyA,
  *     propertyB: state.propertyB,
- *   }),
+ *   })
  * })
  * const filteredState = useRelinkValue(Source, Selector)
  * @public
@@ -88,7 +88,7 @@ export function useRelinkValue<S, K>(
 
   const isModernSelector = isRelinkSelector(selector)
   const shouldSelectBeforeCheck = isModernSelector
-    ? selector[SELECTOR_INTERNAL_SYMBOL].M$checkBeforeSelect
+    ? selector[SELECTOR_INTERNAL_SYMBOL].M$type
     : false
 
   const getSelectedState = useCallback((passedState: S): S | K => {
