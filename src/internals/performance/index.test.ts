@@ -2,8 +2,7 @@ import { TIME_GAP } from '../../debugging'
 import {
   formatReducerNotRespondingWarning,
   formatReducerSlowWarning,
-  PERFORMANCE_SYNC_SLOW_THRESHOLD_MS,
-  PERFORMANCE_ASYNC_SLOW_THRESHOLD_MS,
+  PERFORMANCE_SLOW_THRESHOLD_MS,
   PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS,
   startMeasuringReducerPerformance,
 } from '.'
@@ -61,7 +60,7 @@ describe(startMeasuringReducerPerformance.name, (): void => {
 
     test('Slow', (): void => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
-      jest.advanceTimersByTime(PERFORMANCE_SYNC_SLOW_THRESHOLD_MS + TIME_GAP(1))
+      jest.advanceTimersByTime(PERFORMANCE_SLOW_THRESHOLD_MS + TIME_GAP(1))
       const [isSlow, isNotResponding] = perfMeasurer.stop()
       expect(isSlow).toBe(true)
       expect(isNotResponding).toBe(false)
@@ -90,7 +89,7 @@ describe(startMeasuringReducerPerformance.name, (): void => {
     test('Slow', (): void => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
       perfMeasurer.isAsync.current = true
-      jest.advanceTimersByTime(PERFORMANCE_ASYNC_SLOW_THRESHOLD_MS + TIME_GAP(1))
+      jest.advanceTimersByTime(PERFORMANCE_SLOW_THRESHOLD_MS + TIME_GAP(1))
       const [isSlow, isNotResponding] = perfMeasurer.stop()
       expect(isSlow).toBe(true)
       expect(isNotResponding).toBe(false)
