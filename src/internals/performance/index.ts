@@ -31,8 +31,7 @@ export function performanceNow(): number {
 // to the next reducer, it might only lead to more frustration and critical
 // problems.
 
-export const PERFORMANCE_SYNC_SLOW_THRESHOLD_MS = 15
-export const PERFORMANCE_ASYNC_SLOW_THRESHOLD_MS = 500
+export const PERFORMANCE_SLOW_THRESHOLD_MS = 500
 export const PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS = 10000
 
 type MarkReducerEndPayload = [
@@ -75,10 +74,7 @@ export function startMeasuringReducerPerformance(
       clearTimeout(timeoutRef)
       const timeEnd = performanceNow()
       const timeDiff = Math.round(timeEnd - timeStart)
-      const slowThreshold = isAsync.current
-        ? PERFORMANCE_ASYNC_SLOW_THRESHOLD_MS
-        : PERFORMANCE_SYNC_SLOW_THRESHOLD_MS
-      const isSlow = timeDiff >= slowThreshold
+      const isSlow = timeDiff >= PERFORMANCE_SLOW_THRESHOLD_MS
       // console.log({ timeDiff, isAsync: isAsync.current, slowThreshold, isSlow })
       if (isSlow) {
         devWarn(formatReducerSlowWarning(sourceKey, timeDiff, isAsync.current))
