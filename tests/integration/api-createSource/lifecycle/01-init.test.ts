@@ -54,7 +54,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   test('Synchronous skip', async (): Promise<void> => {
 
     Source = createSource({
-      key: 'test/Source/lifecycle.init/sync/skip',
+      key: 'test/createSource/lifecycle.init/sync/skip',
       default: null,
       lifecycle: {
         init({ skip }): void {
@@ -81,14 +81,6 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     // NOTE: `eventPromise` is not tested here because the source would have
     // finished hydrating (synchronously) by the time `createSource` is called.
 
-  })
-
-  test.skip('Synchronous commit (delayed)', async (): Promise<void> => {
-    // TODO
-  })
-
-  test.skip('Synchronous skip (delayed)', async (): Promise<void> => {
-    // TODO
   })
 
   test('Asynchronous commit', async (): Promise<void> => {

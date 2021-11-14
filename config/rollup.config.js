@@ -37,6 +37,7 @@ function getPlugins(config = {}) {
         compilerOptions: {
           declaration: false,
           declarationDir: null,
+          jsx: 'react',
           outDir: null,
         },
       },

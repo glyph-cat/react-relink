@@ -5,10 +5,11 @@
     "declarationDir": "./temp/tsc/types",
     "esModuleInterop": true,
     "importHelpers": false,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Node",
     "outDir": "./temp/tsc/js",
+    "skipLibCheck": true,
     "stripInternal": true,
     "target": "es2016"
   },

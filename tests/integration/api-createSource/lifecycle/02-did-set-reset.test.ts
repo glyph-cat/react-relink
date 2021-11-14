@@ -19,7 +19,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     const eventStack: Array<RelinkEvent<number>> = []
     Source = createSource({
-      key: 'test/',
+      key: 'test/createSource/lifecycle/did-set-reset',
       default: 0,
       lifecycle: {
         didSet(event) {

@@ -9,7 +9,6 @@ import { wrapper } from '../wrapper'
 // TODO
 // Test objectives:
 // * Check if state values are returned as expected
-// * Check if selectors are working
 // * Check if state values passed into selectors are direct references of the
 //   internal state
 
