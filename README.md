@@ -26,6 +26,12 @@
 
 <br/>
 
+**For those looking for help for v0:**
+* [Readme](https://github.com/chin98edwin/react-relink/blob/v0/README.md)
+* [The docs](https://github.com/chin98edwin/react-relink/tree/v0/docs)
+
+<br/>
+
 # Installation
 
 With [NPM](https://www.npmjs.com/package/react-relink):
