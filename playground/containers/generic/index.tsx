@@ -1,4 +1,4 @@
-import React, { Suspense, useLayoutEffect } from 'react'
+import { Suspense, useLayoutEffect } from 'react'
 import { createSource } from '../../../src/api/source'
 import { useRelinkValue } from '../../../src/api/use-relink-value'
 import { delay, TIME_GAP } from '../../../src/debugging'

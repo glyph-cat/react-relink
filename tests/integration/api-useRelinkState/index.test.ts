@@ -7,9 +7,7 @@ import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objectives:
-// * Make sure the returned hook data is a setter; Use `Object.is` to check
-// * Check if selector is passed into the `useRelinkValue` hook under the hood
-// TODO ^
+// * Make sure the returned hook data is a setter
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
