@@ -16,7 +16,7 @@
 
 <br/>
 
-[**🚧　IMPORTANT: What's Coming in V1　🚧**](https://github.com/chin98edwin/react-relink/blob/main/docs/whats-coming-in-v1.md)
+[**🚧　IMPORTANT: What's Coming in V1　🚧**](https://github.com/chin98edwin/react-relink/tree/v0/docs/whats-coming-in-v1.md)
 
 <br/>
 
@@ -145,13 +145,13 @@ rehydrateCounter(({ commit }) => {
 <br/>
 
 # Documentation
-* [Main Directory](https://github.com/chin98edwin/react-relink/blob/main/docs)
-* [Selectors](https://github.com/chin98edwin/react-relink/blob/main/docs/selectors.md)
-* [Lifecycle](https://github.com/chin98edwin/react-relink/blob/main/docs/lifecycle.md)
-* [Source Dependencies](https://github.com/chin98edwin/react-relink/blob/main/docs/source-dependencies.md)
-* [Immutability In Setters](https://github.com/chin98edwin/react-relink/blob/main/docs/immutability-in-setters.md)
-* [Options](https://github.com/chin98edwin/react-relink/blob/main/docs/options.md)
-* [Error Codes](https://github.com/chin98edwin/react-relink/blob/main/docs/error-codes.md)
-* [Interacting with Sources Outside of React Tree](https://github.com/chin98edwin/react-relink/blob/main/docs/interacting-with-sources-outside-of-react-tree.md)
+* [Main Directory](https://github.com/chin98edwin/react-relink/tree/v0/docs)
+* [Selectors](https://github.com/chin98edwin/react-relink/tree/v0/docs/selectors.md)
+* [Lifecycle](https://github.com/chin98edwin/react-relink/tree/v0/docs/lifecycle.md)
+* [Source Dependencies](https://github.com/chin98edwin/react-relink/tree/v0/docs/source-dependencies.md)
+* [Immutability In Setters](https://github.com/chin98edwin/react-relink/tree/v0/docs/immutability-in-setters.md)
+* [Options](https://github.com/chin98edwin/react-relink/tree/v0/docs/options.md)
+* [Error Codes](https://github.com/chin98edwin/react-relink/tree/v0/docs/error-codes.md)
+* [Interacting with Sources Outside of React Tree](https://github.com/chin98edwin/react-relink/tree/v0/docs/interacting-with-sources-outside-of-react-tree.md)
 
 <br/>
