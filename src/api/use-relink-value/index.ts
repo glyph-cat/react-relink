@@ -10,23 +10,22 @@ import reactFastCompare from 'react-fast-compare'
 import {
   IS_CLIENT_ENV,
   IS_DEV_ENV,
-  SELECTOR_INTERNAL_SYMBOL,
   SOURCE_INTERNAL_SYMBOL,
 } from '../../constants'
-import { forceUpdateReducer, useLayoutEffect } from '../../internals/custom-hooks'
 import {
-  RelinkEvent,
-  RelinkLegacySelector, // eslint-disable-line import/no-deprecated
-  RelinkSource,
-} from '../../schema'
+  forceUpdateReducer,
+  useLayoutEffect,
+} from '../../internals/custom-hooks'
+import { RelinkEvent, RelinkSelector, RelinkSource } from '../../schema'
 import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
 import { CallbackWithNoParamAndReturnsVoid } from '../../internals/helper-types'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
-import { isRelinkSelector, RelinkSelector } from '../selector'
 
 type StateId = Record<string, never>
 
 const stateCache: WeakMap<StateId, unknown> = new WeakMap()
+
+const UNSTABLE_FLAG_shouldSelectBeforeCheck = false
 
 /**
  * @example
@@ -43,24 +42,6 @@ export function useRelinkValue<S>(source: RelinkSource<S>): S
  * })
  * const filteredState = useRelinkValue(Source, selector)
  * @public
- * @deprecated
- */
-export function useRelinkValue<S, K>(
-  source: RelinkSource<S>,
-  // eslint-disable-next-line import/no-deprecated
-  selector: RelinkLegacySelector<S, K>
-): K
-
-/**
- * @example
- * const Selector = createSelector({
- *   get: (state) => ({
- *     propertyA: state.propertyA,
- *     propertyB: state.propertyB,
- *   })
- * })
- * const filteredState = useRelinkValue(Source, Selector)
- * @public
  */
 export function useRelinkValue<S, K>(
   source: RelinkSource<S>,
@@ -72,8 +53,7 @@ export function useRelinkValue<S, K>(
  */
 export function useRelinkValue<S, K>(
   source: RelinkSource<S>,
-  // eslint-disable-next-line import/no-deprecated
-  selector?: RelinkSelector<S, K> | RelinkLegacySelector<S, K>
+  selector?: RelinkSelector<S, K>
 ): S | K {
 
   // Before anything else, perform suspension if source is not ready.
@@ -86,18 +66,9 @@ export function useRelinkValue<S, K>(
     return (): void => { stateCache.delete(stateId) }
   }, [])
 
-  const isModernSelector = isRelinkSelector(selector)
-  const shouldSelectBeforeCheck = isModernSelector
-    ? selector[SELECTOR_INTERNAL_SYMBOL].M$type
-    : false
-
   const getSelectedState = useCallback((passedState: S): S | K => {
-    return selector
-      ? isModernSelector
-        ? selector[SELECTOR_INTERNAL_SYMBOL].M$get(passedState)
-        : selector(passedState)
-      : passedState
-  }, [isModernSelector, selector])
+    return selector ? selector(passedState) : passedState
+  }, [selector])
 
   // Assign initial state if not already assigned.
   if (!stateCache.has(hookId.current)) {
@@ -130,7 +101,7 @@ export function useRelinkValue<S, K>(
       let shouldUpdate = false
       const prevCachedState = stateCache.get(hookId.current)
       if (source[SOURCE_INTERNAL_SYMBOL].M$isMutable) {
-        if (shouldSelectBeforeCheck) {
+        if (UNSTABLE_FLAG_shouldSelectBeforeCheck) {
           newSelectedState = getSelectedState(event.state)
           if (!Object.is(prevCachedState, newSelectedState)) {
             shouldUpdate = true
@@ -171,7 +142,7 @@ export function useRelinkValue<S, K>(
       unwatch()
       clearTimeout(debounceRef)
     }
-  }, [getSelectedState, shouldSelectBeforeCheck, source])
+  }, [getSelectedState, source])
 
   return stateCache.get(hookId.current) as S | K
 }

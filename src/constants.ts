@@ -1,7 +1,5 @@
 export const SOURCE_INTERNAL_SYMBOL = Symbol()
 
-export const SELECTOR_INTERNAL_SYMBOL = Symbol()
-
 /**
  * Refers to the environment used to develop Relink.
  */

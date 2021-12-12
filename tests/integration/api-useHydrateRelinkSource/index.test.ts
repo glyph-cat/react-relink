@@ -24,7 +24,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('main', async (): Promise<void> => {
     Source = createSource({
-      key: 'test/',
+      key: 'test/use-hydrate-relink-source',
       default: 1,
     })
     const hookInterface = createHookInterface({

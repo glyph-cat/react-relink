@@ -17,9 +17,8 @@ export type RelinkHydrateCallback<S> = (args: RelinkHydrateArgs<S>) => void
 
 /**
  * @public
- * @deprecated
  */
-export type RelinkLegacySelector<S, K> = (state: S) => K
+export type RelinkSelector<S, K> = (state: S) => K
 
 /**
  * @public
@@ -241,7 +240,7 @@ export interface RelinkSource<S> {
    */
   watch: Watcher<[RelinkEvent<S>]>['M$watch']
   /**
-   * ## 🚧 Experimental 🚧
+   * ## 🚧  🚧
    * This method might behave differently or be removed in future versions.
    *
    * ---------------------------------------------------------------------------
