@@ -331,7 +331,6 @@ export function createSource<S>({
       M$parentDeps: deps,
       M$childDeps,
       M$directGet: core.M$directGet,
-      // M$suspenseOnHydration,
       M$getIsReadyStatus,
     },
     get,

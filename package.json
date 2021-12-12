@@ -11,6 +11,7 @@
   ],
   "types": "lib/types/index.d.ts",
   "scripts": {
+    "deps": "node ./scripts/update-project-dependencies",
     "clean": "rm -rf .cache ./dist ./lib ./temp ./yarn-error.log",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
