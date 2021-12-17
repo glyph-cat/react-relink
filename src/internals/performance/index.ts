@@ -1,4 +1,5 @@
 import { MutableRefObject } from 'react'
+import { RELINK_CONFIG } from '../../api/config'
 import { IS_DEV_ENV, IS_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { devWarn } from '../dev'
@@ -7,15 +8,11 @@ import { devWarn } from '../dev'
 // the code is conditionally with `IS_DEBUG_ENV`. A check was made on 5 Oct 2021
 // and so far the code has been bundled with the intended bahaviour.
 
-/**
- * For stability purposes we do a check on `typeof window` instead of using the
- * `IS_CLIENT_ENV` constant because we have no control over which builds are
- * used and where they are run in.
- */
-const isWindowAvailable = typeof window !== 'undefined'
-
 export function performanceNow(): number {
-  if (isWindowAvailable) {
+  // NOTE: For stability purposes we do a check on `typeof window` instead of
+  // using the `IS_CLIENT_ENV` constant because we have no control over which
+  // builds are used and what environment they are run in.
+  if (typeof window !== 'undefined') {
     return window.performance.now()
   } else {
     return Date.now()
@@ -56,7 +53,9 @@ export function startMeasuringReducerPerformance(
   let isNotResponding = false
   const isAsync: MutableRefObject<boolean> = { current: false }
 
-  if (IS_DEV_ENV) {
+  const shouldRunPerformanceCheck = IS_DEV_ENV && !RELINK_CONFIG.hidePerformanceWarnings
+
+  if (shouldRunPerformanceCheck) {
     timeStart = performanceNow()
     timeoutRef = setTimeout((): void => {
       isNotResponding = true
@@ -70,7 +69,7 @@ export function startMeasuringReducerPerformance(
    * internal testing environment, not the bundled ones.
    */
   const stop = (): MarkReducerEndPayload => {
-    if (IS_DEV_ENV) {
+    if (shouldRunPerformanceCheck) {
       clearTimeout(timeoutRef)
       const timeEnd = performanceNow()
       const timeDiff = Math.round(timeEnd - timeStart)
