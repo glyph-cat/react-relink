@@ -47,8 +47,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   test('Invalid key', (): void => {
     const callback = (): void => {
       createSource({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore; // Refer to Special Note 'B' in 'src/README.md'
+        // @ts-expect-error: Passed `false` as key on purpose to test the error.
         key: false,
         default: null,
       })
