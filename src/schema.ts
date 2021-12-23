@@ -6,7 +6,14 @@ import { Watcher } from './internals/watcher/schema'
  * @public
  */
 export interface RelinkHydrateArgs<S> {
+  /**
+   * Commit a state that was previously saved.
+   * @param hydratedState - The previously saved state.
+   */
   commit(hydratedState: S): void
+  /**
+   * Skip hydration and use the default state.
+   */
   skip(): void
 }
 
@@ -43,8 +50,18 @@ export interface RelinkStateChangeEvent<S> {
  * @public
  */
 export interface RelinkHydrationEvent<S> {
+  /**
+   * The type of event that was being fired.
+   */
   type: RelinkEventType.hydrate
+  /**
+   * A snapshot of the state.
+   */
   state: S
+  /**
+   * A flag indicating whether the source is hydrating at the time the event is
+   * fired.
+   */
   isHydrating: boolean
 }
 
@@ -54,6 +71,27 @@ export interface RelinkHydrationEvent<S> {
 export type RelinkEvent<S> = RelinkHydrationEvent<S> | RelinkStateChangeEvent<S>
 
 /**
+ * @example
+ * const UserSource = createSource({
+ *   key: 'user-source',
+ *   default: defaultUserState,
+ *   lifecycle: {
+ *     init({ commit, skip }) {
+ *       const data = localStorage.getItem('user')
+ *       if (data) {
+ *         commit(JSON.parse(data))
+ *       } else {
+ *         skip()
+ *       }
+ *     },
+ *     didSet(payload) {
+ *       localStorage.setItem('user', JSON.stringify(payload))
+ *     },
+ *     didReset() {
+ *       localStorage.removeItem('user')
+ *     },
+ *   },
+ * })
  * @public
  */
 export interface RelinkLifecycleConfig<S> {
@@ -112,7 +150,8 @@ export interface RelinkSourceOptions {
    */
   mutable?: boolean
   /**
-   * Enable virtual batching.
+   * Slightly improve performance by coalescing the "setState" calls on top of
+   * React's batched updates.
    * - NOT suitable for states consumed by UI components that need to be
    * responsive. You will notice a delay when typing very quickly, for example.
    * - Suitable for states consumed by UI components that update almost too

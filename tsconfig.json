@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "checkJs": true,
     "declaration": true,
     "declarationDir": "./temp/tsc/types",
     "esModuleInterop": true,

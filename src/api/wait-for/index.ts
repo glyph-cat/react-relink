@@ -3,6 +3,14 @@ import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../../schema'
 
 /**
  * Creates a promise that resolves only when a source has finished hydrating.
+ *
+ * NOTE: Circular dependencies are not allowed.
+ * @param source - The source to wait for.
+ * @example
+ * // Do something here...
+ * await waitForAll([SourceA, SourceB, SourceC])
+ * // Continue to do something here...
+ * @public
  */
 export function waitFor(
   // Refer to Special Note 'A' in 'src/README.md'
@@ -28,22 +36,31 @@ export function waitFor(
 }
 
 /**
+ * Creates a promise that resolves only when a all the listed sources have
+ * finished hydrating.
+ *
+ * NOTE: Circular dependencies are not allowed.
+ * @param sources - The array of sources to wait for.
+ * @example
+ * // Do something here...
+ * await waitForAll([SourceA, SourceB, SourceC])
+ * // Continue to do something here...
  * @public
  */
 export function waitForAll(
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  deps: Array<RelinkSource<any>>
+  sources: Array<RelinkSource<any>>
 ): Promise<void> {
   return new Promise((resolve, reject): void => {
     try {
       const isReadyTracker: Record<RelinkSourceKey, true> = {}
       const resolveIfAllAreReady = (): void => {
-        if (Object.keys(isReadyTracker).length === deps.length) {
+        if (Object.keys(isReadyTracker).length === sources.length) {
           resolve()
         }
       }
-      for (const source of deps) {
+      for (const source of sources) {
         if (source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
           // If source is already hydrated, no need add watcher
           isReadyTracker[source[SOURCE_INTERNAL_SYMBOL].M$key] = true

@@ -26,7 +26,7 @@
 
 <br/>
 
-**For those looking for help for v0:**
+**For those that need help with v0:**
 * [Readme](https://github.com/chin98edwin/react-relink/blob/v0/README.md)
 * [The docs](https://github.com/chin98edwin/react-relink/tree/v0/docs)
 
@@ -34,16 +34,16 @@
 
 # Installation
 
-With [NPM](https://www.npmjs.com/package/react-relink):
+With [Yarn](https://yarnpkg.com/package/react-relink) (Recommended)
 ```sh
-npm i react-relink
+yarn add react-relink
 ```
 
 <br/>
 
-With [Yarn](https://yarnpkg.com/package/react-relink):
+With [NPM](https://www.npmjs.com/package/react-relink):
 ```sh
-yarn add react-relink
+npm i react-relink
 ```
 
 <br/>
@@ -128,15 +128,19 @@ rehydrateCounter(({ commit }) => {
 
 <br/>
 
-# Documentation
-* [Main Directory](https://github.com/chin98edwin/react-relink/blob/main/docs)
-* [Selectors](https://github.com/chin98edwin/react-relink/blob/main/docs/selectors.md)
-* [Lifecycle](https://github.com/chin98edwin/react-relink/blob/main/docs/lifecycle.md)
-* [Source Dependencies](https://github.com/chin98edwin/react-relink/blob/main/docs/source-dependencies.md)
-* [Immutability In Setters](https://github.com/chin98edwin/react-relink/blob/main/docs/immutability-in-setters.md)
-* [Options](https://github.com/chin98edwin/react-relink/blob/main/docs/options.md)
-* [Error Codes](https://github.com/chin98edwin/react-relink/blob/main/docs/error-codes.md)
-* [Interacting with Sources Outside of React Tree](https://github.com/chin98edwin/react-relink/blob/main/docs/interacting-with-sources-outside-of-react-tree.md)
+# Error Codes
+In production builds, error codes are thrown instead of the lengthy messages to save data.
+
+<br/>
+
+## `Relink_E1-typeofRawKey`
+
+Expected `key` to be a string or number but got `${typeofRawKey}`
+
+<br/>
+
+## `Relink_E2-depStack`
+Circular dependencies are not allowed: `${depStack}`
 
 <br/>
 
