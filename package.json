@@ -1,6 +1,6 @@
 {
   "name": "react-relink",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A lightweight state management library for React.",
   "main": "lib/cjs/index.js",
   "module": "lib/es/index.js",
