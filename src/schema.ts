@@ -188,7 +188,7 @@ export interface RelinkSourceEntry<S> {
    */
   key?: RelinkSourceKey
   /**
-   * 
+   *
    */
   scope?: RelinkSource<S>
   /**

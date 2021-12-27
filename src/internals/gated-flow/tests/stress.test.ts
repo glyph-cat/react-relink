@@ -3,7 +3,7 @@ import { createGatedFlow } from '..'
 
 test('Stress test', async (): Promise<void> => {
 
-  const gateKeeper = createGatedFlow(true)
+  const gateKeeper = createGatedFlow(true, 'test/gated-flow/stress')
   const array: Array<number> = []
 
   // Stage 1

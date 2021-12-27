@@ -1,4 +1,4 @@
-import React, { Suspense, useLayoutEffect } from 'react'
+import { Suspense, useLayoutEffect } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
 import { createSource } from '../../api/source'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'

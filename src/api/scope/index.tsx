@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from 'react'
+import { createContext, createElement, ReactNode, useContext } from 'react'
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { RelinkScopeId, RelinkSource, RelinkSourceKey } from '../../schema'
 
@@ -138,9 +138,14 @@ export function RelinkScope({
   for (const source of sources) {
     nextContext.M$pool[source[SOURCE_INTERNAL_SYMBOL].M$scopeId] = source
   }
-  return (
-    <RelinkContext.Provider value={nextContext}>
-      {children}
-    </RelinkContext.Provider>
+  return createElement(
+    RelinkContext.Provider,
+    { value: nextContext },
+    children
   )
+  // return (
+  //   <RelinkContext.Provider value={nextContext}>
+  //     {children}
+  //   </RelinkContext.Provider>
+  // )
 }
