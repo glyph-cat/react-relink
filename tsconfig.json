@@ -10,9 +10,6 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Node",
-    "lib": [
-      "esnext",
-    ],
     "outDir": "./temp/tsc/js",
     "skipLibCheck": true,
     "stripInternal": true,

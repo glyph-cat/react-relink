@@ -4,7 +4,7 @@ import { createGatedFlow } from '..'
 // Elaboration: Gate only closes when all currently queued callbacks have been
 // flushed, but callbacks placed after a lock is requested remains queued.
 test('Gate closes at appropriate timing', async (): Promise<void> => {
-  const gateKeeper = createGatedFlow(true)
+  const gateKeeper = createGatedFlow(true, 'test/gated-flow/close-timing')
   const array: Array<string> = []
 
   // Execute first group of callbacks
