@@ -1,3 +1,4 @@
+import { RelinkSourceKey } from '../../schema'
 import { isThenable } from '../type-checker'
 
 type GatedCallback<V> = (...args: any[]) => V | Promise<V>
@@ -24,7 +25,11 @@ export interface GatedFlow {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const dummyCallback = () => { }
 
-export function createGatedFlow(initialIsOpen: boolean): GatedFlow {
+export function createGatedFlow(
+  initialIsOpen: boolean,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  key: RelinkSourceKey
+): GatedFlow {
 
   /**
    * If gate is open, it means queued callbacks can start flushing and new
@@ -53,11 +58,20 @@ export function createGatedFlow(initialIsOpen: boolean): GatedFlow {
   const M$flush = async (): Promise<void> => {
     // Ignore request to flush if already flushing.
     if (isFlushing) { return } // Early exit
+    // /**
+    //  * A flag to indicate if an action is being executed in the while-loop.
+    //  */
+    // let isExecuting = false
     isFlushing = true
     while (isOpen && queueStack.length > 0) {
       const [poppedCallback, resolve] = queueStack.shift()
+      // if (isExecuting) {
+      //   throw new Error(`'${String(key)}': Cyclic calls are not allowed.`)
+      // }
+      // isExecuting = true
       const payload = poppedCallback()
       const finalPayload = isThenable(payload) ? await payload : payload
+      // isExecuting = false
       resolve(finalPayload)
     }
     isFlushing = false

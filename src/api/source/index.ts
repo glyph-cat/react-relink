@@ -97,7 +97,7 @@ export function createSource<S>({
    * to use, but rather, it means that the source can finally hydrate itself.
    * Also, gate is opened right away if there are no dependencies.
    */
-  const gatedFlow = createGatedFlow(deps.length <= 0)
+  const gatedFlow = createGatedFlow(deps.length <= 0, normalizedKey)
   const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
   const isSourceMutable = mergedOptions.mutable
   const isSourcePublic = mergedOptions.public

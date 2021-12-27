@@ -40,18 +40,18 @@ export function Playground(): JSX.Element {
         {'Change to green'}
       </button>
       <RelinkScope sources={[SubThemeSource.current]}>
-        <SourceIsInherited />
+        <Sandbox />
       </RelinkScope>
       <RelinkScope sources={[SubThemeSource.current]}>
         <RelinkScope sources={[ThemeSource]}>
-          <SourceIsInherited />
+          <Sandbox />
         </RelinkScope>
       </RelinkScope>
     </div>
   )
 }
 
-function SourceIsInherited(): JSX.Element {
+function Sandbox(): JSX.Element {
   const [theme, setTheme] = useRelinkState(ThemeSource)
   const factoryHandleOnClick = (primaryColor: string) => {
     return () => { setTheme({ primaryColor }) }
