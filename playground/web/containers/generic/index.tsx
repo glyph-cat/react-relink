@@ -1,7 +1,6 @@
 import { Suspense, useLayoutEffect } from 'react'
-import { createSource } from '../../../src/api/source'
-import { useRelinkValue } from '../../../src/api/use-relink-value'
-import { delay, TIME_GAP } from '../../../src/debugging'
+import { createSource, useRelinkValue } from '../../../../src/bundle'
+import { delay, TIME_GAP } from '../../../../src/debugging'
 
 const localTimeGap = TIME_GAP(25)
 

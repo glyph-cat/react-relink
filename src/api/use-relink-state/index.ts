@@ -1,5 +1,6 @@
 import { RelinkSelector, RelinkSource } from '../../schema'
-import { useRelinkValue } from '../use-relink-value'
+import { useScopedRelinkSource } from '../scope'
+import { useRelinkValue_BASE } from '../use-relink-value'
 
 /**
  * @example
@@ -31,6 +32,9 @@ export function useRelinkState<S, K>(
   source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
 ): [S | K, RelinkSource<S>['set'], RelinkSource<S>['reset']] {
-  const state = useRelinkValue(source, selector)
-  return [state, source.set, source.reset]
+  // NOTE: `scopedSource` will still be the original (unscoped) one if component
+  // using this hook is not nested in any scopes.
+  const scopedSource = useScopedRelinkSource(source)
+  const state = useRelinkValue_BASE(scopedSource, selector)
+  return [state, scopedSource.set, scopedSource.reset]
 }

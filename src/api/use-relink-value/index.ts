@@ -20,6 +20,7 @@ import { RelinkEvent, RelinkSelector, RelinkSource } from '../../schema'
 import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
 import { CallbackWithNoParamAndReturnsVoid } from '../../internals/helper-types'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
+import { useScopedRelinkSource } from '../scope'
 
 type StateId = Record<string, never>
 
@@ -48,10 +49,20 @@ export function useRelinkValue<S, K>(
   selector: RelinkSelector<S, K>
 ): K
 
-/**
- * @public
- */
 export function useRelinkValue<S, K>(
+  source: RelinkSource<S>,
+  selector?: RelinkSelector<S, K>
+): S | K {
+  // NOTE: `scopedSource` will still be the original (unscoped) one if component
+  // using this hook is not nested in any scopes.
+  const scopedSource = useScopedRelinkSource(source)
+  return useRelinkValue_BASE(scopedSource, selector)
+}
+
+/**
+ * @internal
+ */
+export function useRelinkValue_BASE<S, K>(
   source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
 ): S | K {
@@ -72,7 +83,9 @@ export function useRelinkValue<S, K>(
 
   // Assign initial state if not already assigned.
   if (!stateCache.has(hookId.current)) {
-    const initialState = getSelectedState(source[SOURCE_INTERNAL_SYMBOL].M$directGet())
+    const initialState = getSelectedState(
+      source[SOURCE_INTERNAL_SYMBOL].M$directGet()
+    )
     stateCache.set(hookId.current, initialState)
   }
 

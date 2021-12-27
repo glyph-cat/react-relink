@@ -173,6 +173,11 @@ export interface RelinkSourceOptions {
 export type RelinkSourceKey = string | number | symbol
 
 /**
+ * @internal
+ */
+export type RelinkScopeId = number
+
+/**
  * @public
  */
 export interface RelinkSourceEntry<S> {
@@ -182,6 +187,10 @@ export interface RelinkSourceEntry<S> {
    * clashing with user-defined keys.
    */
   key?: RelinkSourceKey
+  /**
+   * 
+   */
+  scope?: RelinkSource<S>
   /**
    * The default state of the source.
    */
@@ -302,6 +311,7 @@ export interface RelinkSource<S> {
    */
   [SOURCE_INTERNAL_SYMBOL]: {
     M$key: RelinkSourceKey
+    M$scopeId: RelinkScopeId
     M$isMutable: boolean
     M$isPublic: boolean
     M$isVirtualBatchEnabled: boolean
