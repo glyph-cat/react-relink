@@ -6,18 +6,22 @@
     "declarationDir": "./temp/tsc/types",
     "esModuleInterop": true,
     "importHelpers": false,
+    "isolatedModules": true,
     "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Node",
+    "lib": [
+      "esnext",
+    ],
     "outDir": "./temp/tsc/js",
     "skipLibCheck": true,
     "stripInternal": true,
-    "target": "es2016"
+    "target": "ESNext"
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
   ],
   "include": [
     "src",
-  ]
+  ],
 }

@@ -32,6 +32,7 @@ import {
 } from '../../schema'
 import { isFunction, isThenable } from '../../internals/type-checker'
 import { hasSymbol } from '../../internals/has-symbol'
+import { getNewScopeId } from '../scope'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
@@ -53,6 +54,7 @@ let isWarningShown_dropImmutableSupport = false // KIV
  */
 export function createSource<S>({
   key: rawKey,
+  scope,
   deps = [],
   default: defaultState,
   lifecycle = {},
@@ -84,6 +86,9 @@ export function createSource<S>({
   registerKey(normalizedKey)
   // const debugLogger = createDebugLogger(normalizedKey)
   checkForCircularDeps(deps, [normalizedKey])
+  const scopeId = scope
+    ? scope[SOURCE_INTERNAL_SYMBOL].M$scopeId
+    : getNewScopeId()
 
 
   // === Local Variables & Methods ===
@@ -324,6 +329,7 @@ export function createSource<S>({
   return {
     [SOURCE_INTERNAL_SYMBOL]: {
       M$key: normalizedKey,
+      M$scopeId: scopeId,
       M$isMutable: isSourceMutable,
       M$isPublic: isSourcePublic,
       M$isSuspenseEnabled: isSuspenseEnabled,

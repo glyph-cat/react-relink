@@ -1,5 +1,6 @@
 // export * from './api/selector'
 export * from './api/config'
+export * from './api/scope'
 export * from './api/source'
 export * from './api/use-hydrate-relink-source'
 export * from './api/use-relink-state'

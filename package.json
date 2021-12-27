@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:path": "eslint",
-    "playground:web": "parcel playground/index.html --port 3000",
+    "playground:web": "parcel playground/web/index.html --port 3000",
     "debug": "scope=\"debug\" jest -c ./jest.config.ts",
     "debug:src": "scope=\"debug\" jest ./src -c ./jest.config.ts",
     "debug:i": "scope=\"debug\" jest ./tests/integration -c ./jest.config.ts",
