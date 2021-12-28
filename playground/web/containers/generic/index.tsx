@@ -1,4 +1,5 @@
-import { Suspense, useLayoutEffect } from 'react'
+import { useLayoutEffect } from '@glyph-cat//swiss-army-knife'
+import { Suspense } from 'react'
 import { createSource, useRelinkValue } from '../../../../src/bundle'
 import { delay, TIME_GAP } from '../../../../src/debugging'
 

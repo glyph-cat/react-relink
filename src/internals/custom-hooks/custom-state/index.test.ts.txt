@@ -2,7 +2,7 @@ import { useState } from '.'
 import {
   createCleanupRef,
   createHookInterface,
-} from '@chin98edwin/react-test-utils'
+} from '@glyph-cat/react-test-utils'
 
 // Test sets: Primitive/Object × Mutable/Immutable
 

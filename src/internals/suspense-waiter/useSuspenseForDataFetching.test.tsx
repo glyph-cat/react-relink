@@ -1,4 +1,7 @@
-import { Suspense, useLayoutEffect } from 'react'
+import {
+  Suspense,
+  useLayoutEffect, // eslint-disable-line no-restricted-imports
+} from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
 import { createSource } from '../../api/source'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'

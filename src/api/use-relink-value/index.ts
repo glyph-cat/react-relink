@@ -4,7 +4,7 @@ import {
   useDebugValue,
   useEffect,
   useReducer,
-  useRef,
+  useRef, // eslint-disable-line no-restricted-imports
 } from 'react'
 import reactFastCompare from 'react-fast-compare'
 import {

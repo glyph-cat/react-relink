@@ -1,7 +1,7 @@
 import {
   createHookInterface,
   createCleanupRef,
-} from '@chin98edwin/react-test-utils'
+} from '@glyph-cat/react-test-utils'
 import { act } from 'react-test-renderer'
 import { RelinkSource } from '../../../../src/schema'
 import { createEventPromise, delay, TIME_GAP } from '../../../../src/debugging'

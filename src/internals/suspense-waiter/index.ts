@@ -1,4 +1,8 @@
-import { MutableRefObject, useReducer, useRef } from 'react'
+import {
+  MutableRefObject,
+  useReducer,
+  useRef, // eslint-disable-line no-restricted-imports
+} from 'react'
 import { waitFor } from '../../api/wait-for'
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { RelinkSource, RelinkEventType } from '../../schema'

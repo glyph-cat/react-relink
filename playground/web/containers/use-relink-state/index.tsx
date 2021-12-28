@@ -11,6 +11,7 @@ const CounterSource = createSource({
 })
 
 export function Playground(): JSX.Element {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [counterState, setCounter, resetCounter] = useRelinkState(CounterSource)
   return (
     <div style={{ padding: 20 }}>

@@ -1,17 +1,17 @@
 <div align="center">
 
-[![React Relink Banner](https://raw.githubusercontent.com/chin98edwin/react-relink/main/assets/react-relink-wording.svg)](https://github.com/chin98edwin/react-relink)
+[![React Relink Banner](https://raw.githubusercontent.com/glyph-cat/react-relink/main/assets/react-relink-wording.svg)](https://github.com/glyph-cat/react-relink)
 *A lightweight state management library for React.*
 
 <br/>
 
 [![Version](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)
-![Build Status](https://img.shields.io/github/workflow/status/chin98edwin/langutil/Test/main)
+![Build Status](https://img.shields.io/github/workflow/status/glyph-cat/langutil/Test/main)
 ![Bundle size](https://img.shields.io/bundlephobia/min/react-relink)
-[![License](https://img.shields.io/github/license/chin98edwin/react-relink)](https://github.com/chin98edwin/react-relink/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/glyph-cat/react-relink)](https://github.com/glyph-cat/react-relink/blob/main/LICENSE)
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/chin98edwin/react-relink)
-[![Support me on Ko-fi](https://img.shields.io/static/v1?label&logo=kofi&logoColor=ffffff&message=Support%20me%20on%20Ko-fi&color=FF5E5B)](https://ko-fi.com/dev_chin98edwin)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/glyph-cat/react-relink)
+[![Support me on Ko-fi](https://img.shields.io/static/v1?label&logo=kofi&logoColor=ffffff&message=Support%20me%20on%20Ko-fi&color=FF5E5B)](https://ko-fi.com/glyphcat)
 
 </div>
 
@@ -27,8 +27,8 @@
 <br/>
 
 **For those that need help with v0:**
-* [Readme](https://github.com/chin98edwin/react-relink/blob/v0/README.md)
-* [The docs](https://github.com/chin98edwin/react-relink/tree/v0/docs)
+* [Readme](https://github.com/glyph-cat/react-relink/blob/v0/README.md)
+* [The docs](https://github.com/glyph-cat/react-relink/tree/v0/docs)
 
 <br/>
 
@@ -144,15 +144,14 @@ Circular dependencies are not allowed: `${depStack}`
 
 <br/>
 
-# Support Me
+# Support This Project
 
-* Ko-fi: [`ko-fi.com/dev_chin98edwin`](https://ko-fi.com/dev_chin98edwin)
-* PayPal: [`paypal.me/chin98edwin`](http://paypal.me/chin98edwin)
+* Ko-fi: [`ko-fi.com/glyphcat`](https://ko-fi.com/glyphcat)
 * BTC: [`bc1q5qp6a972l8m0k26ln9deuhup0nmldf86ndu5we`](bitcoin:bc1q5qp6a972l8m0k26ln9deuhup0nmldf86ndu5we)
 
 <br/>
 
 # Miscellaneous
-Looking for a specialized package to handle localizations? Check out [Langutil](https://github.com/chin98edwin/langutil).
+Looking for a specialized package to handle localizations? Check out [Langutil](https://github.com/glyph-cat/langutil).
 
 <br/>

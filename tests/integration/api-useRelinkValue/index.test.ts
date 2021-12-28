@@ -1,7 +1,7 @@
 import {
   createCleanupRef,
   createHookInterface,
-} from '@chin98edwin/react-test-utils'
+} from '@glyph-cat/react-test-utils'
 import { RelinkSource } from '../../../src/schema'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'

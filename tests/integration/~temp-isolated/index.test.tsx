@@ -1,4 +1,9 @@
-import { MutableRefObject, useCallback, useEffect, useRef } from 'react'
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef, // eslint-disable-line no-restricted-imports
+} from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
 import { CallbackWithNoParamAndReturnsVoid } from '../../../src/internals/helper-types'
 import { IntegrationTestConfig } from '../../helpers'
