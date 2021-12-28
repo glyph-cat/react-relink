@@ -1,40 +1,28 @@
 {
   "name": "react-relink",
-  "version": "1.1.0",
-  "description": "A lightweight state management library for React.",
-  "main": "lib/cjs/index.js",
-  "module": "lib/es/index.js",
-  "react-native": "lib/native/index.js",
-  "unpkg": "lib/umd/index.js",
+  "version": "0.3.8",
+  "description": "A React state management library inspired by Recoil.",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "react-native": "dist/native/index.js",
+  "unpkg": "dist/umd/index.js",
   "files": [
-    "lib"
+    "dist",
+    "index.d.ts"
   ],
-  "types": "lib/types/index.d.ts",
+  "types": "index.d.ts",
   "scripts": {
-    "deps": "yarn ts-node ./scripts/update-project-dependencies",
-    "clean": "rm -rf .cache ./dist ./lib ./temp ./yarn-error.log",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "lint:path": "eslint",
-    "playground:web": "parcel playground/web/index.html --port 3000",
-    "debug": "scope=\"debug\" jest -c ./jest.config.ts",
-    "debug:src": "scope=\"debug\" jest ./src -c ./jest.config.ts",
-    "debug:i": "scope=\"debug\" jest ./tests/integration -c ./jest.config.ts",
-    "debug:isolated": "scope=\"debug\" jest ./tests/integration/~temp-isolated -c ./jest.config.ts",
-    "rollup": "rollup -c ./config/rollup.config.js",
-    "types": "tsc --declaration",
-    "api": "api-extractor run -c ./config/api-extractor.json --local --verbose",
-    "build": "yarn rollup && yarn types && yarn api",
-    "postbuild": "rm -r ./temp/tsc",
-    "test": "jest -c ./jest.config.ts",
-    "test:bundled": "scope=\"bundled\" jest -c ./jest.config.ts",
-    "preall": "yarn clean",
-    "all": "yarn lint:fix && yarn build && yarn test && yarn pack",
-    "ci:test": "yarn lint && yarn build && yarn test"
+    "build": "rollup -c rollup.config.js",
+    "debug": "scope=\"debug\" jest -c jest.config.js",
+    "test": "jest -c jest.config.js",
+    "test:bundled": "scope=\"bundled\" jest -c jest.config.js",
+    "all": "yarn lint:fix && yarn build && yarn test && yarn pack"
   },
   "keywords": [
     "react",
-    "reducers",
+    "recoil",
     "relink",
     "state",
     "set state",
@@ -51,53 +39,38 @@
   "bugs": {
     "url": "https://github.com/glyph-cat/react-relink/issues"
   },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "fast-copy": "^2.1.1",
     "react-fast-compare": "^3.2.0"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.16.5",
+    "@babel/plugin-proposal-optional-chaining": "^7.16.5",
     "@babel/plugin-transform-modules-commonjs": "^7.16.5",
+    "@babel/plugin-transform-react-jsx": "^7.16.5",
     "@babel/preset-react": "^7.16.5",
-    "@babel/preset-typescript": "^7.16.5",
-    "@glyph-cat/react-test-utils": "^0.1.1-experimental.1",
-    "@glyph-cat/swiss-army-knife": "^0.0.0-experimental.1",
-    "@microsoft/api-extractor": "^7.19.2",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-replace": "^3.0.0",
-    "@testing-library/jest-dom": "^5.16.1",
-    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^27.0.3",
-    "@types/node": "^17.0.3",
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
-    "@types/react-native": "^0.66.9",
-    "@types/react-test-renderer": "^17.0.1",
     "eslint": "^8.5.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "jest": "^27.4.5",
-    "parcel-bundler": "^1.12.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-native": "^0.66.4",
     "react-test-renderer": "^17.0.2",
     "rollup": "^2.61.1",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.31.1",
-    "ts-node": "^10.4.0",
-    "tsc": "^2.0.3",
-    "typescript": "^4.5.4"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "rollup-plugin-terser": "^7.0.2"
   }
 }

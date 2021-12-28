@@ -1,5 +1,4 @@
-*.draft*
 dist
-lib
 node_modules
-temp/
+*.draft*
+demo

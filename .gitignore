@@ -8,27 +8,16 @@ yarn-error.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Builds
-*.tgz
 dist
-lib
+*.tgz
 
 # Dependency directories
-node_modules
-
-# Yarn
-.yarn-integrity
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
+node_modules/
 
 # Optional eslint cache
 .eslintcache
 
-# Temporary
-.cache
-temp/
+# Drafts
 *.draft*
 
 # OS
