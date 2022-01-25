@@ -25,8 +25,8 @@ export function performanceNow(): number {
 // 'not responding' and show a warning right away. The 'slow' warning will still
 // appear if they are resolved eventually.
 // * Only warnings are shown, if we throw error or cancel the execution and move
-// to the next reducer, it might only lead to more frustration and critical
-// problems.
+// to the next reducer, it might only result in a corrupted state and create
+// more problems.
 
 export const PERFORMANCE_SLOW_THRESHOLD_MS = 500
 export const PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS = 10000

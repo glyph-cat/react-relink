@@ -78,6 +78,10 @@ export function useRelinkValue_BASE<S, K>(
   }, [])
 
   const getSelectedState = useCallback((passedState: S): S | K => {
+    // `isFunction` is not used to check selector here because it can only
+    // either be a faulty value or a function. If other types are passed, let
+    // the error automatically surface up so that users are aware of the
+    // incorrect type.
     return selector ? selector(passedState) : passedState
   }, [selector])
 
