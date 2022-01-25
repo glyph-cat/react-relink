@@ -8,169 +8,72 @@ import { createRelinkCore, HYDRATION_SKIP_MARKER } from '.'
 
 describe(createRelinkCore.name, (): void => {
 
-  describe('M$directGet', (): void => {
-
-    test('isSourceMutable: true', (): void => {
-      const defaultState = { value: 1 }
-      const core = createRelinkCore(defaultState, true)
-      expect(core.M$directGet()).toStrictEqual({ value: 1 })
-      expect(Object.is(core.M$directGet(), defaultState)).toBe(true)
-    })
-
-    test('isSourceMutable: false', (): void => {
-      const defaultState = { value: 1 }
-      const core = createRelinkCore(defaultState, false)
-      expect(core.M$directGet()).toStrictEqual({ value: 1 })
-      expect(Object.is(core.M$directGet(), defaultState)).toBe(false)
-      // ^ Because `initialState` is deed-copied from `defaultState`
-    })
-
-  })
-
-  describe('M$get', (): void => {
-
-    test('isSourceMutable: true', (): void => {
-      const defaultState = { value: 1 }
-      const core = createRelinkCore(defaultState, true)
-      expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(Object.is(core.M$get(), defaultState)).toBe(true)
-    })
-
-    test('isSourceMutable: false', (): void => {
-      const defaultState = { value: 1 }
-      const core = createRelinkCore(defaultState, false)
-      expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(Object.is(core.M$get(), defaultState)).toBe(false)
-    })
-
+  test('M$get', (): void => {
+    const defaultState = { value: 1 }
+    const core = createRelinkCore(defaultState)
+    expect(core.M$get()).toStrictEqual({ value: 1 })
+    expect(Object.is(core.M$get(), defaultState)).toBe(true)
   })
 
   describe('M$dynamicSet', (): void => {
 
-    describe('set', (): void => {
+    test('set', (): void => {
 
-      test('isSourceMutable: true', (): void => {
-
-        const defaultState = { value: 1 }
-        const core = createRelinkCore(defaultState, true)
-        const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-        const unwatchStateChange = core.M$watch((event): void => {
-          capturedEventStack.push(event)
-        })
-
-        // Trigger a state change
-        const newState = { value: 2 }
-        core.M$dynamicSet(newState)
-        expect(core.M$get()).toStrictEqual({ value: 2 })
-        expect(Object.is(core.M$get(), newState)).toBe(true)
-        expect(capturedEventStack).toStrictEqual([{
-          type: RelinkEventType.set,
-          state: { value: 2 },
-        }])
-        expect(Object.is(
-          capturedEventStack[0].state,
-          newState
-        )).toBe(true)
-
-        // Cleanup
-        unwatchStateChange()
-
+      const defaultState = { value: 1 }
+      const core = createRelinkCore(defaultState)
+      const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
+      const unwatchStateChange = core.M$watch((event): void => {
+        capturedEventStack.push(event)
       })
 
-      test('isSourceMutable: false', (): void => {
+      // Trigger a state change
+      const newState = { value: 2 }
+      core.M$dynamicSet(newState)
+      expect(core.M$get()).toStrictEqual({ value: 2 })
+      expect(Object.is(core.M$get(), newState)).toBe(true)
+      expect(capturedEventStack).toStrictEqual([{
+        type: RelinkEventType.set,
+        state: { value: 2 },
+      }])
+      expect(Object.is(
+        capturedEventStack[0].state,
+        newState
+      )).toBe(true)
 
-        const defaultState = { value: 1 }
-        const core = createRelinkCore(defaultState, false)
-        const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-        const unwatchStateChange = core.M$watch((event): void => {
-          capturedEventStack.push(event)
-        })
-
-        // Trigger a state change
-        const newState = { value: 2 }
-        core.M$dynamicSet(newState)
-        expect(core.M$get()).toStrictEqual({ value: 2 })
-        expect(Object.is(core.M$get(), newState)).toBe(false)
-        expect(capturedEventStack).toStrictEqual([{
-          type: RelinkEventType.set,
-          state: { value: 2 },
-        }])
-        expect(Object.is(
-          capturedEventStack[0].state,
-          newState
-        )).toBe(false)
-
-        // Cleanup
-        unwatchStateChange()
-
-      })
+      // Cleanup
+      unwatchStateChange()
 
     })
 
+
     describe('reset', (): void => {
 
-      test('isSourceMutable: true', (): void => {
-
-        const defaultState = { value: 1 }
-        const core = createRelinkCore(defaultState, true)
-        const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-        const unwatchStateChange = core.M$watch((event): void => {
-          capturedEventStack.push(event)
-        })
-
-        // Trigger a state change followed by a state reset
-        core.M$dynamicSet({ value: 2 })
-        core.M$dynamicSet(/* Empty means reset */)
-        expect(core.M$get()).toStrictEqual({ value: 1 })
-        expect(Object.is(core.M$get(), defaultState)).toBe(true)
-        expect(capturedEventStack).toStrictEqual([{
-          type: RelinkEventType.set,
-          state: { value: 2 },
-        }, {
-          type: RelinkEventType.reset,
-          state: { value: 1 },
-        }])
-        expect(Object.is(
-          capturedEventStack[1].state,
-          defaultState
-        )).toBe(true)
-
-        // Cleanup
-        unwatchStateChange()
-
+      const defaultState = { value: 1 }
+      const core = createRelinkCore(defaultState)
+      const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
+      const unwatchStateChange = core.M$watch((event): void => {
+        capturedEventStack.push(event)
       })
 
-      test('isSourceMutable: false', (): void => {
+      // Trigger a state change followed by a state reset
+      core.M$dynamicSet({ value: 2 })
+      core.M$dynamicSet(/* Empty means reset */)
+      expect(core.M$get()).toStrictEqual({ value: 1 })
+      expect(Object.is(core.M$get(), defaultState)).toBe(true)
+      expect(capturedEventStack).toStrictEqual([{
+        type: RelinkEventType.set,
+        state: { value: 2 },
+      }, {
+        type: RelinkEventType.reset,
+        state: { value: 1 },
+      }])
+      expect(Object.is(
+        capturedEventStack[1].state,
+        defaultState
+      )).toBe(true)
 
-        const defaultState = { value: 1 }
-        const core = createRelinkCore(defaultState, false)
-        const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-        const unwatchStateChange = core.M$watch((event): void => {
-          capturedEventStack.push(event)
-        })
-
-        // Trigger a state change followed by a state reset
-        core.M$dynamicSet({ value: 2 })
-        core.M$dynamicSet(/* Empty means reset */)
-        expect(core.M$get()).toStrictEqual({ value: 1 })
-        expect(Object.is(core.M$get(), defaultState)).toBe(false)
-        expect(capturedEventStack).toStrictEqual([{
-          type: RelinkEventType.set,
-          state: { value: 2 },
-        }, {
-          type: RelinkEventType.reset,
-          state: { value: 1 },
-        }])
-        expect(Object.is(
-          capturedEventStack[1].state,
-          defaultState
-        )).toBe(false)
-        // ^ Because `initialState` is deed-copied from `defaultState`
-
-        // Cleanup
-        unwatchStateChange()
-
-      })
+      // Cleanup
+      unwatchStateChange()
 
     })
 
@@ -182,7 +85,7 @@ describe(createRelinkCore.name, (): void => {
 
     test('Commit strategy', (): void => {
 
-      const core = createRelinkCore({ value: 1 }, false)
+      const core = createRelinkCore({ value: 1 })
       const capturedEventStack: Array<RelinkEvent<TestState>> = []
       const unwatchStateChange = core.M$watch((event): void => {
         capturedEventStack.push(event)
@@ -217,7 +120,7 @@ describe(createRelinkCore.name, (): void => {
 
     test('Skip strategy', (): void => {
 
-      const core = createRelinkCore({ value: 1 }, false)
+      const core = createRelinkCore({ value: 1 })
       const capturedEventStack: Array<RelinkEvent<TestState>> = []
       const unwatchStateChange = core.M$watch((event): void => {
         capturedEventStack.push(event)
@@ -256,7 +159,7 @@ describe(createRelinkCore.name, (): void => {
 
         test('Hydration start', (): void => {
 
-          const core = createRelinkCore({ value: 1 }, false)
+          const core = createRelinkCore({ value: 1 })
           const capturedEventStack: Array<RelinkEvent<TestState>> = []
           const unwatchStateChange = core.M$watch((event): void => {
             capturedEventStack.push(event)
@@ -279,7 +182,7 @@ describe(createRelinkCore.name, (): void => {
 
         test('Hydration end', (): void => {
 
-          const core = createRelinkCore({ value: 1 }, false)
+          const core = createRelinkCore({ value: 1 })
           const capturedEventStack: Array<RelinkEvent<TestState>> = []
           const unwatchStateChange = core.M$watch((event): void => {
             capturedEventStack.push(event)

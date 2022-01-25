@@ -6,7 +6,6 @@ import {
   useReducer,
   useRef, // eslint-disable-line no-restricted-imports
 } from 'react'
-import reactFastCompare from 'react-fast-compare'
 import {
   IS_CLIENT_ENV,
   IS_DEV_ENV,
@@ -87,9 +86,7 @@ export function useRelinkValue_BASE<S, K>(
 
   // Assign initial state if not already assigned.
   if (!stateCache.has(hookId.current)) {
-    const initialState = getSelectedState(
-      source[SOURCE_INTERNAL_SYMBOL].M$directGet()
-    )
+    const initialState = getSelectedState(source.get())
     stateCache.set(hookId.current, initialState)
   }
 
@@ -117,23 +114,14 @@ export function useRelinkValue_BASE<S, K>(
       let newSelectedState: S | K
       let shouldUpdate = false
       const prevCachedState = stateCache.get(hookId.current)
-      if (source[SOURCE_INTERNAL_SYMBOL].M$isMutable) {
-        if (UNSTABLE_FLAG_shouldSelectBeforeCheck) {
-          newSelectedState = getSelectedState(event.state)
-          if (!Object.is(prevCachedState, newSelectedState)) {
-            shouldUpdate = true
-          }
-        } else {
-          if (!Object.is(prevCachedState, event.state)) {
-            newSelectedState = getSelectedState(event.state)
-            shouldUpdate = true
-          }
+      if (UNSTABLE_FLAG_shouldSelectBeforeCheck) {
+        newSelectedState = getSelectedState(event.state)
+        if (!Object.is(prevCachedState, newSelectedState)) {
+          shouldUpdate = true
         }
       } else {
-        // Run selector so that we can deep compare if the selected values
-        // are the same.
-        newSelectedState = getSelectedState(event.state)
-        if (!reactFastCompare(prevCachedState, newSelectedState)) {
+        if (!Object.is(prevCachedState, event.state)) {
+          newSelectedState = getSelectedState(event.state)
           shouldUpdate = true
         }
       }

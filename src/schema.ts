@@ -128,28 +128,6 @@ export interface RelinkSourceOptions {
    */
   suspense?: boolean
   /**
-   * ## 🚨 Deprecated 🚨
-   *
-   * ---------------------------------------------------------------------------
-   *
-   * Make the source mutable.
-   * - When `true`:
-   *   - State values are passed by reference.
-   *   - Previous and next states are compared with [`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is).
-   * - When `false`:
-   *   - State values are deep copied with [`fast-copy`](https://github.com/planttheidea/fast-copy) every time they need to be read.
-   *   - Previous and next states are compared with [`react-fast-compare`](https://github.com/FormidableLabs/react-fast-compare).
-   * @defaultValue `true`
-   * @deprecated Relink will be dropping support for immutability in the next
-   * major version. This decision has been made because immutability has ended
-   * up being more of a liability than a essential feature. Removing this
-   * feature can help shrink Relink's package size and increase stability.
-   * Besides, what better way is there to achieve immutability for various data
-   * types in your projects other than through a custom set of code optimized
-   * for them?
-   */
-  mutable?: boolean
-  /**
    * Slightly improve performance by coalescing the "setState" calls on top of
    * React's batched updates.
    * - NOT suitable for states consumed by UI components that need to be
@@ -312,7 +290,6 @@ export interface RelinkSource<S> {
   [SOURCE_INTERNAL_SYMBOL]: {
     M$key: RelinkSourceKey
     M$scopeId: RelinkScopeId
-    M$isMutable: boolean
     M$isPublic: boolean
     M$isVirtualBatchEnabled: boolean
     M$isSuspenseEnabled: boolean
@@ -324,7 +301,6 @@ export interface RelinkSource<S> {
      * Sources that depend on this one before they can hydrate themselves.
      */
     M$childDeps: Record<RelinkSourceKey, true>
-    M$directGet(): S
     M$getIsReadyStatus(): boolean
   }
 }

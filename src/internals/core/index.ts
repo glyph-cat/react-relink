@@ -1,4 +1,3 @@
-import deepCopy from '../deep-copy'
 import { RelinkEvent, RelinkEventType } from '../../schema'
 import { createWatcher } from '../../internals/watcher'
 import { UnwatchCallback, WatcherCallback } from '../../internals/watcher/schema'
@@ -15,11 +14,7 @@ function isIncomingStateOmitted(
 
 interface RelinkCore<S> {
   /**
-   * Get the direct reference of the current state.
-   */
-  M$directGet(): S
-  /**
-   * Retrieve the current state. Will be deep copied if mutability is disabled.
+   * Retrieve the current state.
    */
   M$get(): S
   /**
@@ -47,18 +42,13 @@ interface RelinkCore<S> {
 /**
  * A barebones state management setup meant to be used internally only.
  */
-export function createRelinkCore<S>(
-  defaultState: S,
-  isSourceMutable: boolean
-): RelinkCore<S> {
+export function createRelinkCore<S>(defaultState: S): RelinkCore<S> {
 
-  const copyState = (s: S): S => isSourceMutable ? s : deepCopy(s)
-  const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
-  let currentState: S = copyState(initialState) // 📦 (<<<) Receive
+  const copyState = (s: S): S => s
+  // const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
+  let currentState: S = copyState(defaultState) // 📦 (<<<) Receive
   let isHydrating = false
   const watcher = createWatcher<[RelinkEvent<S>]>()
-
-  const M$directGet = (): S => currentState
 
   const M$get = (): S => copyState(currentState) // 📦 (>>>) Expose
 
@@ -75,7 +65,7 @@ export function createRelinkCore<S>(
     if (!isHydrationStart) {
       if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
         // Assume using the initial state
-        currentState = initialState // 📦 (~~~) Internal transfer
+        currentState = defaultState // 📦 (~~~) Internal transfer
         // Refer to Local Note [C] near end of file
       } else {
         currentState = copyState(incomingState) // 📦 (<<<) Receive
@@ -102,7 +92,7 @@ export function createRelinkCore<S>(
     const isReset = isIncomingStateOmitted(incomingState)
     if (isReset) {
       // Refer to Local Note [C] near end of file
-      currentState = initialState // 📦 (~~~) Internal transfer
+      currentState = defaultState // 📦 (~~~) Internal transfer
     } else {
       currentState = copyState(incomingState) // 📦 (<<<) Receive
     }
@@ -113,7 +103,6 @@ export function createRelinkCore<S>(
   }
 
   return {
-    M$directGet,
     M$get,
     M$hydrate,
     M$dynamicSet,

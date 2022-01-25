@@ -40,14 +40,12 @@ import { getNewScopeId } from '../scope'
 // variable name mangling takes place.
 
 const DEFAULT_OPTIONS: RelinkSourceOptions = {
-  mutable: true,
   public: false,
   suspense: false,
   virtualBatch: false,
 } as const
 
 let isWarningShown_sourceKeyAutogen = false // KIV
-let isWarningShown_dropImmutableSupport = false // KIV
 
 /**
  * @public
@@ -99,19 +97,10 @@ export function createSource<S>({
    */
   const gatedFlow = createGatedFlow(deps.length <= 0, normalizedKey)
   const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
-  const isSourceMutable = mergedOptions.mutable
   const isSourcePublic = mergedOptions.public
   const isVirtualBatchEnabled = mergedOptions.virtualBatch
   const isSuspenseEnabled = mergedOptions.suspense
-  const core = createRelinkCore(defaultState, isSourceMutable)
-
-  if (!mergedOptions.mutable) {
-    if (!isWarningShown_dropImmutableSupport) {
-      isWarningShown_dropImmutableSupport = true
-      devWarn('Relink will be dropping support for immutability in the next major version. Read more: https://git.io/JWfDY')
-    }
-  }
-
+  const core = createRelinkCore(defaultState)
 
   // === Hydration ===
 
@@ -330,13 +319,11 @@ export function createSource<S>({
     [SOURCE_INTERNAL_SYMBOL]: {
       M$key: normalizedKey,
       M$scopeId: scopeId,
-      M$isMutable: isSourceMutable,
       M$isPublic: isSourcePublic,
       M$isSuspenseEnabled: isSuspenseEnabled,
       M$isVirtualBatchEnabled: isVirtualBatchEnabled,
       M$parentDeps: deps,
       M$childDeps,
-      M$directGet: core.M$directGet,
       M$getIsReadyStatus,
     },
     get,
