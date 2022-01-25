@@ -15,8 +15,6 @@ const INPUT_FILE = 'src/bundle.ts'
 const UMD_GLOBALS = {
   react: 'React',
   'react-dom': 'ReactDom',
-  'fast-copy': 'fastCopy',
-  'react-fast-compare': 'isEqual',
 }
 
 const EXTERNAL_LIBS_REACT_DOM = Object.keys(UMD_GLOBALS)
