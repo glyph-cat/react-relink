@@ -1,4 +1,4 @@
-import { SOURCE_INTERNAL_SYMBOL, IS_DEV_ENV } from '../../constants'
+import { SOURCE_INTERNAL_SYMBOL, IS_DEV_ENV, IS_DEBUG_ENV } from '../../constants'
 // import { createDebugLogger } from '../../debugging'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { checkForCircularDeps } from '../../internals/circular-deps'
@@ -6,17 +6,13 @@ import {
   createRelinkCore,
   HYDRATION_SKIP_MARKER,
 } from '../../internals/core'
-import { devWarn } from '../../internals/dev'
+import { devError, devWarn } from '../../internals/dev'
 import {
   getWarningForForwardedHydrationCallbackValue,
   TYPE_ERROR_SOURCE_KEY,
 } from '../../internals/errors'
 import { createGatedFlow } from '../../internals/gated-flow'
-import {
-  getAutomaticKey,
-  registerKey,
-  unregisterKey,
-} from '../../internals/key-registry'
+import { registerKey, unregisterKey } from '../../internals/key-registry'
 import {
   createNoUselessHydrationWarner,
   HydrationConcludeType,
@@ -45,7 +41,7 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
   virtualBatch: false,
 } as const
 
-let isWarningShown_sourceKeyAutogen = false // KIV
+let isWarningShown_optionsMutableInvalid = false // KIV
 
 /**
  * @public
@@ -70,13 +66,6 @@ export function createSource<S>({
     if (rawKey === '') {
       devWarn('Did you just passed an empty string as a source key? Be careful, it can lead to problems that are hard to diagnose and debug later on.')
     }
-  } else if (typeofRawKey === 'undefined') {
-    normalizedKey = getAutomaticKey()
-    if (!isWarningShown_sourceKeyAutogen) {
-      isWarningShown_sourceKeyAutogen = true
-      devWarn('Starting from V1, every source must have a unique key. This is because it helps simplify Relink\'s codebase and makes debugging easier for you at the same time. To facilitate this change, keys will be automatically generated at runtime for sources that do not already have one. This is only a temporary measure. Eventually, you will need to manually add in the keys.')
-    }
-    devWarn(`Automatically generated a source key: '${String(normalizedKey)}'`)
   } else {
     throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
   }
@@ -96,7 +85,20 @@ export function createSource<S>({
    * Also, gate is opened right away if there are no dependencies.
    */
   const gatedFlow = createGatedFlow(deps.length <= 0, normalizedKey)
+
   const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
+  if (IS_DEBUG_ENV) {
+    if (typeof mergedOptions['options'] !== 'undefined') {
+      if (!isWarningShown_optionsMutableInvalid) {
+        devError(
+          'Invalid option `mutable`, it has been deprecated since V1 and ' +
+          'completely removed in V2.'
+        )
+        isWarningShown_optionsMutableInvalid = true
+      }
+    }
+  }
+
   const isSourcePublic = mergedOptions.public
   const isVirtualBatchEnabled = mergedOptions.virtualBatch
   const isSuspenseEnabled = mergedOptions.suspense

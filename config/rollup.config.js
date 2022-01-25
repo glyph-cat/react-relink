@@ -80,12 +80,13 @@ function getPlugins(config = {}) {
     preventAssignment: true,
     values: replaceValues,
   }))
-
-  // Minification and cleanup
-  if (mode === 'production') {
-    const terserPlugin = terser({ mangle: { properties: { regex: /^M\$/ } } })
-    pluginStack.push(terserPlugin)
-  }
+  pluginStack.push(terser({
+    mangle: {
+      properties: {
+        regex: /^M\$/,
+      },
+    },
+  }))
   pluginStack.push(forceCleanup())
 
   return pluginStack

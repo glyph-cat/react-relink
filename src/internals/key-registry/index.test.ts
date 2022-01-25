@@ -1,13 +1,13 @@
-import { getAutomaticKey, KEY_REGISTRY, registerKey, unregisterKey } from '.'
+import { KEY_REGISTRY, registerKey, unregisterKey } from '.'
 
 test('Key registration', () => {
   // Initial state
   expect(KEY_REGISTRY).toStrictEqual({})
-  const autokey = getAutomaticKey()
+  const key = Symbol('test')
   // After registering a key
-  registerKey(autokey)
-  expect(KEY_REGISTRY).toStrictEqual({ [autokey]: true })
+  registerKey(key)
+  expect(KEY_REGISTRY).toStrictEqual({ [key]: true })
   // After unregistering the key
-  unregisterKey(autokey)
+  unregisterKey(key)
   expect(KEY_REGISTRY).toStrictEqual({})
 })

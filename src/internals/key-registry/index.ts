@@ -26,8 +26,3 @@ export function registerKey(key: RelinkSourceKey): void {
 export function unregisterKey(key: RelinkSourceKey): void {
   delete KEY_REGISTRY[key]
 }
-
-let counter = 1
-export function getAutomaticKey(): symbol {
-  return Symbol(`Autokey_${counter++}`)
-}

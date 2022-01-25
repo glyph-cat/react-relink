@@ -89,9 +89,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     // Make sure hook only updates if selected value has changed.
     await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
-    expect(hookInterface.getRenderCount()).toBe(2)
+    expect(hookInterface.getRenderCount()).toBe(1)
     await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
-    expect(hookInterface.getRenderCount()).toBe(3)
+    expect(hookInterface.getRenderCount()).toBe(2)
     expect(hookInterface.get('main')).toBe(2)
 
   })

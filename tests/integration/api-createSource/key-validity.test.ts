@@ -37,17 +37,18 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('No key', (): void => {
     const callback = (): void => {
+      // @ts-expect-error: Done on purpose to test the error.
       createSource({
         default: null,
       })
     }
-    expect(callback).not.toThrow()
+    expect(callback).toThrow(TypeError)
   })
 
   test('Invalid key', (): void => {
     const callback = (): void => {
       createSource({
-        // @ts-expect-error: Passed `false` as key on purpose to test the error.
+        // @ts-expect-error: Done on purpose to test the error.
         key: false,
         default: null,
       })

@@ -164,7 +164,7 @@ export interface RelinkSourceEntry<S> {
    * normal project, use a Symbol instead if you're building a library to avoid
    * clashing with user-defined keys.
    */
-  key?: RelinkSourceKey
+  key: RelinkSourceKey
   /**
    *
    */

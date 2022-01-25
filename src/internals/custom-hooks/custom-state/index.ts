@@ -1,7 +1,10 @@
-import { MutableRefObject, useReducer, useRef, useEffect } from 'react'
+import {
+  MutableRefObject,
+  useReducer,
+  useRef, // eslint-disable-line no-restricted-imports
+  useEffect,
+} from 'react'
 import { forceUpdateReducer } from '../force-update'
-
-// KIV: This hook is kept for future reference when immutability is completely removed in V2.
 
 type StateId = Record<string, never>
 const stateCache: WeakMap<
