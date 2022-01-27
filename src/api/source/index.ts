@@ -270,12 +270,14 @@ export function createSource<S>({
         // Refer to Local Note [A] near end of file
         if (isThenable(executedReducer)) {
           perfMeasurer.isAsync.current = true
-          return new Promise((resolve) => {
+          return new Promise((resolve, reject) => {
             executedReducer.then((fulfilledPartialState) => {
               core.M$dynamicSet(fulfilledPartialState) // Is async reducer
               perfMeasurer.stop()
               resolve()
-            }).catch((e) => { throw e }) // KIV: Is this a good approach?
+            }).catch((e) => {
+              reject(e)
+            })
           })
         } else {
           core.M$dynamicSet(executedReducer) // Is reducer
