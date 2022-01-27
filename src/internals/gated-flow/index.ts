@@ -45,7 +45,8 @@ export function createGatedFlow(
 
   const queueStack: Array<[
     callback: GatedCallback<unknown>,
-    resolver: (value: unknown | PromiseLike<unknown>) => void
+    resolver: (value: unknown | PromiseLike<unknown>) => void,
+    rejector: (reason: unknown) => void
   ]> = []
 
   const M$lockBase = (): void => { isOpen = false }
@@ -64,22 +65,27 @@ export function createGatedFlow(
     // let isExecuting = false
     isFlushing = true
     while (isOpen && queueStack.length > 0) {
-      const [poppedCallback, resolve] = queueStack.shift()
+      const [poppedCallback, resolve, reject] = queueStack.shift()
       // if (isExecuting) {
       //   throw new Error(`'${String(key)}': Cyclic calls are not allowed.`)
       // }
       // isExecuting = true
-      const payload = poppedCallback()
-      const finalPayload = isThenable(payload) ? await payload : payload
-      // isExecuting = false
-      resolve(finalPayload)
+      try {
+        const payload = poppedCallback()
+        const finalPayload = isThenable(payload) ? await payload : payload
+        resolve(finalPayload)
+      } catch (e) {
+        reject(e)
+      }
+      // finally { isExecuting = false }
+
     }
     isFlushing = false
   }
 
   const M$exec = <V>(callback: GatedCallback<V>): Promise<V> => {
-    return new Promise((resolve): void => {
-      queueStack.push([callback, resolve])
+    return new Promise((resolve, reject): void => {
+      queueStack.push([callback, resolve, reject])
       M$flush()
       // ^ Let it be known that a flush has been requested, of course, it will
       // not matter if flushing is already in process. This is just in case it
@@ -90,7 +96,7 @@ export function createGatedFlow(
   const M$open = (): Promise<void> => {
     // Promise is resolved only when this specific request to open the gate has
     // been fulfilled.
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (!isOpen) {
         isOpen = true
         M$flush()
@@ -100,7 +106,7 @@ export function createGatedFlow(
           const [callback] = queueStack[i]
           if (Object.is(callback, M$lockBase)) {
             // Swap a dummy set inside so that this promise can be resolved.
-            queueStack.splice(i, 1, [dummyCallback, resolve])
+            queueStack.splice(i, 1, [dummyCallback, resolve, reject])
             break
           }
         }

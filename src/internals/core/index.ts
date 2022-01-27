@@ -44,13 +44,11 @@ interface RelinkCore<S> {
  */
 export function createRelinkCore<S>(defaultState: S): RelinkCore<S> {
 
-  const copyState = (s: S): S => s
-  // const initialState: S = copyState(defaultState) // 📦 (<<<) Receive
-  let currentState: S = copyState(defaultState) // 📦 (<<<) Receive
+  let currentState: S = defaultState
   let isHydrating = false
   const watcher = createWatcher<[RelinkEvent<S>]>()
 
-  const M$get = (): S => copyState(currentState) // 📦 (>>>) Expose
+  const M$get = (): S => currentState
 
   const M$getIsHydrating = (): boolean => isHydrating
 
@@ -65,10 +63,10 @@ export function createRelinkCore<S>(defaultState: S): RelinkCore<S> {
     if (!isHydrationStart) {
       if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
         // Assume using the initial state
-        currentState = defaultState // 📦 (~~~) Internal transfer
+        currentState = defaultState
         // Refer to Local Note [C] near end of file
       } else {
-        currentState = copyState(incomingState) // 📦 (<<<) Receive
+        currentState = incomingState
       }
     }
 
@@ -92,9 +90,9 @@ export function createRelinkCore<S>(defaultState: S): RelinkCore<S> {
     const isReset = isIncomingStateOmitted(incomingState)
     if (isReset) {
       // Refer to Local Note [C] near end of file
-      currentState = defaultState // 📦 (~~~) Internal transfer
+      currentState = defaultState
     } else {
-      currentState = copyState(incomingState) // 📦 (<<<) Receive
+      currentState = incomingState
     }
     watcher.M$refresh({
       type: isReset ? RelinkEventType.reset : RelinkEventType.set,
