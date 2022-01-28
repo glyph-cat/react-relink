@@ -264,10 +264,11 @@ export function createSource<S>({
           return new Promise((resolve, reject) => {
             executedReducer.then((fulfilledPartialState) => {
               core.M$dynamicSet(fulfilledPartialState) // Is async reducer
-              perfMeasurer.stop()
               resolve()
             }).catch((e) => {
               reject(e)
+            }).finally(() => {
+              perfMeasurer.stop()
             })
           })
         } else {
