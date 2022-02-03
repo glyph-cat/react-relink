@@ -26,12 +26,6 @@
 
 <br/>
 
-**For those that need help with v0:**
-* [Readme](https://github.com/glyph-cat/react-relink/blob/v0/README.md)
-* [The docs](https://github.com/glyph-cat/react-relink/tree/v0/docs)
-
-<br/>
-
 # Installation
 
 With [Yarn](https://yarnpkg.com/package/react-relink) (Recommended)
@@ -49,6 +43,10 @@ npm i react-relink
 <br/>
 
 # Usage
+
+*Note: you can find a more detailed documentation in the TypeScript definition file which is located at `<your-project>/node_modules/react-relink/lib/types/index.d.ts`.*
+
+<br/>
 
 ## Create a Source
 
