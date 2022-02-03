@@ -30,6 +30,7 @@ node_modules
 .cache
 temp/
 *.draft*
+*.old*
 
 # OS
 .DS_Store

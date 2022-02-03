@@ -1,6 +1,6 @@
 import nodeResolve from '@rollup/plugin-node-resolve'
-import babel from '@rollup/plugin-babel'
-import commonjs from '@rollup/plugin-commonjs'
+// import babel from '@rollup/plugin-babel'
+// import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
 import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
@@ -41,14 +41,18 @@ function getPlugins(config = {}) {
         },
       },
     }),
-    babel: babel({
-      presets: [
-        '@babel/preset-react',
-      ],
-      exclude: '**/node_modules/**',
-      babelHelpers: 'bundled',
-    }),
-    commonjs: commonjs(),
+    // babel: babel({
+    //   presets: [
+    //     // '@babel/preset-react',
+    //     '@babel/preset-env',
+    //   ],
+    //   plugins: [
+    //     ['@babel/plugin-proposal-class-properties'],
+    //   ],
+    //   exclude: '**/node_modules/**',
+    //   babelHelpers: 'bundled',
+    // }),
+    // commonjs: commonjs(),
   }
 
   // Override plugins

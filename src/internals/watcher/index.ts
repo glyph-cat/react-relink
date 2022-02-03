@@ -1,4 +1,4 @@
-import { Watcher, WatcherCallback, UnwatchCallback } from './schema'
+import { Watcher } from './schema'
 
 /**
  * Creates a Watcher.
@@ -19,7 +19,7 @@ export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
   let watcherCollection: Record<number, CallableFunction> = {}
   let incrementalWatchId = 1
 
-  const M$watch = (callback: WatcherCallback<A>): UnwatchCallback => {
+  const M$watch = (callback: (...args: A) => void): (() => void) => {
     const newId = incrementalWatchId++
     watcherCollection[newId] = callback
     // genericDebugLogger.echo(`Added watcher (ID: ${newId})`)

@@ -7,20 +7,26 @@ import { waitFor } from '../../api/wait-for'
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { RelinkSource, RelinkEventType } from '../../schema'
 import { forceUpdateReducer, useLayoutEffect } from '../custom-hooks'
-import { CallbackWithNoParamAndReturnsVoid } from '../helper-types'
 
 // Modified based from ovieokeh's `wrapPromise` method. Reference:
 // https://github.com/ovieokeh/suspense-data-fetching/blob/master/lib/api/wrapPromise.js
 
-export type SuspenseWaiter = CallbackWithNoParamAndReturnsVoid
+/**
+ * @internal
+ */
+export type SuspenseWaiter = () => void
 
 /**
  * 0 = success
  * 1 = pending
  * 2 = error
+ * @internal
  */
 type SuspenseStatus = 0 | 1 | 2
 
+/**
+ * @internal
+ */
 export function createSuspenseWaiter(
   promise: Promise<unknown>
 ): SuspenseWaiter {
@@ -92,7 +98,7 @@ export function useSuspenseForDataFetching(
       createSuspenseWaiter(waitPromise.current)()
     }
   }
-  useLayoutEffect((): CallbackWithNoParamAndReturnsVoid => {
+  useLayoutEffect((): (() => void) => {
     if (source[SOURCE_INTERNAL_SYMBOL].M$isSuspenseEnabled) {
       const unwatch = source.watch((event): void => {
         // Ignore if event is not caused by hydration

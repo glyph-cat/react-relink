@@ -5,7 +5,6 @@ import {
   useRef, // eslint-disable-line no-restricted-imports
 } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
-import { CallbackWithNoParamAndReturnsVoid } from '../../../src/internals/helper-types'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -64,7 +63,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     interface SandboxProps {
       onMount(c: number): void
-      onChangeValueRequestedRef: MutableRefObject<CallbackWithNoParamAndReturnsVoid>
+      onChangeValueRequestedRef: MutableRefObject<() => void>
     }
 
     function Sandbox({

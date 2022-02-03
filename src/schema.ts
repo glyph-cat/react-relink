@@ -1,5 +1,4 @@
 import { SOURCE_INTERNAL_SYMBOL } from './constants'
-import { Watcher } from './internals/watcher/schema'
 
 /**
  * Arguments passed to the hydration callback.
@@ -264,7 +263,7 @@ export interface RelinkSource<S> {
    *   return () => { unwatch() }
    * }, [Source])
    */
-  watch: Watcher<[RelinkEvent<S>]>['M$watch']
+  watch(callback: ((event: RelinkEvent<S>) => void)): (() => void)
   /**
    * ## 🚧  🚧
    * This method might behave differently or be removed in future versions.

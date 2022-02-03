@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "checkJs": true,
     "declaration": true,
     "declarationDir": "./temp/tsc/types",
@@ -12,6 +13,7 @@
     "moduleResolution": "Node",
     "outDir": "./temp/tsc/js",
     "skipLibCheck": true,
+    "strict": false,
     "stripInternal": true,
     "target": "ESNext"
   },

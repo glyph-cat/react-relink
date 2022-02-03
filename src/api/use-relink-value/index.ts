@@ -7,7 +7,6 @@ import {
 import { useLayoutEffect, useState } from '../../internals/custom-hooks'
 import { RelinkEvent, RelinkSelector, RelinkSource } from '../../schema'
 import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
-import { CallbackWithNoParamAndReturnsVoid } from '../../internals/helper-types'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
 
@@ -81,7 +80,7 @@ export function useRelinkValue_BASE<S, K>(
   })
 
   // Add/remove watcher, compare & trigger update.
-  useLayoutEffect((): CallbackWithNoParamAndReturnsVoid => {
+  useLayoutEffect((): (() => void) => {
     // NOTE: Virtual batching is implemented at the hook level instead of the
     // source (like it used to in V0) because it used to cause faulty
     // `Source.set()` calls... and also because it just makes more sense.

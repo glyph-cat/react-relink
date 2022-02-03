@@ -1,6 +1,5 @@
 import { RelinkEvent, RelinkEventType } from '../../schema'
 import { createWatcher } from '../../internals/watcher'
-import { UnwatchCallback, WatcherCallback } from '../../internals/watcher/schema'
 import { ObjectMarker } from '../helper-types'
 
 const OMISSION_MARKER: ObjectMarker = {} as const
@@ -32,7 +31,7 @@ interface RelinkCore<S> {
   /**
    * The same `M$watch` method from `createWatcher`.
    */
-  M$watch(callback: WatcherCallback<[RelinkEvent<S>]>): UnwatchCallback
+  M$watch(callback: (event: RelinkEvent<S>) => void): (() => void)
   /**
    * The same `M$unwatchAll` method from `createWatcher`.
    */
@@ -118,7 +117,8 @@ export function createRelinkCore<S>(defaultState: S): RelinkCore<S> {
 // [B] By using the getter `M$get()` whenever we need to access the current
 //     state, this guarantees a consistent behaviour every-fucking-where in
 //     terms of mutability —— and this preserves sanity.
-// [C] We do not need `copyState` here because is has already been called at
+// [C] (No longer relevant, kept as archive)
+//     We do not need `copyState` here because is has already been called at
 //     the declaration of `initialState` as a constant variable. If source is
 //     mutable and user somehow changed the default state, it is only the
 //     natural behaviour that when reset is called, the current state  will

@@ -1,8 +1,19 @@
 import { RelinkSourceKey } from '../../schema'
 import { isThenable } from '../type-checker'
 
+/**
+ * @internal
+ */
 type GatedCallback<V> = (...args: any[]) => V | Promise<V>
 
+/**
+ * @internal
+ */
+const dummyCallback = () => { } // eslint-disable-line @typescript-eslint/no-empty-function
+
+/**
+ * @internal
+ */
 export interface GatedFlow {
   /**
    * Append a callback to the queue.
@@ -22,9 +33,9 @@ export interface GatedFlow {
   M$open(): Promise<void>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const dummyCallback = () => { }
-
+/**
+ * @internal
+ */
 export function createGatedFlow(
   initialIsOpen: boolean,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
