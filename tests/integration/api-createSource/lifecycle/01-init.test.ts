@@ -3,7 +3,7 @@ import {
   createCleanupRef,
 } from '@glyph-cat/react-test-utils'
 import { act } from 'react-test-renderer'
-import { RelinkSource } from '../../../../src/schema'
+import { RelinkSourceSchema } from '../../../../src/schema'
 import { createEventPromise, delay, TIME_GAP } from '../../../../src/debugging'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
@@ -12,7 +12,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, RelinkEventType, useRelinkValue } = Relink
 
-  let Source: RelinkSource<number>
+  let Source: RelinkSourceSchema<number>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     Source.cleanup()

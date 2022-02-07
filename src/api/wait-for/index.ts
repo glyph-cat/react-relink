@@ -1,5 +1,5 @@
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../../schema'
+import { RelinkEventType, RelinkSourceSchema, RelinkSourceKey } from '../../schema'
 
 /**
  * Creates a promise that resolves only when a source has finished hydrating.
@@ -15,7 +15,7 @@ import { RelinkEventType, RelinkSource, RelinkSourceKey } from '../../schema'
 export function waitFor(
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  source: RelinkSource<any>
+  source: RelinkSourceSchema<any>
 ): Promise<void> {
   return new Promise((resolve): void => {
     if (source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
@@ -50,7 +50,7 @@ export function waitFor(
 export function waitForAll(
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sources: Array<RelinkSource<any>>
+  sources: Array<RelinkSourceSchema<any>>
 ): Promise<void> {
   return new Promise((resolve, reject): void => {
     try {

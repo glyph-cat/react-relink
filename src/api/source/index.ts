@@ -1,4 +1,8 @@
-import { SOURCE_INTERNAL_SYMBOL, IS_DEV_ENV, IS_DEBUG_ENV } from '../../constants'
+import {
+  SOURCE_INTERNAL_SYMBOL,
+  IS_DEV_ENV,
+  IS_DEBUG_ENV,
+} from '../../constants'
 // import { createDebugLogger } from '../../debugging'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { checkForCircularDeps } from '../../internals/circular-deps'
@@ -18,10 +22,11 @@ import { startMeasuringReducerPerformance } from '../../internals/performance'
 import { safeStringJoin } from '../../internals/string-formatting'
 import {
   RelinkEventType,
-  RelinkSource,
-  RelinkSourceEntry,
+  RelinkSourceSchema,
+  RelinkSourceConfig,
   RelinkSourceKey,
   RelinkSourceOptions,
+  // RelinkHydrateCallback,
 } from '../../schema'
 import { isFunction, isThenable } from '../../internals/type-checker'
 import { hasSymbol } from '../../internals/has-symbol'
@@ -43,6 +48,15 @@ let isWarningShown_optionsMutableInvalid = false // KIV
 /**
  * @public
  */
+export function isRelinkSource<S = unknown>(
+  value: unknown
+): value is RelinkSourceSchema<S> {
+  return hasSymbol(value, SOURCE_INTERNAL_SYMBOL)
+}
+
+/**
+ * @public
+ */
 export function createSource<S>({
   key: rawKey,
   scope,
@@ -50,7 +64,7 @@ export function createSource<S>({
   default: defaultState,
   lifecycle = {},
   options: rawOptions,
-}: RelinkSourceEntry<S>): RelinkSource<S> {
+}: RelinkSourceConfig<S>): RelinkSourceSchema<S> {
 
   // === Key checking ===
   let normalizedKey: RelinkSourceKey
@@ -115,7 +129,7 @@ export function createSource<S>({
     return isReady
   }
 
-  const hydrate: RelinkSource<S>['hydrate'] = (callback): Promise<void> => {
+  const hydrate: RelinkSourceSchema<S>['hydrate'] = (callback): Promise<void> => {
     // NOTE: `core.M$hydrate` was previously not wrapped in 'M$exec'. Firing
     // multiple `.hydrate()` calls will most likely cause bugs because of this.
     gatedFlow.M$exec((): void => {
@@ -249,7 +263,7 @@ export function createSource<S>({
     })
   }
 
-  const set: RelinkSource<S>['set'] = (
+  const set: RelinkSourceSchema<S>['set'] = (
     stateOrReducer: S | ((currentState: S) => S | Promise<S>)
   ): Promise<void> => {
     return gatedFlow.M$exec((): void | Promise<void> => {
@@ -339,15 +353,6 @@ export function createSource<S>({
     cleanup,
   }
 
-}
-
-/**
- * @public
- */
-export function isRelinkSource<S = unknown>(
-  value: unknown
-): value is RelinkSource<S> {
-  return hasSymbol(value, SOURCE_INTERNAL_SYMBOL)
 }
 
 // === Local Notes ===

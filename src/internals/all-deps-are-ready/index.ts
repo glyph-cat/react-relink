@@ -1,10 +1,10 @@
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { RelinkSource } from '../../schema'
+import { RelinkSourceSchema } from '../../schema'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { genericDebugLogger } from '../../debugging'
 
 export function allDepsAreReady(
-  sources: Array<RelinkSource<unknown>>
+  sources: Array<RelinkSourceSchema<unknown>>
 ): boolean {
   // KIV: genericDebugLogger.echo(`sources.length: ${sources.length}`)
   for (const source of sources) {

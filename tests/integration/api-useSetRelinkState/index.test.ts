@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
-import { RelinkSource } from '../../../src/schema'
+import { RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -15,7 +15,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, useSetRelinkState } = Relink
 
-  let Source: RelinkSource<number>
+  let Source: RelinkSourceSchema<number>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     Source.cleanup()

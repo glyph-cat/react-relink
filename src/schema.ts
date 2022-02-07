@@ -156,8 +156,14 @@ export type RelinkScopeId = number
 
 /**
  * @public
+ * @deprecated Please use `RelinkSourceConfig` instead.
  */
-export interface RelinkSourceEntry<S> {
+export type RelinkSourceEntry<S> = RelinkSourceConfig<S>
+
+/**
+ * @public
+ */
+export interface RelinkSourceConfig<S> {
   /**
    * A unique key for the source. Use a string or number for better clarity in a
    * normal project, use a Symbol instead if you're building a library to avoid
@@ -167,7 +173,7 @@ export interface RelinkSourceEntry<S> {
   /**
    *
    */
-  scope?: RelinkSource<S>
+  scope?: RelinkSourceSchema<S>
   /**
    * The default state of the source.
    */
@@ -177,7 +183,7 @@ export interface RelinkSourceEntry<S> {
    */
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  deps?: Array<RelinkSource<any>>
+  deps?: Array<RelinkSourceSchema<any>>
   /**
    * A hooks to this source to run certain callbacks when certain events are
    * fired.
@@ -192,7 +198,7 @@ export interface RelinkSourceEntry<S> {
 /**
  * @public
  */
-export interface RelinkSource<S> {
+export interface RelinkSourceSchema<S> {
   /**
    * Get the current state. This is regardless of whether there are any pending
    * state changes.
@@ -295,7 +301,7 @@ export interface RelinkSource<S> {
     /**
      * Sources that this one depend on before it can hydrate itself.
      */
-    M$parentDeps: Array<RelinkSource<unknown>>
+    M$parentDeps: Array<RelinkSourceSchema<unknown>>
     /**
      * Sources that depend on this one before they can hydrate themselves.
      */
@@ -303,3 +309,14 @@ export interface RelinkSource<S> {
     M$getIsReadyStatus(): boolean
   }
 }
+
+/**
+ * @public
+ * @deprecated Please use `RelinkSourceSchema` instead.
+ * `RelinkSource` will be reserved as a class name in the future as
+ * Relink slowly migrate from factory patterns to classes in the future. The
+ * methods and properties should remain the same, but unforeseen circumstances
+ * may occur which leads to decisions that cause breaking changes. Hence this
+ * safety mechanism is created.
+ */
+export type RelinkSource<S> = RelinkSourceSchema<S>

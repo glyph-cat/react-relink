@@ -4,7 +4,7 @@ import {
 } from '@glyph-cat/react-test-utils'
 import { act } from 'react-test-renderer'
 import { delay, TIME_GAP } from '../../../src/debugging'
-import { RelinkSource } from '../../../src/schema'
+import { RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -16,7 +16,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, useRelinkState } = Relink
 
-  let Source: RelinkSource<number>
+  let Source: RelinkSourceSchema<number>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     cleanupRef.run()

@@ -5,13 +5,13 @@ import {
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
 import { createSource } from '../../api/source'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
-import { RelinkSource } from '../../schema'
+import { RelinkSourceSchema } from '../../schema'
 import { delay, TIME_GAP } from '../../debugging'
 
 describe(useSuspenseForDataFetching.name, (): void => {
 
   let root: ReactTestRenderer
-  let Source: RelinkSource<number>
+  let Source: RelinkSourceSchema<number>
   afterEach((): void => {
     Source.cleanup()
     root.unmount()

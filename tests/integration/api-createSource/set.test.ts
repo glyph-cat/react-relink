@@ -1,5 +1,5 @@
 import { createEventPromise } from '../../../src/debugging'
-import { RelinkEventType, RelinkSource } from '../../../src/schema'
+import { RelinkEventType, RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -7,7 +7,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource } = Relink
 
-  let Source: RelinkSource<SampleSchema>
+  let Source: RelinkSourceSchema<SampleSchema>
   beforeEach((): void => {
     Source = createSource({
       key: 'test/Source.set()',

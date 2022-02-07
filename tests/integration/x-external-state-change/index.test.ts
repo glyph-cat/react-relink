@@ -4,7 +4,7 @@ import {
 } from '@glyph-cat/react-test-utils'
 import { useReducer } from 'react'
 import { forceUpdateReducer } from '../../../src/internals/custom-hooks'
-import { RelinkSource } from '../../../src/schema'
+import { RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -15,7 +15,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, useRelinkValue } = Relink
 
-  let Source: RelinkSource<SampleSchema>
+  let Source: RelinkSourceSchema<SampleSchema>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     Source.cleanup()

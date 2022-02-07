@@ -1,9 +1,9 @@
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { ERROR_CIRCULAR_DEPENDENCY } from '../../internals/errors'
-import { RelinkSource, RelinkSourceKey } from '../../schema'
+import { RelinkSourceSchema, RelinkSourceKey } from '../../schema'
 
 export function checkForCircularDeps(
-  deps: Array<RelinkSource<unknown>>,
+  deps: Array<RelinkSourceSchema<unknown>>,
   keyPathStack: Array<RelinkSourceKey>
 ): void {
   const depsKeyStack = []

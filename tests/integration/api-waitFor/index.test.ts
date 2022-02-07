@@ -1,5 +1,5 @@
 import { delay, TIME_GAP } from '../../../src/debugging'
-import { RelinkSource } from '../../../src/schema'
+import { RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -7,7 +7,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, waitFor } = Relink
 
-  let Source: RelinkSource<number>
+  let Source: RelinkSourceSchema<number>
   afterEach((): void => { Source.cleanup() })
 
   test('Ready to use', async (): Promise<void> => {

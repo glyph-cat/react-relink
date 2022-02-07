@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext } from 'react'
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { RelinkScopeId, RelinkSource, RelinkSourceKey } from '../../schema'
+import { RelinkScopeId, RelinkSourceSchema, RelinkSourceKey } from '../../schema'
 
 /**
  * @internal
@@ -16,7 +16,7 @@ export const getNewScopeId = (): RelinkScopeId => ++scopeIdCounter
  * @internal
  */
 interface RelinkContextSchema {
-  M$pool: Record<RelinkSourceKey, RelinkSource<unknown>>
+  M$pool: Record<RelinkSourceKey, RelinkSourceSchema<unknown>>
 }
 
 /**
@@ -29,11 +29,11 @@ const RelinkContext = createContext<RelinkContextSchema>({
 /**
  * @internal
  */
-export function useScopedRelinkSource<S>(source: RelinkSource<S>): RelinkSource<S> {
+export function useScopedRelinkSource<S>(source: RelinkSourceSchema<S>): RelinkSourceSchema<S> {
   const currentContext = useContext(RelinkContext)
   const scopedSource = currentContext.M$pool[source[SOURCE_INTERNAL_SYMBOL].M$scopeId]
   return scopedSource
-    ? scopedSource as RelinkSource<S> // If in pool, return the scoped source.
+    ? scopedSource as RelinkSourceSchema<S> // If in pool, return the scoped source.
     : source // Otherwise, return the original source.
 }
 
@@ -50,7 +50,7 @@ export interface RelinkScopeProps {
    */
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sources: Array<RelinkSource<any>>
+  sources: Array<RelinkSourceSchema<any>>
   children: ReactNode
 }
 

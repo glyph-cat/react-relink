@@ -5,7 +5,7 @@ import {
   SOURCE_INTERNAL_SYMBOL,
 } from '../../constants'
 import { useLayoutEffect, useState } from '../../internals/custom-hooks'
-import { RelinkEvent, RelinkSelector, RelinkSource } from '../../schema'
+import { RelinkEvent, RelinkSelector, RelinkSourceSchema } from '../../schema'
 import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
@@ -15,7 +15,7 @@ import { useScopedRelinkSource } from '../scope'
  * const state = useRelinkValue(Source)
  * @public
  */
-export function useRelinkValue<S>(source: RelinkSource<S>): S
+export function useRelinkValue<S>(source: RelinkSourceSchema<S>): S
 
 /**
  * @example
@@ -27,12 +27,12 @@ export function useRelinkValue<S>(source: RelinkSource<S>): S
  * @public
  */
 export function useRelinkValue<S, K>(
-  source: RelinkSource<S>,
+  source: RelinkSourceSchema<S>,
   selector: RelinkSelector<S, K>
 ): K
 
 export function useRelinkValue<S, K>(
-  source: RelinkSource<S>,
+  source: RelinkSourceSchema<S>,
   selector?: RelinkSelector<S, K>
 ): S | K {
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
@@ -45,7 +45,7 @@ export function useRelinkValue<S, K>(
  * @internal
  */
 export function useRelinkValue_BASE<S, K>(
-  source: RelinkSource<S>,
+  source: RelinkSourceSchema<S>,
   selector?: RelinkSelector<S, K>
 ): S | K {
 

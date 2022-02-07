@@ -1,4 +1,4 @@
-import { RelinkSource } from '../../../src/schema'
+import { RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -8,9 +8,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource, isRelinkSource } = Relink
 
-  let SourceA: RelinkSource<number>
-  let SourceB: RelinkSource<number>
-  let SourceC: RelinkSource<number>
+  let SourceA: RelinkSourceSchema<number>
+  let SourceB: RelinkSourceSchema<number>
+  let SourceC: RelinkSourceSchema<number>
   afterEach((): void => {
     if (isRelinkSource(SourceA)) { SourceA.cleanup() }
     if (isRelinkSource(SourceB)) { SourceB.cleanup() }

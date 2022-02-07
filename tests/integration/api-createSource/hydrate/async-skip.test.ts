@@ -1,5 +1,5 @@
 import { createEventStackPromise, delay, TIME_GAP } from '../../../../src/debugging'
-import { RelinkEventType, RelinkSource } from '../../../../src/schema'
+import { RelinkEventType, RelinkSourceSchema } from '../../../../src/schema'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
@@ -7,7 +7,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { createSource } = Relink
 
-  let Source: RelinkSource<SampleSchema>
+  let Source: RelinkSourceSchema<SampleSchema>
   afterEach((): void => { Source.cleanup() })
 
   test('main', async (): Promise<void> => {

@@ -1,13 +1,13 @@
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
 import { createSource, isRelinkSource } from '../../api/source'
-import { RelinkSource } from '../../schema'
+import { RelinkSourceSchema } from '../../schema'
 import { checkForCircularDeps } from '.'
 
 describe(checkForCircularDeps.name, (): void => {
 
-  let SourceA: RelinkSource<number>
-  let SourceB: RelinkSource<number>
-  let SourceC: RelinkSource<number>
+  let SourceA: RelinkSourceSchema<number>
+  let SourceB: RelinkSourceSchema<number>
+  let SourceC: RelinkSourceSchema<number>
   afterEach((): void => {
     if (isRelinkSource(SourceA)) { SourceA.cleanup() }
     if (isRelinkSource(SourceB)) { SourceB.cleanup() }

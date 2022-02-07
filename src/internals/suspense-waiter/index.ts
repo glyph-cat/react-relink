@@ -5,7 +5,7 @@ import {
 } from 'react'
 import { waitFor } from '../../api/wait-for'
 import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { RelinkSource, RelinkEventType } from '../../schema'
+import { RelinkSourceSchema, RelinkEventType } from '../../schema'
 import { forceUpdateReducer, useLayoutEffect } from '../custom-hooks'
 
 // Modified based from ovieokeh's `wrapPromise` method. Reference:
@@ -78,7 +78,7 @@ export function createSuspenseWaiter(
 // }
 
 export function useSuspenseForDataFetching(
-  source: RelinkSource<unknown>
+  source: RelinkSourceSchema<unknown>
 ): void {
   const waitPromise: MutableRefObject<Promise<void>> = useRef(null)
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)

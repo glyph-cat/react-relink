@@ -1,4 +1,4 @@
-import { RelinkEvent, RelinkEventType, RelinkSource } from '../../../../src/schema'
+import { RelinkEvent, RelinkEventType, RelinkSourceSchema } from '../../../../src/schema'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
@@ -6,7 +6,7 @@ import { wrapper } from '../../wrapper'
 // * Make sure the `didSet` and `didReset` lifecycle hooks are triggered at
 // appropriate times when `.set()`, `.reset()` and `.hydrate()` are called.
 
-let Source: RelinkSource<number> = null
+let Source: RelinkSourceSchema<number> = null
 afterEach((): void => {
   Source.cleanup()
 })
