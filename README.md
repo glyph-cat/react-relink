@@ -142,6 +142,12 @@ Circular dependencies are not allowed: `${depStack}`
 
 <br/>
 
+# List of Breaking Changes In All Versions
+* v0 -> v1 `dangerously...` methods were changed to source methods
+  * `dangerouslySetRelinkState` becomes `Source.set`
+* v1 -> v2
+  * The `mutable` option is no longer available in favor of performance.
+
 # Support This Project
 
 * Ko-fi: [`ko-fi.com/glyphcat`](https://ko-fi.com/glyphcat)

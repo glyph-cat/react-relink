@@ -99,7 +99,9 @@ export function createSource<S>({
 
   const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
   if (IS_DEBUG_ENV) {
-    if (typeof mergedOptions['options'] !== 'undefined') {
+    // @ts-expect-error Projects migrating from earlier versions might still
+    // have this option specified.
+    if (typeof mergedOptions.mutable !== 'undefined') {
       if (!isWarningShown_optionsMutableInvalid) {
         devError(
           'Invalid option `mutable`, it has been deprecated since V1 and ' +

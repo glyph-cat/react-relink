@@ -13,11 +13,18 @@ const depStack = Object.keys(PKG_dependencies)
 const devDepStack = Object.keys(PKG_devDependencies)
 const allDepStack = [...depStack, ...devDepStack]
 
-const command = [
-  `yarn remove ${allDepStack.join(' ')}`,
-  `yarn add ${getPackageInstallPaths(PKG_dependencies).join(' ')}`,
-  `yarn add -D ${getPackageInstallPaths(PKG_devDependencies).join(' ')}`,
-].join(' && ')
+const commandStack = [`yarn remove ${allDepStack.join(' ')}`]
+if (depStack.length > 0) {
+  commandStack.push(
+    `yarn add ${getPackageInstallPaths(PKG_dependencies).join(' ')}`
+  )
+}
+if (devDepStack.length > 0) {
+  commandStack.push(
+    `yarn add -D ${getPackageInstallPaths(PKG_devDependencies).join(' ')}`
+  )
+}
+const command = commandStack.join(' && ')
 
 const execProcess = exec(command)
 execProcess.stdout.pipe(process.stdout)
