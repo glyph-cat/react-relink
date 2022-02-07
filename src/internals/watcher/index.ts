@@ -1,54 +1,51 @@
-import { Watcher } from './schema'
-
 /**
  * Creates a Watcher.
  * @example
- * const watcher = createWatcher()
+ * const watcher = new Watcher()
  * const unwatch = watcher.M$watch(() => { ... })
  * watcher.M$refresh(...) // Arguments can be passed
  * unwatch()
- * @returns A Watcher object.
  */
-export function createWatcher<A extends Array<unknown>>(): Watcher<A> {
+export class Watcher<A extends Array<unknown>> {
 
   // KIV: Consider using a linked list as it is a better representation of how
   // listeners should be added, removed and fired in sequence.
   // The linked list needs to have the following characteristics:
   // * Elements are always added to end of list
   // * Elements can be removed at any position
-  let watcherCollection: Record<number, CallableFunction> = {}
-  let incrementalWatchId = 1
+  private M$watcherCollection: Record<number, CallableFunction> = {}
+  private M$incrementalWatchId = 0
 
-  const M$watch = (callback: (...args: A) => void): (() => void) => {
-    const newId = incrementalWatchId++
-    watcherCollection[newId] = callback
+  /**
+   * Accepts a callback and start watching for changes. The callback will be
+   * invoked whenever a refresh is triggered.
+   */
+  M$watch = (callback: ((...args: A) => void)): (() => void) => {
+    const newId = ++this.M$incrementalWatchId
+    this.M$watcherCollection[newId] = callback
     // genericDebugLogger.echo(`Added watcher (ID: ${newId})`)
     const unwatch = (): void => {
-      delete watcherCollection[newId]
+      delete this.M$watcherCollection[newId]
       // genericDebugLogger.echo(`Removed watcher (ID: ${newId})`)
     }
     return unwatch
   }
 
-  const M$unwatchAll = (): void => {
-    watcherCollection = {}
+  /**
+   * Forcecully remove all watchers.
+   */
+  M$unwatchAll = (): void => {
+    this.M$watcherCollection = {}
   }
 
-  const M$refresh = (...args: A): void => {
-    const callbackStack = Object.values(watcherCollection)
+  /**
+   * Triggers a refresh.
+   */
+  M$refresh = (...args: A): void => {
+    const callbackStack = Object.values(this.M$watcherCollection)
     for (let i = 0; i < callbackStack.length; i++) {
       callbackStack[i](...args)
     }
-    // KIV: Old implementation below
-    // Object.values(watcherMap).forEach((callback): void => {
-    //   callback(...args)
-    // })
-  }
-
-  return {
-    M$watch,
-    M$unwatchAll,
-    M$refresh,
   }
 
 }

@@ -2,13 +2,13 @@ import { SOURCE_INTERNAL_SYMBOL, IS_DEV_ENV, IS_DEBUG_ENV } from '../../constant
 // import { createDebugLogger } from '../../debugging'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { checkForCircularDeps } from '../../internals/circular-deps'
-import { createRelinkCore, HYDRATION_SKIP_MARKER } from '../../internals/core'
+import { RelinkCore, HYDRATION_SKIP_MARKER } from '../../internals/core'
 import { devError, devWarn } from '../../internals/dev'
 import {
   getWarningForForwardedHydrationCallbackValue,
   TYPE_ERROR_SOURCE_KEY,
 } from '../../internals/errors'
-import { createGatedFlow } from '../../internals/gated-flow'
+import { GatedFlow } from '../../internals/gated-flow'
 import { registerKey, unregisterKey } from '../../internals/key-registry'
 import {
   createNoUselessHydrationWarner,
@@ -81,7 +81,7 @@ export function createSource<S>({
    * to use, but rather, it means that the source can finally hydrate itself.
    * Also, gate is opened right away if there are no dependencies.
    */
-  const gatedFlow = createGatedFlow(deps.length <= 0, normalizedKey)
+  const gatedFlow = new GatedFlow(deps.length <= 0, normalizedKey)
 
   const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
   if (IS_DEBUG_ENV) {
@@ -99,7 +99,7 @@ export function createSource<S>({
   const isSourcePublic = mergedOptions.public
   const isVirtualBatchEnabled = mergedOptions.virtualBatch
   const isSuspenseEnabled = mergedOptions.suspense
-  const core = createRelinkCore(defaultState)
+  const core = new RelinkCore(defaultState)
 
   // === Hydration ===
 
@@ -109,7 +109,7 @@ export function createSource<S>({
   const M$getIsReadyStatus = (): boolean => {
     // NOTE: If this source's `lifecycle.init` is not provided, `isHydrating`
     // should always be false.
-    const isHydrating = core.M$getIsHydrating()
+    const isHydrating = core.M$isHydrating
     const areAllDepsReallyReady = allDepsAreReady(deps)
     const isReady = !isHydrating && areAllDepsReallyReady
     return isReady
@@ -222,14 +222,14 @@ export function createSource<S>({
   // NOTE: When cleaning up, `M$unwatchAll` is called, so we don't need to worry
   // about unwatching here.
   if (isFunction(lifecycle.didSet)) {
-    core.M$watch((event): void => {
+    core.M$watcher.M$watch((event): void => {
       if (event.type === RelinkEventType.set) {
         lifecycle.didSet(event)
       }
     })
   }
   if (isFunction(lifecycle.didReset)) {
-    core.M$watch((event): void => {
+    core.M$watcher.M$watch((event): void => {
       if (event.type === RelinkEventType.reset) {
         lifecycle.didReset(event)
       }
@@ -239,11 +239,13 @@ export function createSource<S>({
 
   // === Exposed Methods ===
 
-  const get = (): S => core.M$get()
+  const get = (): S => {
+    return core.M$currentState
+  }
 
   const getAsync = (): Promise<S> => {
     return gatedFlow.M$exec((): S => {
-      return core.M$get()
+      return core.M$currentState
     })
   }
 
@@ -254,7 +256,7 @@ export function createSource<S>({
       // let nextState: S
       if (isFunction(stateOrReducer)) {
         const perfMeasurer = startMeasuringReducerPerformance(normalizedKey)
-        const executedReducer = stateOrReducer(core.M$get())
+        const executedReducer = stateOrReducer(core.M$currentState)
         // Refer to Local Note [A] near end of file
         if (isThenable(executedReducer)) {
           perfMeasurer.isAsync.current = true
@@ -310,7 +312,7 @@ export function createSource<S>({
       // Unregister child depenency from this source
       delete dep[SOURCE_INTERNAL_SYMBOL].M$childDeps[normalizedKey]
     }
-    core.M$unwatchAll()
+    core.M$watcher.M$unwatchAll()
     unregisterKey(normalizedKey)
     while (depWatchers.length > 0) {
       depWatchers.shift()() // Immediately invokes `unwatch()`
@@ -333,7 +335,7 @@ export function createSource<S>({
     set,
     reset,
     hydrate,
-    watch: core.M$watch,
+    watch: core.M$watcher.M$watch,
     cleanup,
   }
 

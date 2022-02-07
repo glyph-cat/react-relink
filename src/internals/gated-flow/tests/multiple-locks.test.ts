@@ -1,7 +1,7 @@
-import { createGatedFlow } from '..'
+import { GatedFlow } from '..'
 
 test('Multiple locks', () => {
-  const gateKeeper = createGatedFlow(true, 'test/gated-flow/multiple-locks')
+  const gateKeeper = new GatedFlow(true, 'test/gated-flow/multiple-locks')
 
   const array: Array<number> = []
   gateKeeper.M$exec((): void => {

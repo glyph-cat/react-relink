@@ -1,18 +1,18 @@
 import { RelinkEvent, RelinkEventType } from '../../schema'
-import { createRelinkCore, HYDRATION_SKIP_MARKER } from '.'
+import { RelinkCore, HYDRATION_SKIP_MARKER } from '.'
 
 // NOTE: This test covers the following aspects:
 // * Testing for mutability - so that we don't have to worry about it anywhere
 //   else anymore.
 // * Ensuring that events are fired accordingly.
 
-describe(createRelinkCore.name, (): void => {
+describe(RelinkCore.name, (): void => {
 
   test('M$get', (): void => {
     const defaultState = { value: 1 }
-    const core = createRelinkCore(defaultState)
-    expect(core.M$get()).toStrictEqual({ value: 1 })
-    expect(Object.is(core.M$get(), defaultState)).toBe(true)
+    const core = new RelinkCore(defaultState)
+    expect(core.M$currentState).toStrictEqual({ value: 1 })
+    expect(Object.is(core.M$currentState, defaultState)).toBe(true)
   })
 
   describe('M$dynamicSet', (): void => {
@@ -20,17 +20,17 @@ describe(createRelinkCore.name, (): void => {
     test('set', (): void => {
 
       const defaultState = { value: 1 }
-      const core = createRelinkCore(defaultState)
+      const core = new RelinkCore(defaultState)
       const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-      const unwatchStateChange = core.M$watch((event): void => {
+      const unwatchStateChange = core.M$watcher.M$watch((event): void => {
         capturedEventStack.push(event)
       })
 
       // Trigger a state change
       const newState = { value: 2 }
       core.M$dynamicSet(newState)
-      expect(core.M$get()).toStrictEqual({ value: 2 })
-      expect(Object.is(core.M$get(), newState)).toBe(true)
+      expect(core.M$currentState).toStrictEqual({ value: 2 })
+      expect(Object.is(core.M$currentState, newState)).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.set,
         state: { value: 2 },
@@ -49,17 +49,17 @@ describe(createRelinkCore.name, (): void => {
     describe('reset', (): void => {
 
       const defaultState = { value: 1 }
-      const core = createRelinkCore(defaultState)
+      const core = new RelinkCore(defaultState)
       const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-      const unwatchStateChange = core.M$watch((event): void => {
+      const unwatchStateChange = core.M$watcher.M$watch((event): void => {
         capturedEventStack.push(event)
       })
 
       // Trigger a state change followed by a state reset
       core.M$dynamicSet({ value: 2 })
       core.M$dynamicSet(/* Empty means reset */)
-      expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(Object.is(core.M$get(), defaultState)).toBe(true)
+      expect(core.M$currentState).toStrictEqual({ value: 1 })
+      expect(Object.is(core.M$currentState, defaultState)).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.set,
         state: { value: 2 },
@@ -85,15 +85,15 @@ describe(createRelinkCore.name, (): void => {
 
     test('Commit strategy', (): void => {
 
-      const core = createRelinkCore({ value: 1 })
+      const core = new RelinkCore({ value: 1 })
       const capturedEventStack: Array<RelinkEvent<TestState>> = []
-      const unwatchStateChange = core.M$watch((event): void => {
+      const unwatchStateChange = core.M$watcher.M$watch((event): void => {
         capturedEventStack.push(event)
       })
 
       core.M$hydrate(/* Empty means hydration is starting */)
-      expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(core.M$getIsHydrating()).toBe(true)
+      expect(core.M$currentState).toStrictEqual({ value: 1 })
+      expect(core.M$isHydrating).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,
@@ -101,8 +101,8 @@ describe(createRelinkCore.name, (): void => {
       }])
 
       core.M$hydrate({ value: 2 })
-      expect(core.M$get()).toStrictEqual({ value: 2 })
-      expect(core.M$getIsHydrating()).toBe(false)
+      expect(core.M$currentState).toStrictEqual({ value: 2 })
+      expect(core.M$isHydrating).toBe(false)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,
@@ -120,15 +120,15 @@ describe(createRelinkCore.name, (): void => {
 
     test('Skip strategy', (): void => {
 
-      const core = createRelinkCore({ value: 1 })
+      const core = new RelinkCore({ value: 1 })
       const capturedEventStack: Array<RelinkEvent<TestState>> = []
-      const unwatchStateChange = core.M$watch((event): void => {
+      const unwatchStateChange = core.M$watcher.M$watch((event): void => {
         capturedEventStack.push(event)
       })
 
       core.M$hydrate(/* Empty means hydration is starting */)
-      expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(core.M$getIsHydrating()).toBe(true)
+      expect(core.M$currentState).toStrictEqual({ value: 1 })
+      expect(core.M$isHydrating).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,
@@ -136,8 +136,8 @@ describe(createRelinkCore.name, (): void => {
       }])
 
       core.M$hydrate(HYDRATION_SKIP_MARKER)
-      expect(core.M$get()).toStrictEqual({ value: 1 })
-      expect(core.M$getIsHydrating()).toBe(false)
+      expect(core.M$currentState).toStrictEqual({ value: 1 })
+      expect(core.M$isHydrating).toBe(false)
       expect(capturedEventStack).toStrictEqual([{
         type: RelinkEventType.hydrate,
         isHydrating: true,
@@ -159,9 +159,9 @@ describe(createRelinkCore.name, (): void => {
 
         test('Hydration start', (): void => {
 
-          const core = createRelinkCore({ value: 1 })
+          const core = new RelinkCore({ value: 1 })
           const capturedEventStack: Array<RelinkEvent<TestState>> = []
-          const unwatchStateChange = core.M$watch((event): void => {
+          const unwatchStateChange = core.M$watcher.M$watch((event): void => {
             capturedEventStack.push(event)
           })
 
@@ -182,9 +182,9 @@ describe(createRelinkCore.name, (): void => {
 
         test('Hydration end', (): void => {
 
-          const core = createRelinkCore({ value: 1 })
+          const core = new RelinkCore({ value: 1 })
           const capturedEventStack: Array<RelinkEvent<TestState>> = []
-          const unwatchStateChange = core.M$watch((event): void => {
+          const unwatchStateChange = core.M$watcher.M$watch((event): void => {
             capturedEventStack.push(event)
           })
 

@@ -2,6 +2,7 @@ import { RelinkEvent, RelinkSource } from '../../schema'
 
 /**
  * Creates a promise that resolves when a Relink event has been received.
+ * @internal
  */
 export function createEventPromise<S>(
   Source: RelinkSource<S>
@@ -16,6 +17,7 @@ export function createEventPromise<S>(
 
 /**
  * Creates a promise that resolves when N Relink events have been received.
+ * @internal
  */
 export function createEventStackPromise<S>(
   Source: RelinkSource<S>,

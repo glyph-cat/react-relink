@@ -1,7 +1,7 @@
-import { createGatedFlow } from '..'
+import { GatedFlow } from '..'
 
 test('Synchronous', async (): Promise<void> => {
-  const gateKeeper = createGatedFlow(true, 'test/gated-flow/values-are-forwarded/synchronous')
+  const gateKeeper = new GatedFlow(true, 'test/gated-flow/values-are-forwarded/synchronous')
   const obj = Symbol()
   const payload = await gateKeeper.M$exec((): symbol => {
     return obj
@@ -10,7 +10,7 @@ test('Synchronous', async (): Promise<void> => {
 })
 
 test('Asynchronous', async (): Promise<void> => {
-  const gateKeeper = createGatedFlow(true, 'test/gated-flow/values-are-forwarded/asynchronous')
+  const gateKeeper = new GatedFlow(true, 'test/gated-flow/values-are-forwarded/asynchronous')
   const obj = Symbol()
   const payload = await gateKeeper.M$exec(async (): Promise<symbol> => {
     return obj

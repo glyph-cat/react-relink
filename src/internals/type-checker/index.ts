@@ -12,5 +12,7 @@ export function isFunction(value: unknown): value is Function {
 export function isThenable(value: unknown): value is Promise<unknown> {
   // If `value` itself is falsy, it cannot possibly be a promise.
   if (!value) { return false }
-  return isFunction(value['then'])
+  // @ts-expect-error It is not known if `.then` is defined, but to be able to
+  // reach this line, `value` must somehow be defined.
+  return isFunction(value.then)
 }

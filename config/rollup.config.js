@@ -31,6 +31,20 @@ function getPlugins(config = {}) {
   const basePlugins = {
     nodeResolve: nodeResolve(NODE_RESOLVE_CONFIG_BASE),
     autoImportReact: autoImportReact(),
+    // babel: babel({
+    //   presets: [
+    //     // '@babel/preset-react',
+    //     '@babel/preset-env',
+    //   ],
+    //   plugins: [
+    //     ['@babel/plugin-proposal-class-properties', {
+    //       loose: true,
+    //       setPublicClassFields: true,
+    //     }],
+    //   ],
+    //   exclude: '**/node_modules/**',
+    //   babelHelpers: 'bundled',
+    // }),
     typescript: typescript({
       tsconfigOverride: {
         compilerOptions: {
@@ -41,17 +55,7 @@ function getPlugins(config = {}) {
         },
       },
     }),
-    // babel: babel({
-    //   presets: [
-    //     // '@babel/preset-react',
-    //     '@babel/preset-env',
-    //   ],
-    //   plugins: [
-    //     ['@babel/plugin-proposal-class-properties'],
-    //   ],
-    //   exclude: '**/node_modules/**',
-    //   babelHelpers: 'bundled',
-    // }),
+
     // commonjs: commonjs(),
   }
 

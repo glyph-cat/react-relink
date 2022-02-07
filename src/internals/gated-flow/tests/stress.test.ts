@@ -1,9 +1,9 @@
 import { delay, TIME_GAP } from '../../../debugging'
-import { createGatedFlow } from '..'
+import { GatedFlow } from '..'
 
 test('Stress test', async (): Promise<void> => {
 
-  const gateKeeper = createGatedFlow(true, 'test/gated-flow/stress')
+  const gateKeeper = new GatedFlow(true, 'test/gated-flow/stress')
   const array: Array<number> = []
 
   // Stage 1
