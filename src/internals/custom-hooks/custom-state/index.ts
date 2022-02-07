@@ -6,12 +6,22 @@ import {
 } from 'react'
 import { forceUpdateReducer } from '../force-update'
 
+/**
+ * @internal
+ */
 type StateId = Record<string, never>
+
+/**
+ * @internal
+ */
 const stateCache: WeakMap<
   StateId,
   [unknown, (newState: unknown) => void]
 > = new WeakMap()
 
+/**
+ * @internal
+ */
 type StateHookData<S> = [S, (newState: S) => void]
 
 /**
@@ -22,6 +32,7 @@ type StateHookData<S> = [S, (newState: S) => void]
  * - Initial state must be a factory (has performance benefits when selectors
  *   are used)
  * - State setter only accepts new values (no reducers)
+ * @internal
  */
 export function useState<S>(initialState: () => S): StateHookData<S> {
 
@@ -39,7 +50,7 @@ export function useState<S>(initialState: () => S): StateHookData<S> {
     stateCache.set(id.current, [initialState(), stateSetter])
   }
 
-  useEffect((): (() => void) => {
+  useEffect(() => {
     const stateId = id.current
     return (): void => { stateCache.delete(stateId) }
   }, [])

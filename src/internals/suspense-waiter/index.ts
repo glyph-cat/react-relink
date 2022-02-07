@@ -98,7 +98,7 @@ export function useSuspenseForDataFetching(
       createSuspenseWaiter(waitPromise.current)()
     }
   }
-  useLayoutEffect((): (() => void) => {
+  useLayoutEffect(() => {
     if (source[SOURCE_INTERNAL_SYMBOL].M$isSuspenseEnabled) {
       const unwatch = source.watch((event): void => {
         // Ignore if event is not caused by hydration

@@ -8,11 +8,6 @@
  */
 export class Watcher<A extends Array<unknown>> {
 
-  // KIV: Consider using a linked list as it is a better representation of how
-  // listeners should be added, removed and fired in sequence.
-  // The linked list needs to have the following characteristics:
-  // * Elements are always added to end of list
-  // * Elements can be removed at any position
   private M$watcherCollection: Record<number, CallableFunction> = {}
   private M$incrementalWatchId = 0
 

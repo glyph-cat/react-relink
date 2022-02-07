@@ -175,6 +175,7 @@ export class RelinkCore<S> {
 // [A] If incoming state is not provided, it defaults to the omission marker in
 //     `M$dynamicSet` and `M$hydrate`. This way, we won't mix up with falsey
 //     values because the object reference is clearly different.
+//     ===== No longer relevant, kept as reference for now. =====
 // [B] By using the getter `M$get()` whenever we need to access the current
 //     state, this guarantees a consistent behaviour every-fucking-where in
 //     terms of mutability —— and this preserves sanity.

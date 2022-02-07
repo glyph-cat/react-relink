@@ -80,7 +80,7 @@ export function useRelinkValue_BASE<S, K>(
   })
 
   // Add/remove watcher, compare & trigger update.
-  useLayoutEffect((): (() => void) => {
+  useLayoutEffect(() => {
     // NOTE: Virtual batching is implemented at the hook level instead of the
     // source (like it used to in V0) because it used to cause faulty
     // `Source.set()` calls... and also because it just makes more sense.
