@@ -88,6 +88,15 @@ export interface RelinkSourceConfig<S> {
 
 /**
  * @public
+ * @deprecated Kept for compatibility purposes. Will be removed in next major
+ * version. Please use `new RelinkSource(...)` instead.
+ */
+export function createSource<S>(config: RelinkSourceConfig<S>): RelinkSource<S> {
+  return new RelinkSource(config)
+}
+
+/**
+ * @public
  */
 export class RelinkSource<S> {
 
