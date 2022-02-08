@@ -3,20 +3,20 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, waitForAll } = Relink
+  const { RelinkSource, waitForAll } = Relink
   const testName = 'waitForAll'
 
   test('main', async (): Promise<void> => {
 
-    const SourceA = createSource({
+    const SourceA = new RelinkSource({
       key: `test/${testName}/no-deps/a`,
       default: null,
     })
-    const SourceB = createSource({
+    const SourceB = new RelinkSource({
       key: `test/${testName}/no-deps/b`,
       default: null,
     })
-    const SourceC = createSource({
+    const SourceC = new RelinkSource({
       key: `test/${testName}/no-deps/c`,
       default: null,
     })

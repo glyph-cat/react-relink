@@ -1,18 +1,18 @@
+import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
 import { createEventStackPromise, delay, TIME_GAP } from '../../../../src/debugging'
-import { RelinkEventType, RelinkSourceSchema } from '../../../../src/schema'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource } = Relink
+  const { RelinkSource, RelinkEventType } = Relink
 
-  let Source: RelinkSourceSchema<SampleSchema>
+  let Source: $RelinkSource<SampleSchema>
   afterEach((): void => { Source.cleanup() })
 
   test('main', async (): Promise<void> => {
 
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/Source.hydrate()',
       default: {
         foo: 1,

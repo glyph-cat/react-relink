@@ -1,7 +1,7 @@
 import { useRef } from 'react' // eslint-disable-line no-restricted-imports
-import { createSource, RelinkScope, useRelinkState } from '../../../../src/bundle'
+import { RelinkSource, RelinkScope, useRelinkState } from '../../../../src/bundle'
 
-const ThemeSource = createSource({
+const ThemeSource = new RelinkSource({
   key: 'theme',
   default: {
     primaryColor: '#ff4a4a',
@@ -18,7 +18,7 @@ export function Playground(): JSX.Element {
 
   const SubThemeSource = useRef<typeof ThemeSource>()
   if (!SubThemeSource.current) {
-    SubThemeSource.current = createSource({
+    SubThemeSource.current = new RelinkSource({
       key: 'sub-theme',
       scope: ThemeSource,
       default: {

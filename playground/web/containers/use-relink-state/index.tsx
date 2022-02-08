@@ -1,8 +1,8 @@
 import React from 'react'
-import { createSource } from '../../../../src/api/source'
+import { RelinkSource } from '../../../../src/api/source'
 import { useRelinkState } from '../../../../src/api/use-relink-state'
 
-const CounterSource = createSource({
+const CounterSource = new RelinkSource({
   key: 'counter',
   default: {
     a: 0,

@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
-import { RelinkSourceSchema } from '../../../src/schema'
+import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -10,9 +10,9 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, useRelinkValue } = Relink
+  const { RelinkSource, useRelinkValue } = Relink
 
-  let Source: RelinkSourceSchema<SampleSchema>
+  let Source: $RelinkSource<SampleSchema>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     Source.cleanup()
@@ -21,7 +21,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Basic Usage', async (): Promise<void> => {
 
-    Source = createSource<SampleSchema>({
+    Source = new RelinkSource<SampleSchema>({
       key: 'test/api-useRelinkValue/basic-usage',
       default: {
         foo: 1,
@@ -66,7 +66,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('With selector', async (): Promise<void> => {
 
-    Source = createSource<SampleSchema>({
+    Source = new RelinkSource<SampleSchema>({
       key: 'test/api-useRelinkValue/with-selector',
       default: {
         foo: 1,

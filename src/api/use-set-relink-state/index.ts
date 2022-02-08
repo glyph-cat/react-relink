@@ -1,6 +1,6 @@
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
-import { RelinkSourceSchema } from '../../schema'
 import { useScopedRelinkSource } from '../scope'
+import { RelinkSource } from '../source'
 
 /**
  * @example
@@ -8,8 +8,8 @@ import { useScopedRelinkSource } from '../scope'
  * @public
  */
 export function useSetRelinkState<S>(
-  source: RelinkSourceSchema<S>
-): RelinkSourceSchema<S>['set'] {
+  source: RelinkSource<S>
+): RelinkSource<S>['set'] {
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)

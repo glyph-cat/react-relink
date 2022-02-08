@@ -3,10 +3,10 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource } = Relink
+  const { RelinkSource } = Relink
 
   test('main', (): void => {
-    const Source = createSource({
+    const Source = new RelinkSource({
       key: 'test/Source.get()',
       default: 1,
     })

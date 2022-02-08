@@ -3,15 +3,14 @@ import {
   useLayoutEffect, // eslint-disable-line no-restricted-imports
 } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
-import { createSource } from '../../api/source'
+import { RelinkSource } from '../../api/source'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
-import { RelinkSourceSchema } from '../../schema'
 import { delay, TIME_GAP } from '../../debugging'
 
 describe(useSuspenseForDataFetching.name, (): void => {
 
   let root: ReactTestRenderer
-  let Source: RelinkSourceSchema<number>
+  let Source: RelinkSource<number>
   afterEach((): void => {
     Source.cleanup()
     root.unmount()
@@ -19,7 +18,7 @@ describe(useSuspenseForDataFetching.name, (): void => {
 
   test('main', async (): Promise<void> => {
 
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/suspense',
       default: null,
       lifecycle: {

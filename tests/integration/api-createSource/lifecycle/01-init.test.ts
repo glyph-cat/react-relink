@@ -3,16 +3,16 @@ import {
   createCleanupRef,
 } from '@glyph-cat/react-test-utils'
 import { act } from 'react-test-renderer'
-import { RelinkSourceSchema } from '../../../../src/schema'
+import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
 import { createEventPromise, delay, TIME_GAP } from '../../../../src/debugging'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, RelinkEventType, useRelinkValue } = Relink
+  const { RelinkSource, RelinkEventType, useRelinkValue } = Relink
 
-  let Source: RelinkSourceSchema<number>
+  let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     Source.cleanup()
@@ -21,7 +21,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Synchronous commit', async (): Promise<void> => {
 
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/Source/lifecycle.init/sync/commit',
       default: null,
       lifecycle: {
@@ -47,14 +47,14 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect((await Source.getAsync())).toBe(1)
     expect(hookInterface.get('main')).toBe(1)
     // NOTE: `eventPromise` is not tested here because the source would have
-    // finished hydrating (synchronously) by the time `createSource` is called.
+    // finished hydrating (synchronously) by the time `RelinkSource` is called.
 
   })
 
   test('Synchronous skip', async (): Promise<void> => {
 
-    Source = createSource({
-      key: 'test/createSource/lifecycle.init/sync/skip',
+    Source = new RelinkSource({
+      key: 'test/RelinkSource/lifecycle.init/sync/skip',
       default: null,
       lifecycle: {
         init({ skip }): void {
@@ -79,13 +79,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect((await Source.getAsync())).toBe(null)
     expect(hookInterface.get('main')).toBe(null)
     // NOTE: `eventPromise` is not tested here because the source would have
-    // finished hydrating (synchronously) by the time `createSource` is called.
+    // finished hydrating (synchronously) by the time `RelinkSource` is called.
 
   })
 
   test('Asynchronous commit', async (): Promise<void> => {
 
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/Source/lifecycle.init/async/commit',
       default: null,
       lifecycle: {
@@ -123,7 +123,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Asynchronous skip', async (): Promise<void> => {
 
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/Source/lifecycle.init/async/commit',
       default: null,
       lifecycle: {

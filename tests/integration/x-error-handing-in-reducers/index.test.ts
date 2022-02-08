@@ -1,4 +1,4 @@
-import { RelinkSourceSchema } from '../../../src/schema'
+import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -8,15 +8,15 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource } = Relink
+  const { RelinkSource } = Relink
 
   describe('Error handling in reducers', (): void => {
 
     jest.setTimeout(10100)
 
-    let Source: RelinkSourceSchema<number>
+    let Source: $RelinkSource<number>
     beforeEach((): void => {
-      Source = createSource({
+      Source = new RelinkSource({
         key: 'test/error-handling-in-reducers',
         default: 0,
       })
@@ -84,7 +84,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       // Simulate an error
       let caughtError: Error
       try {
-        await Source.set(() => new Promise(((_resolve, reject) => {
+        await Source.set(() => new Promise<number>(((_resolve, reject) => {
           reject(new CustomError())
         })))
       } catch (e) {

@@ -1,11 +1,11 @@
 import { useLayoutEffect } from '@glyph-cat//swiss-army-knife'
 import { Suspense } from 'react'
-import { createSource, useRelinkValue } from '../../../../src/bundle'
+import { RelinkSource, useRelinkValue } from '../../../../src/bundle'
 import { delay, TIME_GAP } from '../../../../src/debugging'
 
 const localTimeGap = TIME_GAP(25)
 
-const CounterSource = createSource({
+const CounterSource = new RelinkSource({
   key: 'counter',
   default: {
     a: 0,
@@ -28,7 +28,7 @@ const CounterSource = createSource({
   },
 })
 
-const StateVisibilitySource = createSource({
+const StateVisibilitySource = new RelinkSource({
   key: 'visibility',
   default: true,
 })

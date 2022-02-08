@@ -4,12 +4,12 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, waitForAll } = Relink
+  const { RelinkSource, waitForAll } = Relink
   const testName = 'waitForAll'
 
   test('main', async (): Promise<void> => {
 
-    const SourceA_sub1 = createSource<number>({
+    const SourceA_sub1 = new RelinkSource<number>({
       key: `test/${testName}/some-with-deps/a/sub-1`,
       default: 0,
       lifecycle: {
@@ -19,7 +19,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
-    const SourceB_sub1 = createSource<number>({
+    const SourceB_sub1 = new RelinkSource<number>({
       key: `test/${testName}/some-with-deps/b/sub-1`,
       default: 0,
       lifecycle: {
@@ -30,19 +30,19 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
-    const SourceA = createSource({
+    const SourceA = new RelinkSource({
       key: `test/${testName}/some-with-deps/a`,
       default: null,
       deps: [SourceA_sub1],
     })
 
-    const SourceB = createSource({
+    const SourceB = new RelinkSource({
       key: `test/${testName}/some-with-deps/b`,
       default: null,
       deps: [SourceB_sub1],
     })
 
-    const SourceC = createSource({
+    const SourceC = new RelinkSource({
       key: `test/${testName}/some-with-deps/c`,
       default: null,
     })

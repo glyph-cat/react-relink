@@ -1,21 +1,18 @@
 import { useCallback, useDebugValue } from 'react'
-import {
-  IS_CLIENT_ENV,
-  IS_DEV_ENV,
-  SOURCE_INTERNAL_SYMBOL,
-} from '../../constants'
+import { IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
 import { useLayoutEffect, useState } from '../../internals/custom-hooks'
-import { RelinkEvent, RelinkSelector, RelinkSourceSchema } from '../../schema'
+import { RelinkEvent, RelinkSelector } from '../../schema'
 import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
+import { RelinkSource } from '../source'
 
 /**
  * @example
  * const state = useRelinkValue(Source)
  * @public
  */
-export function useRelinkValue<S>(source: RelinkSourceSchema<S>): S
+export function useRelinkValue<S>(source: RelinkSource<S>): S
 
 /**
  * @example
@@ -27,12 +24,12 @@ export function useRelinkValue<S>(source: RelinkSourceSchema<S>): S
  * @public
  */
 export function useRelinkValue<S, K>(
-  source: RelinkSourceSchema<S>,
+  source: RelinkSource<S>,
   selector: RelinkSelector<S, K>
 ): K
 
 export function useRelinkValue<S, K>(
-  source: RelinkSourceSchema<S>,
+  source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
 ): S | K {
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
@@ -45,7 +42,7 @@ export function useRelinkValue<S, K>(
  * @internal
  */
 export function useRelinkValue_BASE<S, K>(
-  source: RelinkSourceSchema<S>,
+  source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
 ): S | K {
 
@@ -70,9 +67,9 @@ export function useRelinkValue_BASE<S, K>(
   useDebugValue(undefined, () => {
     // In case source contains sensitive information, it is hidden away in
     // production environment by default.
-    if (source[SOURCE_INTERNAL_SYMBOL].M$isPublic || IS_DEV_ENV) {
+    if (source.M$options.public || IS_DEV_ENV) {
       return {
-        key: source[SOURCE_INTERNAL_SYMBOL].M$key,
+        key: source.M$key,
         selector,
         value: state,
       }
@@ -97,7 +94,7 @@ export function useRelinkValue_BASE<S, K>(
       })
     }
     const unwatch = source.watch(
-      IS_CLIENT_ENV && source[SOURCE_INTERNAL_SYMBOL].M$isVirtualBatchEnabled
+      IS_CLIENT_ENV && source.M$options.virtualBatch
         ? compareAndUpdateDebounced
         : compareAndUpdateRightAway
     )

@@ -10,13 +10,13 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, RelinkScope, useRelinkState } = Relink
+  const { RelinkSource, RelinkScope, useRelinkState } = Relink
 
   test('main', async (): Promise<void> => {
 
     let root: ReactTestRenderer
 
-    const CounterSource = createSource({
+    const CounterSource = new RelinkSource({
       key: 'test/RelinkScope/main-counter',
       default: 1,
     })
@@ -33,7 +33,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     function App(): JSX.Element {
       const SubCounterSource = useRef<typeof CounterSource>()
       if (!SubCounterSource.current) {
-        SubCounterSource.current = createSource({
+        SubCounterSource.current = new RelinkSource({
           key: 'test/RelinkScope/main-counter',
           scope: CounterSource,
           default: 100,

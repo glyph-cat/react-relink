@@ -1,44 +1,45 @@
-import { RelinkSourceSchema } from '../../../src/schema'
+import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // KIV: There used to be a problem where `allDepsAreReady` will be called
 // infinitely.
+
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, isRelinkSource } = Relink
+  const { RelinkSource } = Relink
 
-  let SourceA: RelinkSourceSchema<number>
-  let SourceB: RelinkSourceSchema<number>
-  let SourceC: RelinkSourceSchema<number>
+  let SourceA: $RelinkSource<number>
+  let SourceB: $RelinkSource<number>
+  let SourceC: $RelinkSource<number>
   afterEach((): void => {
-    if (isRelinkSource(SourceA)) { SourceA.cleanup() }
-    if (isRelinkSource(SourceB)) { SourceB.cleanup() }
-    if (isRelinkSource(SourceC)) { SourceC.cleanup() }
+    if (SourceA instanceof RelinkSource) { SourceA.cleanup() }
+    if (SourceB instanceof RelinkSource) { SourceB.cleanup() }
+    if (SourceC instanceof RelinkSource) { SourceC.cleanup() }
   })
 
   test('main', (): void => {
     const callback = (): void => {
       const sourceADeps = []
-      SourceA = createSource({
-        key: 'test/createSource/circular-deps/a',
+      SourceA = new RelinkSource({
+        key: 'test/RelinkSource/circular-deps/a',
         default: 0,
         deps: sourceADeps,
       })
-      SourceB = createSource({
-        key: 'test/createSource/circular-deps/b',
+      SourceB = new RelinkSource({
+        key: 'test/RelinkSource/circular-deps/b',
         default: 0,
         deps: [SourceA],
       })
       sourceADeps.push(SourceB)
-      SourceC = createSource({
-        key: 'test/createSource/circular-deps/c',
+      SourceC = new RelinkSource({
+        key: 'test/RelinkSource/circular-deps/c',
         default: 0,
         deps: [SourceB],
       })
     }
     expect(callback).toThrow(
-      /test\/createSource\/circular-deps\/c -> test\/createSource\/circular-deps\/b -> test\/createSource\/circular-deps\/a -> test\/createSource\/circular-deps\/b/
+      /test\/RelinkSource\/circular-deps\/c -> test\/RelinkSource\/circular-deps\/b -> test\/RelinkSource\/circular-deps\/a -> test\/RelinkSource\/circular-deps\/b/
     )
   })
 

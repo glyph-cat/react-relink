@@ -1,12 +1,14 @@
-export const SOURCE_INTERNAL_SYMBOL = Symbol()
+// export const INTERNALS_SYMBOL = Symbol()
 
 /**
  * Refers to the environment used to develop Relink.
+ * @internal
  */
 export const IS_DEBUG_ENV = process.env.IS_DEBUG_ENV !== 'false'
 
 /**
  * Refers to the non-production environment where Relink is used by developers.
+ * @internal
  */
 export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
 
@@ -21,6 +23,8 @@ export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
  *
  * NOTE: This should only be used to control the library's behaviour in different
  * environments, NOT for checking whether browser APIs are available.
+ *
+ * @internal
  */
 export const IS_CLIENT_ENV = IS_DEBUG_ENV ||
   process.env.BUILD_TYPE === 'react-native' ||

@@ -1,6 +1,6 @@
-import { createSource, useRelinkValue } from '../../../../src/bundle'
+import { RelinkSource, useRelinkValue } from '../../../../src/bundle'
 
-const CounterSource = createSource({
+const CounterSource = new RelinkSource({
   key: 'theme',
   default: 0,
 })

@@ -1,13 +1,6 @@
-import {
-  SOURCE_INTERNAL_SYMBOL,
-  IS_DEV_ENV,
-  IS_DEBUG_ENV,
-} from '../../constants'
-// import { createDebugLogger } from '../../debugging'
-import { allDepsAreReady } from '../../internals/all-deps-are-ready'
-import { checkForCircularDeps } from '../../internals/circular-deps'
+import { IS_DEV_ENV } from '../../constants'
 import { RelinkCore, HYDRATION_SKIP_MARKER } from '../../internals/core'
-import { devError, devWarn } from '../../internals/dev'
+import { devWarn } from '../../internals/dev'
 import {
   getWarningForForwardedHydrationCallbackValue,
   TYPE_ERROR_SOURCE_KEY,
@@ -22,135 +15,298 @@ import { startMeasuringReducerPerformance } from '../../internals/performance'
 import { safeStringJoin } from '../../internals/string-formatting'
 import {
   RelinkEventType,
-  RelinkSourceSchema,
-  RelinkSourceConfig,
+  RelinkLifecycleConfig,
   RelinkSourceKey,
   RelinkSourceOptions,
-  // RelinkHydrateCallback,
+  RelinkHydrateCallback,
+  RelinkEvent,
 } from '../../schema'
 import { isFunction, isThenable } from '../../internals/type-checker'
-import { hasSymbol } from '../../internals/has-symbol'
 import { getNewScopeId } from '../scope'
+import { allDepsAreReady } from './all-deps-are-ready'
+import { checkForCircularDeps } from './circular-deps'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
 // are not mangled by Terser, this causes problems in production build where
 // variable name mangling takes place.
 
+/**
+ * @internal
+ */
 const DEFAULT_OPTIONS: RelinkSourceOptions = {
   public: false,
   suspense: false,
   virtualBatch: false,
 } as const
 
-let isWarningShown_optionsMutableInvalid = false // KIV
-
 /**
+ * @deprecated Please use the `instanceof` keyword instead.
+ * Example: `yourVariable instanceof RelinkSource`
  * @public
  */
 export function isRelinkSource<S = unknown>(
   value: unknown
-): value is RelinkSourceSchema<S> {
-  return hasSymbol(value, SOURCE_INTERNAL_SYMBOL)
+): value is RelinkSource<S> {
+  return value instanceof RelinkSource
 }
 
 /**
  * @public
  */
-export function createSource<S>({
-  key: rawKey,
-  scope,
-  deps = [],
-  default: defaultState,
-  lifecycle = {},
-  options: rawOptions,
-}: RelinkSourceConfig<S>): RelinkSourceSchema<S> {
-
-  // === Key checking ===
-  let normalizedKey: RelinkSourceKey
-  const typeofRawKey = typeof rawKey
-  if (typeofRawKey === 'string' ||
-    typeofRawKey === 'number' ||
-    typeofRawKey === 'symbol'
-  ) {
-    normalizedKey = rawKey
-    if (rawKey === '') {
-      devWarn('Did you just passed an empty string as a source key? Be careful, it can lead to problems that are hard to diagnose and debug later on.')
-    }
-  } else {
-    throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
-  }
-
-  registerKey(normalizedKey)
-  // const debugLogger = createDebugLogger(normalizedKey)
-  checkForCircularDeps(deps, [normalizedKey])
-  const scopeId = scope
-    ? scope[SOURCE_INTERNAL_SYMBOL].M$scopeId
-    : getNewScopeId()
-
-
-  // === Local Variables & Methods ===
+export interface RelinkSourceConfig<S> {
   /**
-   * Gate being opened DOES NOT MEAN the source has been hydrated and is ready
-   * to use, but rather, it means that the source can finally hydrate itself.
-   * Also, gate is opened right away if there are no dependencies.
+   * A unique key for the source. Use a string or number for better clarity in a
+   * normal project, use a Symbol instead if you're building a library to avoid
+   * clashing with user-defined keys.
    */
-  const gatedFlow = new GatedFlow(deps.length <= 0, normalizedKey)
+  key: RelinkSourceKey
+  /**
+   *
+   */
+  scope?: RelinkSource<S>
+  /**
+   * The default state of the source.
+   */
+  default: S
+  /**
+   * Wait for other sources to be hydrated before this one does.
+   */
+  // Refer to Special Note 'A' in 'src/README.md'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  deps?: Array<RelinkSource<any>>
+  /**
+   * A hooks to this source to run certain callbacks when certain events are
+   * fired.
+   */
+  lifecycle?: RelinkLifecycleConfig<S>
+  /**
+   * Additional options to configure the source.
+   */
+  options?: RelinkSourceOptions
+}
 
-  const mergedOptions = { ...DEFAULT_OPTIONS, ...rawOptions }
-  if (IS_DEBUG_ENV) {
-    // @ts-expect-error Projects migrating from earlier versions might still
-    // have this option specified.
-    if (typeof mergedOptions.mutable !== 'undefined') {
-      if (!isWarningShown_optionsMutableInvalid) {
-        devError(
-          'Invalid option `mutable`, it has been deprecated since V1 and ' +
-          'completely removed in V2.'
-        )
-        isWarningShown_optionsMutableInvalid = true
+/**
+ * @public
+ */
+export class RelinkSource<S> {
+
+  /**
+   * @internal
+   */
+  M$key: RelinkSourceKey
+
+  /**
+   * @internal
+   */
+  M$scopeId: number
+
+  /**
+   * @internal
+   */
+  // Refer to Special Note 'A' in 'src/README.md'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  M$parentDeps: Array<RelinkSource<any>>
+
+  /**
+   * @internal
+   */
+  M$gatedFlow: GatedFlow
+
+  /**
+   * @internal
+   */
+  M$options: RelinkSourceOptions
+
+  /**
+   * @internal
+   */
+  M$core: RelinkCore<S>
+
+  /**
+   * @internal
+   */
+  M$depWatchers: Array<() => void> = []
+
+  /**
+   * @internal
+   */
+  M$childDeps: Record<RelinkSourceKey, true> = {}
+
+  constructor({
+    key: rawKey,
+    scope,
+    deps = [],
+    default: defaultState,
+    lifecycle = {},
+    options: rawOptions,
+  }: RelinkSourceConfig<S>) {
+
+    // === Key checking ===
+    const typeofRawKey = typeof rawKey
+    if (typeofRawKey === 'string' ||
+      typeofRawKey === 'number' ||
+      typeofRawKey === 'symbol'
+    ) {
+      this.M$key = rawKey
+      if (rawKey === '') {
+        devWarn('Did you just passed an empty string as a source key? Be careful, it can lead to problems that are hard to diagnose and debug later on.')
+      }
+    } else {
+      throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
+    }
+
+    // === Bind methods ===
+    this.M$getIsReadyStatus = this.M$getIsReadyStatus.bind(this)
+    this.hydrate = this.hydrate.bind(this)
+    this.get = this.get.bind(this)
+    this.getAsync = this.getAsync.bind(this)
+    this.set = this.set.bind(this)
+    this.reset = this.reset.bind(this)
+    this.cleanup = this.cleanup.bind(this)
+
+    registerKey(this.M$key)
+    // const debugLogger = createDebugLogger(normalizedKey)
+    checkForCircularDeps(deps, [this.M$key])
+    this.M$parentDeps = deps
+    this.M$scopeId = scope ? scope.M$scopeId : getNewScopeId()
+
+    /**
+     * Gate being opened DOES NOT MEAN the source has been hydrated and is ready
+     * to use, but rather, it means that the source can finally hydrate itself.
+     * Also, gate is opened right away if there are no dependencies.
+     */
+    this.M$gatedFlow = new GatedFlow(deps.length <= 0, this.M$key)
+
+    this.M$options = { ...DEFAULT_OPTIONS, ...rawOptions }
+    this.M$core = new RelinkCore(defaultState)
+
+    const attemptHydration = async (): Promise<void> => {
+      if (isFunction(lifecycle.init)) {
+        await this.hydrate(lifecycle.init)
       }
     }
+
+    // KIV/TODO: Write a test to ensure this behaviour.
+    // This runs the first round of hydration for this source ASAP, even before
+    // all deps are ready. This is because some applications might want to hydrate
+    // from a local storage first, then fetch data from server and attempt another
+    // hydration after a few moments just to make sure the state is up to date.
+    // This is why watchers are used to allow subsequent hydrations if any parent
+    // deps are being rehydrated or just being hydrated for the first time.
+    attemptHydration()
+
+    for (const dep of deps) {
+      // Register child depenency to this source
+      dep.M$childDeps[this.M$key] = true
+      const unwatchDepHydration = dep.watch((event) => {
+        // Ignore if event is not caused by hydration
+        if (event.type !== RelinkEventType.hydrate) { return }
+        if (event.isHydrating) {
+          // Lock gate to prevent further state changes.
+          // gatedFlow.M$lock()
+          // Let it be known that this source is (pending) hydrating
+          this.M$core.M$hydrate(/* Empty means hydration is starting */)
+        } else {
+          // Open gate to resume queued state changes.
+          // gatedFlow.M$open()
+          // For each 'M$lock' called, a 'M$open' will be called when the dep
+          // finishes hydrating. Gate will really be open when all locks are
+          // cancelled out by the 'M$open' calls.
+
+          // KIV
+          // Gate is not locked so that pending state changes can complete and we
+          // don't waste time waiting for them to hydrate the current source.
+          // Although it might seem meaningless to execute queued state changes
+          // knowing that they will be overriden by the new hydrated values, it is
+          // important to know that there may be function called by the developer
+          // that are await-ing for those state changes to be completed.
+          if (allDepsAreReady(deps)) {
+            attemptHydration()
+          }
+        }
+      })
+      this.M$depWatchers.push(unwatchDepHydration)
+    }
+
+
+    // === Lifecycle ===
+    // NOTE: When cleaning up, `M$unwatchAll` is called, so we don't need to worry
+    // about unwatching here.
+    if (isFunction(lifecycle.didSet)) {
+      this.M$core.M$watcher.M$watch((event): void => {
+        if (event.type === RelinkEventType.set) {
+          lifecycle.didSet(event)
+        }
+      })
+    }
+    if (isFunction(lifecycle.didReset)) {
+      this.M$core.M$watcher.M$watch((event): void => {
+        if (event.type === RelinkEventType.reset) {
+          lifecycle.didReset(event)
+        }
+      })
+    }
+
   }
-
-  const isSourcePublic = mergedOptions.public
-  const isVirtualBatchEnabled = mergedOptions.virtualBatch
-  const isSuspenseEnabled = mergedOptions.suspense
-  const core = new RelinkCore(defaultState)
-
-  // === Hydration ===
 
   /**
    * Self is not hydrating && deps are not hydrating.
+   * @internal
    */
-  const M$getIsReadyStatus = (): boolean => {
+  M$getIsReadyStatus = (): boolean => {
     // NOTE: If this source's `lifecycle.init` is not provided, `isHydrating`
     // should always be false.
-    const isHydrating = core.M$isHydrating
-    const areAllDepsReallyReady = allDepsAreReady(deps)
+    const isHydrating = this.M$core.M$isHydrating
+    const areAllDepsReallyReady = allDepsAreReady(this.M$parentDeps)
     const isReady = !isHydrating && areAllDepsReallyReady
     return isReady
   }
 
-  const hydrate: RelinkSourceSchema<S>['hydrate'] = (callback): Promise<void> => {
+  /**
+   * Rehydrates the source. Useful when you need to fetch data from
+   * `localStorage` or a server. This will change the state and cause components
+   * to re-render, but won't fire event `lifecycle.didSet` so that the same data
+   * doesn't get persisted back to the `localStorage` or server.
+   * @example
+   * Source.hydrate(({ commit, skip }) => {
+   * const rawValue = localStorage.getItem(storageKey)
+   *   let parsedValue
+   *   try {
+   *     parsedValue = JSON.parse(rawValue)
+   *   } catch (e) {
+   *     console.error(e)
+   *   } finally {
+   *     if (parsedValue) {
+   *       // Conclude the hydration with the persisted data.
+   *       commit(parsedValue)
+   *     } else {
+   *       // Conclude the hydration with the default state.
+   *       skip()
+   *     }
+   *   }
+   * })
+   */
+  hydrate(callback: RelinkHydrateCallback<S>): Promise<void> {
     // NOTE: `core.M$hydrate` was previously not wrapped in 'M$exec'. Firing
     // multiple `.hydrate()` calls will most likely cause bugs because of this.
-    gatedFlow.M$exec((): void => {
-      core.M$hydrate(/* Empty means hydration is starting */)
+    this.M$gatedFlow.M$exec((): void => {
+      this.M$core.M$hydrate(/* Empty means hydration is starting */)
     })
-    return gatedFlow.M$exec((): void | Promise<void> => {
-      const concludeHydration = createNoUselessHydrationWarner(normalizedKey)
+    return this.M$gatedFlow.M$exec((): void | Promise<void> => {
+      const concludeHydration = createNoUselessHydrationWarner(this.M$key)
 
       const executedCallback = callback({
-        commit(hydratedState: S): void {
+        commit: (hydratedState: S): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
           if (isFirstHydration) {
-            core.M$hydrate(hydratedState)
+            this.M$core.M$hydrate(hydratedState)
           }
         },
-        skip(): void {
+        skip: (): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
           if (isFirstHydration) {
-            core.M$hydrate(HYDRATION_SKIP_MARKER)
+            this.M$core.M$hydrate(HYDRATION_SKIP_MARKER)
           }
         },
       })
@@ -184,101 +340,67 @@ export function createSource<S>({
     })
   }
 
-  const attemptHydration = async (): Promise<void> => {
-    if (isFunction(lifecycle.init)) {
-      await hydrate(lifecycle.init)
-    }
+  /**
+   * Get the current state. This is regardless of whether there are any pending
+   * state changes.
+   * @example
+   * Source.get()
+   */
+  get(): S {
+    return this.M$core.M$currentState
   }
 
-  // KIV/TODO: Write a test to ensure this behaviour.
-  // This runs the first round of hydration for this source ASAP, even before
-  // all deps are ready. This is because some applications might want to hydrate
-  // from a local storage first, then fetch data from server and attempt another
-  // hydration after a few moments just to make sure the state is up to date.
-  // This is why watchers are used to allow subsequent hydrations if any parent
-  // deps are being rehydrated or just being hydrated for the first time.
-  attemptHydration()
-
-  const depWatchers: Array<() => void> = []
-  for (const dep of deps) {
-    // Register child depenency to this source
-    dep[SOURCE_INTERNAL_SYMBOL].M$childDeps[normalizedKey] = true
-    const unwatchDepHydration = dep.watch((event) => {
-      // Ignore if event is not caused by hydration
-      if (event.type !== RelinkEventType.hydrate) { return }
-      if (event.isHydrating) {
-        // Lock gate to prevent further state changes.
-        // gatedFlow.M$lock()
-        // Let it be known that this source is (pending) hydrating
-        core.M$hydrate(/* Empty means hydration is starting */)
-      } else {
-        // Open gate to resume queued state changes.
-        // gatedFlow.M$open()
-        // For each 'M$lock' called, a 'M$open' will be called when the dep
-        // finishes hydrating. Gate will really be open when all locks are
-        // cancelled out by the 'M$open' calls.
-
-        // KIV
-        // Gate is not locked so that pending state changes can complete and we
-        // don't waste time waiting for them to hydrate the current source.
-        // Although it might seem meaningless to execute queued state changes
-        // knowing that they will be overriden by the new hydrated values, it is
-        // important to know that there may be function called by the developer
-        // that are await-ing for those state changes to be completed.
-        if (allDepsAreReady(deps)) {
-          attemptHydration()
-        }
-      }
-    })
-    depWatchers.push(unwatchDepHydration)
-  }
-
-
-  // === Lifecycle ===
-  // NOTE: When cleaning up, `M$unwatchAll` is called, so we don't need to worry
-  // about unwatching here.
-  if (isFunction(lifecycle.didSet)) {
-    core.M$watcher.M$watch((event): void => {
-      if (event.type === RelinkEventType.set) {
-        lifecycle.didSet(event)
-      }
-    })
-  }
-  if (isFunction(lifecycle.didReset)) {
-    core.M$watcher.M$watch((event): void => {
-      if (event.type === RelinkEventType.reset) {
-        lifecycle.didReset(event)
-      }
+  /**
+   * Get the latest state. The state will only be returned after pending state
+   * changes have completed. Any further state changes will only be triggered
+   * after this promise is resolved.
+   * @example
+   * await Source.getAsync()
+   */
+  getAsync(): Promise<S> {
+    return this.M$gatedFlow.M$exec((): S => {
+      return this.M$core.M$currentState
     })
   }
 
+  /**
+   * Change the value of the state. Note that state values are not always
+   * updated immediately, if the next line of code depends on the latest state
+   * value, then you should use `await` on this method.
+   * @example // Directly set new value (Immediate state change not guaranteed)
+   * Source.set(newValue)
+   * @example // Directly set new value (State change on next line guaranteed)
+   * await Source.set(newValue)
+   */
+  set(nextState: S): Promise<void>
 
-  // === Exposed Methods ===
+  /**
+   * Change the value of the state. Note that state values are not always
+   * updated immediately, if the next line of code depends on the latest state
+   * value, then you should use `await` on this method.
+   * @example // With reducer (Immediate state change not guaranteed)
+   * Source.set((oldValue) => ({ ...oldValue, ...newValue }))
+   * @example // With async reducer (Immediate state change not guaranteed)
+   * Source.set(async (oldValue) => ({ ...oldValue, ...newValue }))
+   * @example // With reducer (State change on next line guaranteed)
+   * await Source.set((oldValue) => ({ ...oldValue, ...newValue }))
+   * @example // With async reducer (State change on next line guaranteed)
+   * await Source.set(async (oldValue) => ({ ...oldValue, ...newValue }))
+   */
+  set(reducer: (currentState: S) => S | Promise<S>): Promise<void>
 
-  const get = (): S => {
-    return core.M$currentState
-  }
-
-  const getAsync = (): Promise<S> => {
-    return gatedFlow.M$exec((): S => {
-      return core.M$currentState
-    })
-  }
-
-  const set: RelinkSourceSchema<S>['set'] = (
-    stateOrReducer: S | ((currentState: S) => S | Promise<S>)
-  ): Promise<void> => {
-    return gatedFlow.M$exec((): void | Promise<void> => {
+  set(stateOrReducer: S | ((currentState: S) => S | Promise<S>)): Promise<void> {
+    return this.M$gatedFlow.M$exec((): void | Promise<void> => {
       // let nextState: S
       if (isFunction(stateOrReducer)) {
-        const perfMeasurer = startMeasuringReducerPerformance(normalizedKey)
-        const executedReducer = stateOrReducer(core.M$currentState)
+        const perfMeasurer = startMeasuringReducerPerformance(this.M$key)
+        const executedReducer = stateOrReducer(this.M$core.M$currentState)
         // Refer to Local Note [A] near end of file
         if (isThenable(executedReducer)) {
           perfMeasurer.isAsync.current = true
           return new Promise((resolve, reject) => {
             executedReducer.then((fulfilledPartialState) => {
-              core.M$dynamicSet(fulfilledPartialState) // Is async reducer
+              this.M$core.M$dynamicSet(fulfilledPartialState) // Is async reducer
               resolve()
             }).catch((e) => {
               reject(e)
@@ -287,72 +409,87 @@ export function createSource<S>({
             })
           })
         } else {
-          core.M$dynamicSet(executedReducer) // Is reducer
+          this.M$core.M$dynamicSet(executedReducer) // Is reducer
           perfMeasurer.stop()
         }
       } else {
-        core.M$dynamicSet(stateOrReducer) // Is direct set
+        this.M$core.M$dynamicSet(stateOrReducer) // Is direct set
       }
     })
   }
 
-  const reset = (): Promise<void> => {
-    return gatedFlow.M$exec((): void => {
-      core.M$dynamicSet(/* Empty means reset */)
+  /**
+   * @example
+   * Source.reset() // Immediate state change not guaranteed
+   * @example
+   * await Source.reset() // State change on next line guaranteed
+   */
+  reset(): Promise<void> {
+    return this.M$gatedFlow.M$exec((): void => {
+      this.M$core.M$dynamicSet(/* Empty means reset */)
     })
   }
 
-  // Declared as object as it is easier to add/remove the keys.
-  const M$childDeps: Record<RelinkSourceKey, true> = {}
+  /**
+   * @example
+   * useLayoutEffect(() => {
+   *   const unwatch = Source.watch((event) => {
+   *     // ...
+   *   })
+   *   return () => { unwatch() }
+   * }, [Source])
+   */
+  watch(callback: ((event: RelinkEvent<S>) => void)): (() => void) {
+    return this.M$core.M$watcher.M$watch(callback)
+  }
 
   // KIV:
   // We still haven't been able to find a way to check if sources are still in
   // use so that we can automatically clean them up, but since for most cases,
   // sources are used for as long as an app is opened, this can be temporarily
   // disregarded.
-  const cleanup = (): void => {
+
+  /**
+   * ## 🚧 EXPERIMENTAL 🚧
+   * This method might behave differently or be removed in future versions.
+   *
+   * ---------------------------------------------------------------------------
+   *
+   * If sources are dynamically created, it is best to call this
+   * cleanup function when they are no longer needed.
+   * @example
+   * function MyComponent() {
+   *   const Source = useRef(null)
+   *   if (!Source.current) { Source = new RelinkSource(...) }
+   *   useEffect(() => {
+   *     return () => { Source.current.cleanup() }
+   *   }, [])
+   *   return '...'
+   * }
+   */
+  cleanup(): void {
     // Check if there are any child dependants and proceed to cleanup anyway,
     // but show a warning if there are child dependants so that developers will
     // be aware that there might be unintended behaviours.
     if (IS_DEV_ENV) {
-      const childDepStack = Object.keys(M$childDeps)
+      const childDepStack = Object.keys(this.M$childDeps)
       if (childDepStack.length !== 0) {
         devWarn(
-          `Attempted to cleanup '${String(normalizedKey)}' while there are ` +
+          `Attempted to cleanup '${String(this.M$key)}' while there are ` +
           'still other sources that depend on it: ' +
           `'${safeStringJoin(childDepStack, '\', \'')}'.`
         )
       }
     }
-    for (const dep of deps) {
+    for (const dep of this.M$parentDeps) {
       // Unregister child depenency from this source
-      delete dep[SOURCE_INTERNAL_SYMBOL].M$childDeps[normalizedKey]
+      delete dep.M$childDeps[this.M$key]
     }
-    core.M$watcher.M$unwatchAll()
-    unregisterKey(normalizedKey)
-    while (depWatchers.length > 0) {
-      depWatchers.shift()() // Immediately invokes `unwatch()`
+    this.M$core.M$watcher.M$unwatchAll()
+    unregisterKey(this.M$key)
+    while (this.M$depWatchers.length > 0) {
+      this.M$depWatchers.shift()() // Immediately invokes `unwatch()`
     }
-  }
-
-  return {
-    [SOURCE_INTERNAL_SYMBOL]: {
-      M$key: normalizedKey,
-      M$scopeId: scopeId,
-      M$isPublic: isSourcePublic,
-      M$isSuspenseEnabled: isSuspenseEnabled,
-      M$isVirtualBatchEnabled: isVirtualBatchEnabled,
-      M$parentDeps: deps,
-      M$childDeps,
-      M$getIsReadyStatus,
-    },
-    get,
-    getAsync,
-    set,
-    reset,
-    hydrate,
-    watch: core.M$watcher.M$watch,
-    cleanup,
   }
 
 }

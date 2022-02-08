@@ -7,11 +7,11 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource } = Relink
+  const { RelinkSource } = Relink
 
   test('Carry forward', async (): Promise<void> => {
 
-    const Source = createSource<SampleSchema>({
+    const Source = new RelinkSource<SampleSchema>({
       key: 'test/x-carry-forward',
       default: {
         foo: 1,

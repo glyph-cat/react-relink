@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
-import { RelinkSourceSchema } from '../../../src/schema'
+import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -11,9 +11,9 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, useRelinkState } = Relink
+  const { RelinkSource, useRelinkState } = Relink
 
-  let Source: RelinkSourceSchema<number>
+  let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     Source.cleanup()
@@ -21,7 +21,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   })
 
   test('main', (): void => {
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/use-relink-state',
       default: 1,
     })

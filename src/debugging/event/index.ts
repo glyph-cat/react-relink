@@ -1,11 +1,12 @@
-import { RelinkEvent, RelinkSourceSchema } from '../../schema'
+import { RelinkEvent } from '../../schema'
+import { RelinkSource } from '../../api/source'
 
 /**
  * Creates a promise that resolves when a Relink event has been received.
  * @internal
  */
 export function createEventPromise<S>(
-  Source: RelinkSourceSchema<S>
+  Source: RelinkSource<S>
 ): Promise<RelinkEvent<S>> {
   return new Promise((resolve) => {
     const unwatch = Source.watch((event) => {
@@ -20,7 +21,7 @@ export function createEventPromise<S>(
  * @internal
  */
 export function createEventStackPromise<S>(
-  Source: RelinkSourceSchema<S>,
+  Source: RelinkSource<S>,
   eventsToCollect: number
 ): Promise<Array<RelinkEvent<S>>> {
   return new Promise((resolve) => {

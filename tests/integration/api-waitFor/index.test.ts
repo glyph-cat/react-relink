@@ -1,17 +1,17 @@
+import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { delay, TIME_GAP } from '../../../src/debugging'
-import { RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, waitFor } = Relink
+  const { RelinkSource, waitFor } = Relink
 
-  let Source: RelinkSourceSchema<number>
+  let Source: $RelinkSource<number>
   afterEach((): void => { Source.cleanup() })
 
   test('Ready to use', async (): Promise<void> => {
-    Source = createSource<number>({
+    Source = new RelinkSource<number>({
       key: 'test/waitFor',
       default: 1,
     })
@@ -21,7 +21,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   })
 
   test('Needs hydration', async (): Promise<void> => {
-    Source = createSource<number>({
+    Source = new RelinkSource<number>({
       key: 'test/waitFor',
       default: null,
       lifecycle: {

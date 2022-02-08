@@ -3,12 +3,12 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource } = Relink
+  const { RelinkSource } = Relink
 
   test('Number key', (): void => {
     const callback = (): void => {
-      createSource({
-        key: 1, // 'createSource/number-key'
+      new RelinkSource({
+        key: 1, // 'RelinkSource/number-key'
         default: null,
       })
     }
@@ -17,8 +17,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('String key', (): void => {
     const callback = (): void => {
-      createSource({
-        key: 'createSource/string-key',
+      new RelinkSource({
+        key: 'RelinkSource/string-key',
         default: null,
       })
     }
@@ -27,8 +27,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Symbol key', (): void => {
     const callback = (): void => {
-      createSource({
-        key: Symbol('createSource/number-key'),
+      new RelinkSource({
+        key: Symbol('RelinkSource/number-key'),
         default: null,
       })
     }
@@ -38,7 +38,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   test('No key', (): void => {
     const callback = (): void => {
       // @ts-expect-error: Done on purpose to test the error.
-      createSource({
+      new RelinkSource({
         default: null,
       })
     }
@@ -47,7 +47,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Invalid key', (): void => {
     const callback = (): void => {
-      createSource({
+      new RelinkSource({
         // @ts-expect-error: Done on purpose to test the error.
         key: false,
         default: null,
@@ -58,11 +58,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Duplicate keys', (): void => {
     const callback = (): void => {
-      createSource({
+      new RelinkSource({
         key: 'test/duplicate-keys',
         default: null,
       })
-      createSource({
+      new RelinkSource({
         key: 'test/duplicate-keys',
         default: null,
       })

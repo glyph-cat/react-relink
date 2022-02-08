@@ -4,8 +4,8 @@ import {
   useRef, // eslint-disable-line no-restricted-imports
 } from 'react'
 import { waitFor } from '../../api/wait-for'
-import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { RelinkSourceSchema, RelinkEventType } from '../../schema'
+import { RelinkSource } from '../../api/source'
+import { RelinkEventType } from '../../schema'
 import { forceUpdateReducer, useLayoutEffect } from '../custom-hooks'
 
 // Modified based from ovieokeh's `wrapPromise` method. Reference:
@@ -78,14 +78,14 @@ export function createSuspenseWaiter(
 // }
 
 export function useSuspenseForDataFetching(
-  source: RelinkSourceSchema<unknown>
+  source: RelinkSource<unknown>
 ): void {
   const waitPromise: MutableRefObject<Promise<void>> = useRef(null)
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
-  if (source[SOURCE_INTERNAL_SYMBOL].M$isSuspenseEnabled) {
+  if (source.M$options.suspense) {
     // [Point A] Don't wait until component mounts, create promise for suspension
     // immediately if source is not ready.
-    if (!source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
+    if (!source.M$getIsReadyStatus()) {
       waitPromise.current = (async () => {
         await waitFor(source)
         // Nullify the promise reference, otherwise it will still be there on
@@ -99,7 +99,7 @@ export function useSuspenseForDataFetching(
     }
   }
   useLayoutEffect(() => {
-    if (source[SOURCE_INTERNAL_SYMBOL].M$isSuspenseEnabled) {
+    if (source.M$options.suspense) {
       const unwatch = source.watch((event): void => {
         // Ignore if event is not caused by hydration
         if (event.type !== RelinkEventType.hydrate) { return }

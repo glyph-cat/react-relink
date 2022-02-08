@@ -1,4 +1,7 @@
-import { RelinkEvent, RelinkEventType, RelinkSourceSchema } from '../../../../src/schema'
+import {
+  RelinkEvent,
+  RelinkSource as $RelinkSource,
+} from '../../../../src/bundle'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
@@ -6,20 +9,20 @@ import { wrapper } from '../../wrapper'
 // * Make sure the `didSet` and `didReset` lifecycle hooks are triggered at
 // appropriate times when `.set()`, `.reset()` and `.hydrate()` are called.
 
-let Source: RelinkSourceSchema<number> = null
+let Source: $RelinkSource<number> = null
 afterEach((): void => {
   Source.cleanup()
 })
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource } = Relink
+  const { RelinkSource, RelinkEventType } = Relink
 
   test('main', async (): Promise<void> => {
 
     const eventStack: Array<RelinkEvent<number>> = []
-    Source = createSource({
-      key: 'test/createSource/lifecycle/did-set-reset',
+    Source = new RelinkSource({
+      key: 'test/RelinkSource/lifecycle/did-set-reset',
       default: 0,
       lifecycle: {
         didSet(event) {

@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext } from 'react'
-import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { RelinkScopeId, RelinkSourceSchema, RelinkSourceKey } from '../../schema'
+import { RelinkScopeId, RelinkSourceKey } from '../../schema'
+// eslint-disable-next-line import/no-cycle
+import { RelinkSource } from '../source' // TOFIX
 
 /**
  * @internal
@@ -16,7 +17,7 @@ export const getNewScopeId = (): RelinkScopeId => ++scopeIdCounter
  * @internal
  */
 interface RelinkContextSchema {
-  M$pool: Record<RelinkSourceKey, RelinkSourceSchema<unknown>>
+  M$pool: Record<RelinkSourceKey, RelinkSource<unknown>>
 }
 
 /**
@@ -29,11 +30,11 @@ const RelinkContext = createContext<RelinkContextSchema>({
 /**
  * @internal
  */
-export function useScopedRelinkSource<S>(source: RelinkSourceSchema<S>): RelinkSourceSchema<S> {
+export function useScopedRelinkSource<S>(source: RelinkSource<S>): RelinkSource<S> {
   const currentContext = useContext(RelinkContext)
-  const scopedSource = currentContext.M$pool[source[SOURCE_INTERNAL_SYMBOL].M$scopeId]
+  const scopedSource = currentContext.M$pool[source.M$scopeId]
   return scopedSource
-    ? scopedSource as RelinkSourceSchema<S> // If in pool, return the scoped source.
+    ? scopedSource as RelinkSource<S> // If in pool, return the scoped source.
     : source // Otherwise, return the original source.
 }
 
@@ -50,7 +51,7 @@ export interface RelinkScopeProps {
    */
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sources: Array<RelinkSourceSchema<any>>
+  sources: Array<RelinkSource<any>>
   children: ReactNode
 }
 
@@ -67,12 +68,12 @@ export interface RelinkScopeProps {
  * @example
  * // First approach
  *
- * const MainSource = createSource({
+ * const MainSource = new RelinkSource({
  *   key: 'main',
  *   default: '...',
  * })
  *
- * const SubSource = createSource({
+ * const SubSource = new RelinkSource({
  *   key: 'sub',
  *   scope: MainSource,
  *   default: '...',
@@ -96,7 +97,7 @@ export interface RelinkScopeProps {
  * @example
  * // Second approach
  *
- * const MainSource = createSource({
+ * const MainSource = new RelinkSource({
  *   key: 'main',
  *   default: '...',
  * })
@@ -104,7 +105,7 @@ export interface RelinkScopeProps {
  * function App() {
  *   const SubSource = useRef<typeof MainSource>()
  *   if (!SubSource.current) {
- *     SubSource.current = createSource({
+ *     SubSource.current = new RelinkSource({
  *       key: 'sub',
  *       scope: MainSource,
  *       default: '...',
@@ -136,7 +137,7 @@ export function RelinkScope({
   }
   // Sources from props are merged with sources from parent providers.
   for (const source of sources) {
-    nextContext.M$pool[source[SOURCE_INTERNAL_SYMBOL].M$scopeId] = source
+    nextContext.M$pool[source.M$scopeId] = source
   }
   return (
     <RelinkContext.Provider value={nextContext}>

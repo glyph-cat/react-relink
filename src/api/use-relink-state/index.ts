@@ -1,5 +1,6 @@
-import { RelinkSelector, RelinkSourceSchema } from '../../schema'
+import { RelinkSelector } from '../../schema'
 import { useScopedRelinkSource } from '../scope'
+import { RelinkSource } from '../source'
 import { useRelinkValue_BASE } from '../use-relink-value'
 
 /**
@@ -8,8 +9,8 @@ import { useRelinkValue_BASE } from '../use-relink-value'
  * @public
  */
 export function useRelinkState<S>(
-  source: RelinkSourceSchema<S>
-): [S, RelinkSourceSchema<S>['set'], RelinkSourceSchema<S>['reset']]
+  source: RelinkSource<S>
+): [S, RelinkSource<S>['set'], RelinkSource<S>['reset']]
 
 /**
  * @example
@@ -21,17 +22,17 @@ export function useRelinkState<S>(
  * @public
  */
 export function useRelinkState<S, K>(
-  source: RelinkSourceSchema<S>,
+  source: RelinkSource<S>,
   selector: RelinkSelector<S, K>
-): [K, RelinkSourceSchema<S>['set'], RelinkSourceSchema<S>['reset']]
+): [K, RelinkSource<S>['set'], RelinkSource<S>['reset']]
 
 /**
  * @public
  */
 export function useRelinkState<S, K>(
-  source: RelinkSourceSchema<S>,
+  source: RelinkSource<S>,
   selector?: RelinkSelector<S, K>
-): [S | K, RelinkSourceSchema<S>['set'], RelinkSourceSchema<S>['reset']] {
+): [S | K, RelinkSource<S>['set'], RelinkSource<S>['reset']] {
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)

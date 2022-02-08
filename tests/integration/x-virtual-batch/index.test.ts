@@ -3,8 +3,8 @@ import {
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
 import { act } from 'react-test-renderer'
+import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { delay, TIME_GAP } from '../../../src/debugging'
-import { RelinkSourceSchema } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -14,9 +14,9 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
-  const { createSource, useRelinkState } = Relink
+  const { RelinkSource, useRelinkState } = Relink
 
-  let Source: RelinkSourceSchema<number>
+  let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
   afterEach((): void => {
     cleanupRef.run()
@@ -25,7 +25,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('With Virtual Batch', async (): Promise<void> => {
 
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/virtual-batch',
       default: 1,
       options: {
@@ -63,7 +63,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Without Virtual Batch', async (): Promise<void> => {
 
-    Source = createSource({
+    Source = new RelinkSource({
       key: 'test/virtual-batch',
       default: 1,
       options: {

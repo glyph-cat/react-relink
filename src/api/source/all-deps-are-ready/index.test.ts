@@ -1,73 +1,72 @@
-import { createSource } from '../../api/source'
-import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { TIME_GAP } from '../../debugging'
+import { TIME_GAP } from '../../../debugging'
+import { RelinkSource } from '..'
 import { allDepsAreReady } from '.'
 
 describe(allDepsAreReady.name, (): void => {
 
   test('No deps', (): void => {
-    const MainSource = createSource({
+    const MainSource = new RelinkSource({
       key: `test/${allDepsAreReady.name}/no-deps`,
       default: 1,
     })
-    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource.M$parentDeps)
     expect(output).toBe(true)
   })
 
   test('All deps don\'t need hydration', (): void => {
     const scopeName = 'all-deps-no-need-hydration'
-    const SourceA = createSource({
+    const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
     })
-    const SourceB = createSource({
+    const SourceB = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
     })
-    const MainSource = createSource({
+    const MainSource = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource.M$parentDeps)
     expect(output).toBe(true)
   })
 
   test('All deps are ready', (): void => {
     const scopeName = 'all-deps-are-ready'
-    const SourceA = createSource({
+    const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => { commit(1) },
       },
     })
-    const SourceB = createSource({
+    const SourceB = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => { commit(1) },
       },
     })
-    const MainSource = createSource({
+    const MainSource = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource.M$parentDeps)
     expect(output).toBe(true)
   })
 
   test('Only some deps are ready', (): void => {
     const scopeName = 'some-deps-are-ready'
-    const SourceA = createSource({
+    const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
         init: ({ commit }): void => { commit(1) },
       },
     })
-    const SourceB = createSource({
+    const SourceB = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
@@ -78,18 +77,18 @@ describe(allDepsAreReady.name, (): void => {
         },
       },
     })
-    const MainSource = createSource({
+    const MainSource = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource.M$parentDeps)
     expect(output).toBe(false)
   })
 
   test('No deps are ready', (): void => {
     const scopeName = 'no-deps-are-ready'
-    const SourceA = createSource({
+    const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
@@ -100,7 +99,7 @@ describe(allDepsAreReady.name, (): void => {
         },
       },
     })
-    const SourceB = createSource({
+    const SourceB = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
@@ -111,12 +110,12 @@ describe(allDepsAreReady.name, (): void => {
         },
       },
     })
-    const MainSource = createSource({
+    const MainSource = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/main`,
       default: 1,
       deps: [SourceA, SourceB],
     })
-    const output = allDepsAreReady(MainSource[SOURCE_INTERNAL_SYMBOL].M$parentDeps)
+    const output = allDepsAreReady(MainSource.M$parentDeps)
     expect(output).toBe(false)
   })
 

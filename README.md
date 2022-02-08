@@ -53,9 +53,9 @@ npm i react-relink
 Provide a default state for the source.
 
 ```js
-import { createSource } from 'react-relink'
+import { RelinkSource } from 'react-relink'
 
-const CounterSource = createSource({
+const CounterSource = new RelinkSource({
   key: 'counter',
   default: 1,
 })

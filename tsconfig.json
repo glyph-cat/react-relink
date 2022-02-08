@@ -19,6 +19,8 @@
   },
   "exclude": [
     "node_modules",
+    "./src/**/*.draft*",
+    "./src/**/*.old*",
   ],
   "include": [
     "src",

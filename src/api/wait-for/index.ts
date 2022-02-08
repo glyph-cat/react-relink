@@ -1,5 +1,5 @@
-import { SOURCE_INTERNAL_SYMBOL } from '../../constants'
-import { RelinkEventType, RelinkSourceSchema, RelinkSourceKey } from '../../schema'
+import { RelinkEventType, RelinkSourceKey } from '../../schema'
+import { RelinkSource } from '../source'
 
 /**
  * Creates a promise that resolves only when a source has finished hydrating.
@@ -15,10 +15,10 @@ import { RelinkEventType, RelinkSourceSchema, RelinkSourceKey } from '../../sche
 export function waitFor(
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  source: RelinkSourceSchema<any>
+  source: RelinkSource<any>
 ): Promise<void> {
   return new Promise((resolve): void => {
-    if (source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
+    if (source.M$getIsReadyStatus()) {
       resolve()
     } else {
       const unwatch = source.watch((event): void => {
@@ -50,7 +50,7 @@ export function waitFor(
 export function waitForAll(
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sources: Array<RelinkSourceSchema<any>>
+  sources: Array<RelinkSource<any>>
 ): Promise<void> {
   return new Promise((resolve, reject): void => {
     try {
@@ -61,9 +61,9 @@ export function waitForAll(
         }
       }
       for (const source of sources) {
-        if (source[SOURCE_INTERNAL_SYMBOL].M$getIsReadyStatus()) {
+        if (source.M$getIsReadyStatus()) {
           // If source is already hydrated, no need add watcher
-          isReadyTracker[source[SOURCE_INTERNAL_SYMBOL].M$key] = true
+          isReadyTracker[source.M$key] = true
         } else {
           // If not, only then we add a watcher to it
           const unwatch = source.watch((event): void => {
@@ -73,9 +73,9 @@ export function waitForAll(
               // If a hydrated source suddenly enters hydration again while
               // waiting for other sources to hydrate, remove its key from the
               // tracker.
-              delete isReadyTracker[source[SOURCE_INTERNAL_SYMBOL].M$key]
+              delete isReadyTracker[source.M$key]
             } else {
-              isReadyTracker[source[SOURCE_INTERNAL_SYMBOL].M$key] = true
+              isReadyTracker[source.M$key] = true
               unwatch()
               resolveIfAllAreReady()
             }
