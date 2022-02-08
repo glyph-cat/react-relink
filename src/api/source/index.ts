@@ -296,7 +296,7 @@ export function createSource<S>({
     })
   }
 
-  const reset = async (): Promise<void> => {
+  const reset = (): Promise<void> => {
     return gatedFlow.M$exec((): void => {
       core.M$dynamicSet(/* Empty means reset */)
     })

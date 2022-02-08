@@ -202,14 +202,16 @@ export interface RelinkSourceSchema<S> {
   /**
    * Get the current state. This is regardless of whether there are any pending
    * state changes.
-   * @example Source.get()
+   * @example
+   * Source.get()
    */
   get(): S
   /**
    * Get the latest state. The state will only be returned after pending state
    * changes have completed. Any further state changes will only be triggered
    * after this promise is resolved.
-   * @example await Source.getAsync()
+   * @example
+   * await Source.getAsync()
    */
   getAsync(): Promise<S>
   /**
