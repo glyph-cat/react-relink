@@ -142,12 +142,10 @@ Circular dependencies are not allowed: `${depStack}`
 
 <br/>
 
-# List of Breaking Changes In All Versions
-* v0 -> v1
-  * `dangerously...` methods were changed to source methods
-  * Eg: `dangerouslySetRelinkState` becomes `Source.set`
-* v1 -> v2
-  * The `mutable` option is no longer available in favor of performance.
+# List of Breaking Changes
+* [From `v0` to `v1`](https://github.com/glyph-cat/react-relink/releases/tag/1.0.0)
+* [From `v1` to `v2`](https://github.com/glyph-cat/react-relink/releases/tag/2.0.0)
+* [From `v2` to `v3`](https://github.com/glyph-cat/react-relink/releases/tag/3.0.0)
 
 # Support This Project
 
