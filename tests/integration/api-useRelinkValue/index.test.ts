@@ -19,7 +19,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  test('Basic Usage', async (): Promise<void> => {
+  test('Main', async (): Promise<void> => {
 
     Source = new RelinkSource<SampleSchema>({
       key: 'test/api-useRelinkValue/basic-usage',
@@ -61,38 +61,6 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     // Make sure hook DOES NOT update if same state object is returned.
     await Source.set((s) => { return s })
     expect(hookInterface.getRenderCount()).toBe(3)
-
-  })
-
-  test('With selector', async (): Promise<void> => {
-
-    Source = new RelinkSource<SampleSchema>({
-      key: 'test/api-useRelinkValue/with-selector',
-      default: {
-        foo: 1,
-        bar: 1,
-      },
-    })
-
-    const hookInterface = createHookInterface({
-      useHook: () => useRelinkValue(Source, (s) => s.bar),
-      values: {
-        main({ hookData }) {
-          return hookData
-        },
-      },
-    }, cleanupRef)
-
-    // Make sure hook returns correct value.
-    expect(hookInterface.getRenderCount()).toBe(1)
-    expect(hookInterface.get('main')).toBe(1)
-
-    // Make sure hook only updates if selected value has changed.
-    await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
-    expect(hookInterface.getRenderCount()).toBe(1)
-    await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
-    expect(hookInterface.getRenderCount()).toBe(2)
-    expect(hookInterface.get('main')).toBe(2)
 
   })
 

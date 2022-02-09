@@ -78,8 +78,8 @@ export namespace RELINK_COMPARE_FN_PRESET {
    * }
    */
   export function shallowCompareArrayOrObject(
-    prevState: Array<unknown> | Record<number | string, unknown>,
-    nextState: Array<unknown> | Record<number | string, unknown>,
+    prevState: Array<unknown> | unknown,
+    nextState: Array<unknown> | unknown,
   ): boolean {
 
     const prevStateIsArray = Array.isArray(prevState)
@@ -93,11 +93,6 @@ export namespace RELINK_COMPARE_FN_PRESET {
     if (prevStateIsArray && nextStateIsArray) {
       return shallowCompareArray(prevState, nextState)
     } else {
-      // @ts-expect-error Not sure why even after checking type with `Array.isArray`
-      // TS still emits this error:
-      // > Argument of type 'unknown[] | Record<string | number, unknown>' is
-      // > not assignable to parameter of type 'Partial<Record<string | number,
-      // > unknown>>'.
       return shallowCompareObject(prevState, nextState)
     }
   }
@@ -113,8 +108,8 @@ export namespace RELINK_COMPARE_FN_PRESET {
    * })
    */
   export function shallowCompareObject(
-    prevState: Partial<Record<number | string, unknown>>,
-    nextState: Partial<Record<number | string, unknown>>
+    prevState: unknown,
+    nextState: unknown
   ): boolean {
 
     if (IS_INTERNAL_DEBUG_ENV) {
