@@ -14,7 +14,7 @@ describe(useState.name, (): void => {
   test('Primitive data', (): void => {
 
     const hookInterface = createHookInterface({
-      useHook: () => useState(() => 1),
+      useHook: () => useState(() => 1, Object.is),
       actions: {
         goodPracticeSet: ({ hookData }): void => {
           const [, setState] = hookData
@@ -60,7 +60,7 @@ describe(useState.name, (): void => {
       useHook: () => useState<DemoStateSchema>(() => ({
         foo: 1,
         bar: 2,
-      })),
+      }), Object.is),
       actions: {
         setWithDifferentRef: ({ hookData }): void => {
           const [, setState] = hookData

@@ -1,10 +1,10 @@
-// export const INTERNALS_SYMBOL = Symbol()
+export const $$INTERNALS = Symbol()
 
 /**
  * Refers to the environment used to develop Relink.
  * @internal
  */
-export const IS_DEBUG_ENV = process.env.IS_DEBUG_ENV !== 'false'
+export const IS_INTERNAL_DEBUG_ENV = process.env.IS_INTERNAL_DEBUG_ENV !== 'false'
 
 /**
  * Refers to the non-production environment where Relink is used by developers.
@@ -26,7 +26,7 @@ export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
  *
  * @internal
  */
-export const IS_CLIENT_ENV = IS_DEBUG_ENV ||
+export const IS_CLIENT_ENV = IS_INTERNAL_DEBUG_ENV ||
   process.env.BUILD_TYPE === 'react-native' ||
   process.env.BUILD_TYPE === 'umd' ||
   typeof window !== 'undefined'

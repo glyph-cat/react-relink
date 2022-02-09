@@ -1,7 +1,6 @@
 import { createContext, ReactNode, useContext } from 'react'
 import { RelinkScopeId, RelinkSourceKey } from '../../schema'
-// eslint-disable-next-line import/no-cycle
-import { RelinkSource } from '../source' // TOFIX
+import { RelinkSource } from '../source'
 
 /**
  * @internal

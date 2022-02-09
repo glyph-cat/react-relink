@@ -1,11 +1,11 @@
 import { MutableRefObject } from 'react'
 import { RELINK_CONFIG } from '../../api/config'
-import { IS_DEV_ENV, IS_DEBUG_ENV } from '../../constants'
+import { IS_DEV_ENV, IS_INTERNAL_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { devWarn } from '../dev'
 
 // NOTE: The code in this file should not be included in minified builds because
-// the code is conditionally with `IS_DEBUG_ENV`. A check was made on 5 Oct 2021
+// the code is conditionally with `IS_INTERNAL_DEBUG_ENV`. A check was made on 5 Oct 2021
 // and so far the code has been bundled with the intended bahaviour.
 
 export function performanceNow(): number {
@@ -78,7 +78,7 @@ export function startMeasuringReducerPerformance(
       if (isSlow) {
         devWarn(formatReducerSlowWarning(sourceKey, timeDiff, isAsync.current))
       }
-      if (IS_DEBUG_ENV) {
+      if (IS_INTERNAL_DEBUG_ENV) {
         return [isSlow, isNotResponding]
       }
     }

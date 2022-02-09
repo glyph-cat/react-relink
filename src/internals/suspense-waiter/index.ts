@@ -80,8 +80,11 @@ export function createSuspenseWaiter(
 export function useSuspenseForDataFetching(
   source: RelinkSource<unknown>
 ): void {
+
   const waitPromise: MutableRefObject<Promise<void>> = useRef(null)
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
+
+
   if (source.M$options.suspense) {
     // [Point A] Don't wait until component mounts, create promise for suspension
     // immediately if source is not ready.
@@ -98,6 +101,7 @@ export function useSuspenseForDataFetching(
       createSuspenseWaiter(waitPromise.current)()
     }
   }
+
   useLayoutEffect(() => {
     if (source.M$options.suspense) {
       const unwatch = source.watch((event): void => {
@@ -113,4 +117,5 @@ export function useSuspenseForDataFetching(
       }
     }
   }, [source])
+
 }

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { IS_DEBUG_ENV } from '../../constants'
+import { IS_INTERNAL_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { getHexFromString } from './get-hex-from-string'
 
@@ -61,7 +61,7 @@ function getTimestamp(): string {
 export function createDebugLogger(sourceKey: RelinkSourceKey): DebugLogger {
 
   const echo = (message: string): true | void => {
-    if (IS_DEBUG_ENV) {
+    if (IS_INTERNAL_DEBUG_ENV) {
       if (DEBUG_LOG_FILTER.includes(sourceKey)) {
         const timestamp = chalk.grey(getTimestamp())
         if (Object.is(sourceKey, GENERIC_SYMBOL)) {

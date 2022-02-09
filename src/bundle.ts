@@ -1,6 +1,7 @@
-// export * from './api/selector'
+export { RELINK_COMPARE_FN_PRESET } from './api/compare-fn-presets'
 export * from './api/config'
 export * from './api/scope'
+export * from './api/selector'
 export * from './api/source'
 export * from './api/use-hydrate-relink-source'
 export * from './api/use-relink-state'

@@ -1,5 +1,7 @@
 import { IS_DEV_ENV } from '../../constants'
+import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { RelinkCore, HYDRATION_SKIP_MARKER } from '../../internals/core'
+import { checkForCircularDeps } from '../../internals/circular-deps'
 import { devWarn } from '../../internals/dev'
 import {
   getWarningForForwardedHydrationCallbackValue,
@@ -13,6 +15,7 @@ import {
 } from '../../internals/no-useless-hydration-warner'
 import { startMeasuringReducerPerformance } from '../../internals/performance'
 import { safeStringJoin } from '../../internals/string-formatting'
+import { isFunction, isThenable } from '../../internals/type-checker'
 import {
   RelinkEventType,
   RelinkLifecycleConfig,
@@ -21,10 +24,7 @@ import {
   RelinkHydrateCallback,
   RelinkEvent,
 } from '../../schema'
-import { isFunction, isThenable } from '../../internals/type-checker'
 import { getNewScopeId } from '../scope'
-import { allDepsAreReady } from './all-deps-are-ready'
-import { checkForCircularDeps } from './circular-deps'
 
 // NOTE:
 // Factory pattern is used throughout the codebase because class method names
@@ -166,7 +166,7 @@ export class RelinkSource<S> {
     }
 
     // === Bind methods ===
-    this.M$getIsReadyStatus = this.M$getIsReadyStatus.bind(this)
+    // Refer to Special Note 'D' in 'src/README.md'
     this.hydrate = this.hydrate.bind(this)
     this.get = this.get.bind(this)
     this.getAsync = this.getAsync.bind(this)

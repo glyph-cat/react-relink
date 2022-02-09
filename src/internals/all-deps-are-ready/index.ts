@@ -1,5 +1,8 @@
-import { RelinkSource } from '../../../api/source'
+import { RelinkSource } from '../../api/source'
 
+/**
+ * @internal
+ */
 export function allDepsAreReady(
   sources: Array<RelinkSource<unknown>>
 ): boolean {

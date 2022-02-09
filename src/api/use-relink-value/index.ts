@@ -1,11 +1,12 @@
 import { useCallback, useDebugValue } from 'react'
-import { IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
+import { $$INTERNALS, IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
 import { useLayoutEffect, useState } from '../../internals/custom-hooks'
 import { RelinkEvent, RelinkSelector } from '../../schema'
 import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
+import { RelinkAdvancedSelector } from '../selector'
 
 /**
  * @example
@@ -54,14 +55,29 @@ export function useRelinkValue_BASE<S, K>(
   // the error automatically surface up so that users are aware of the
   // incorrect type.
   const getSelectedState = useCallback((passedState: S): S | K => {
-    return selector ? selector(passedState) : passedState
+    if (selector) {
+      if (selector instanceof RelinkAdvancedSelector) {
+        return selector[$$INTERNALS].M$get(passedState)
+      } else {
+        return selector(passedState)
+      }
+    } else {
+      return passedState
+    }
   }, [selector])
 
   // NOTE: `isFunction` is not used to check the selector because it can only
   // either be a faulty value or a function. If other types are passed, let
   // the error automatically surface up so that users are aware of the
   // incorrect type.
-  const [state, setState] = useState(() => getSelectedState(source.get()))
+  const [state, setState] = useState(
+    // State initializer
+    () => getSelectedState(source.get()),
+    // Equality checker
+    selector instanceof RelinkAdvancedSelector
+      ? selector[$$INTERNALS].M$compareFn
+      : Object.is
+  )
 
   // Show debug value.
   useDebugValue(undefined, () => {
@@ -70,7 +86,7 @@ export function useRelinkValue_BASE<S, K>(
     if (source.M$options.public || IS_DEV_ENV) {
       return {
         key: source.M$key,
-        selector,
+        selector: selector,
         value: state,
       }
     }

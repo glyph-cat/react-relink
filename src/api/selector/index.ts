@@ -1,92 +1,40 @@
-// import { SELECTOR_INTERNAL_SYMBOL } from '../../constants'
-// import { hasSymbol } from '../../internals/has-symbol'
+import { $$INTERNALS } from '../../constants'
 
-// /**
-//  * @alpha Might not make its way into final or future release(s).
-//  */
-// export enum RelinkSelectorType {
-//   A = 1,
-//   B,
-// }
+/**
+ * @public
+ */
+export interface RelinkAdvancedSelectorConfig<S, K> {
+  /**
+   * The getter of the selected state.
+   */
+  get(state: S): K
+  /**
+   * You can provide a custom equality checker through this property.
+   * This function should only return `true` if the previous and next states are
+   * considered equal, otherwise it should return `false` .
+   * @defaultValue `Object.is`
+   */
+  compareFn?(prevState: K, nextState: K): boolean
+}
 
-// /**
-//  * @alpha Might not make its way into final or future release(s).
-//  */
-// export interface RelinkSelector<S, K> {
-//   [SELECTOR_INTERNAL_SYMBOL]: {
-//     M$get(state: S): K
-//     M$type: RelinkSelectorType
-//   }
-// }
+/**
+ * @public
+ */
+export class RelinkAdvancedSelector<S, K> {
 
-// /**
-//  * @alpha Might not make its way into final or future release(s).
-//  */
-// export interface RelinkSelectorConfig<S, K> {
-//   /**
-//    * The actual selector.
-//    */
-//   get(state: S): K
-//   /**
-//    * Set the selector type control how equality checking is done. Choosing the
-//    * right type can increase performance optimizations be reducing unnessary
-//    * re-rendering of components. This only affects **mutable** sources.
-//    * ---------------------------------------------------------------------------
-//    * `A`: Equality checking is done on the selected state.
-//    *
-//    * Optimized for selectors that look like this:
-//    * ```js
-//    * (state) => state.foo
-//    * ```
-//    * Since it's just the underlying value that is returned, `Object.is` will
-//    * return false everytime it compares the unselected state with the previous
-//    * one, causing components to re-render even when the reference to the
-//    * selected value remains the same. By performing equality checking on the
-//    * selected state, it is easier to determine if a re-render is necessary.
-//    * ---------------------------------------------------------------------------
-//    * `B`: Equality checking is done on the unselected state.
-//    *
-//    * Optimized for selectors that look like this:
-//    * ```js
-//    * (state) => ({ foo: state.foo, bar: state.bar })
-//    * ```
-//    * Since a new object is returned, `Object.is` will return false every time it
-//    * compares the selected state with the previous one, causing components to
-//    * render even when the underlying values are the same. By performing equality
-//    * checking on the unselected state, it is easier to determine if there is
-//    * really a state change.
-//    * ---------------------------------------------------------------------------
-//    * @defaultValue `A`
-//    */
-//   type?: RelinkSelectorType
-// }
+  /**
+   * @internal
+   */
+  [$$INTERNALS]: {
+    M$get(state: S): K
+    M$compareFn?(prevState: K, nextState: K): boolean
+  }
 
-// const defaultSelectorConfig = {
-//   M$type: RelinkSelectorType.A,
-// } as const
+  constructor({ get, compareFn }: RelinkAdvancedSelectorConfig<S, K>) {
+    this[$$INTERNALS] = {
+      M$get: get,
+      M$compareFn: compareFn || Object.is,
+    }
+  }
 
-// /**
-//  * @alpha Might not make its way into final or future release(s).
-//  */
-// export function createSelector<S, K>(
-//   config: RelinkSelectorConfig<S, K>
-// ): RelinkSelector<S, K> {
-//   return {
-//     [SELECTOR_INTERNAL_SYMBOL]: {
-//       ...defaultSelectorConfig,
-//       M$get: config.get,
-//       M$type: config.type,
-//     },
-//   }
-// }
-
-// /**
-//  * @alpha Might not make its way into final or future release(s).
-//  */
-// export function isRelinkSelector<S, K>(
-//   value: unknown
-// ): value is RelinkSelector<S, K> {
-//   return hasSymbol(value, SELECTOR_INTERNAL_SYMBOL)
-// }
-
-export { }
+}

@@ -1,7 +1,10 @@
-import { ERROR_CIRCULAR_DEPENDENCY } from '../../../internals/errors'
-import { RelinkSourceKey } from '../../../schema'
-import { RelinkSource } from '..'
+import { RelinkSource } from '../../api/source'
+import { RelinkSourceKey } from '../../schema'
+import { ERROR_CIRCULAR_DEPENDENCY } from '../errors'
 
+/**
+ * @internal
+ */
 export function checkForCircularDeps(
   deps: Array<RelinkSource<unknown>>,
   keyPathStack: Array<RelinkSourceKey>

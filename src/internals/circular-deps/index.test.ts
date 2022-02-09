@@ -1,7 +1,7 @@
 import {
   RelinkSource,
   isRelinkSource, // eslint-disable-line import/no-deprecated
-} from '..'
+} from '../../api/source'
 import { checkForCircularDeps } from '.'
 
 describe(checkForCircularDeps.name, (): void => {

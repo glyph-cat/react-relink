@@ -76,7 +76,7 @@ function getPlugins(config = {}) {
   // Replace values
   const replaceValues = {
     'process.env.BUILD_TYPE': JSON.stringify(buildEnv),
-    'process.env.IS_DEBUG_ENV': JSON.stringify('false'),
+    'process.env.IS_INTERNAL_DEBUG_ENV': JSON.stringify('false'),
     'process.env.NPM_PACKAGE_VERSION': JSON.stringify(version),
   }
   if (mode) {

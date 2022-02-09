@@ -34,7 +34,10 @@ type StateHookData<S> = [S, (newState: S) => void]
  * - State setter only accepts new values (no reducers)
  * @internal
  */
-export function useState<S>(initialState: () => S): StateHookData<S> {
+export function useState<S>(
+  initialState: () => S,
+  isEqual: ((prevState: unknown, nextState: unknown) => boolean)
+): StateHookData<S> {
 
   const id: MutableRefObject<StateId> = useRef({})
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
@@ -42,7 +45,7 @@ export function useState<S>(initialState: () => S): StateHookData<S> {
   if (!stateCache.has(id.current)) {
     const stateSetter = (nextStateValue: S): void => {
       const [prevStateValue] = stateCache.get(id.current)
-      if (!Object.is(prevStateValue, nextStateValue)) {
+      if (!isEqual(prevStateValue, nextStateValue)) {
         stateCache.set(id.current, [nextStateValue, stateSetter])
         forceUpdate()
       }
