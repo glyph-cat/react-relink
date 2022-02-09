@@ -18,6 +18,20 @@ describe(shallowCompareArray.name, (): void => {
     expect(isEqual).toBe(true)
   })
 
+  describe('Different types', (): void => {
+
+    test('undefined, []', (): void => {
+      const isEqual = shallowCompareArray(undefined, [])
+      expect(isEqual).toBe(false)
+    })
+
+    test('number, []', (): void => {
+      const isEqual = shallowCompareArray(42, [])
+      expect(isEqual).toBe(false)
+    })
+
+  })
+
   test('Differrent length', (): void => {
     const prevState = ['foo', 42]
     const nextState = ['foo', 'bar', 42]
@@ -83,6 +97,20 @@ describe(shallowCompareObject.name, (): void => {
   test('Empty object', (): void => {
     const isEqual = shallowCompareObject({}, {})
     expect(isEqual).toBe(true)
+  })
+
+  describe('Different types', (): void => {
+
+    test('undefined, []', (): void => {
+      const isEqual = shallowCompareObject(undefined, {})
+      expect(isEqual).toBe(false)
+    })
+
+    test('number, []', (): void => {
+      const isEqual = shallowCompareObject(42, {})
+      expect(isEqual).toBe(false)
+    })
+
   })
 
   test('Different property size', (): void => {

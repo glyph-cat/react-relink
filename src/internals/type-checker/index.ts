@@ -4,6 +4,11 @@ export function isFunction(value: unknown): value is Function {
   return typeof value === 'function'
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+  return typeof value === 'object'
+}
+
 /**
  * Helps prevent using await on normal functions. Although there's normally no
  * harm to use await on normal functions, it creates a slight delay that is not

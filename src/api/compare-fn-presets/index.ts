@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { MutableRefObject } from 'react'
 import { IS_INTERNAL_DEBUG_ENV } from '../../constants'
+import { isObject } from '../../internals/type-checker'
 
 /**
  * @internal
@@ -33,8 +34,8 @@ export namespace RELINK_COMPARE_FN_PRESET {
    * ])
    */
   export function shallowCompareArray(
-    prevState: Array<unknown>,
-    nextState: Array<unknown>
+    prevState: Array<unknown> | unknown,
+    nextState: Array<unknown> | unknown,
   ): boolean {
 
     if (IS_INTERNAL_DEBUG_ENV) {
@@ -43,24 +44,31 @@ export namespace RELINK_COMPARE_FN_PRESET {
       )
     }
 
-    if (prevState.length !== nextState.length) {
-      return false // Early exit
-    }
+    if (Array.isArray(prevState) && Array.isArray(nextState)) {
 
-    for (let i = 0; i < prevState.length; i++) {
-      if (!Object.is(prevState[i], nextState[i])) {
+      if (prevState.length !== nextState.length) {
         return false // Early exit
       }
+
+      for (let i = 0; i < prevState.length; i++) {
+        if (!Object.is(prevState[i], nextState[i])) {
+          return false // Early exit
+        }
+      }
+
+      return true
+
+    } else {
+      return Object.is(prevState, nextState) // Fallback
     }
 
-    return true
 
   }
 
   /**
    * A wrapper around `shallowCompareArray` and `shallowCompareObject`
    * ONLY use this when you cannot determine whether your selected state will
-   * return an array or an object as it requires more time to compute.
+   * return an array or an object as it exhausts a lot of computing resources.
    * @example
    * // Your selector might be something that looks like this:
    * (state) => {
@@ -118,25 +126,31 @@ export namespace RELINK_COMPARE_FN_PRESET {
       )
     }
 
-    const prevStateKeys = Object.keys(prevState)
-    const nextStateKeys = Object.keys(nextState)
+    if (isObject(prevState) && isObject(nextState)) {
 
-    if (prevStateKeys.length !== nextStateKeys.length) {
-      return false // Early exit
-    }
+      const prevStateKeys = Object.keys(prevState)
+      const nextStateKeys = Object.keys(nextState)
 
-    for (let i = 0; i < prevStateKeys.length; i++) {
-      const prevStateKey = prevStateKeys[i]
-      const nextStateKey = nextStateKeys[i]
-      if (prevStateKey !== nextStateKey) {
+      if (prevStateKeys.length !== nextStateKeys.length) {
         return false // Early exit
       }
-      if (!Object.is(prevState[prevStateKey], nextState[nextStateKey])) {
-        return false // Early exit
-      }
-    }
 
-    return true
+      for (let i = 0; i < prevStateKeys.length; i++) {
+        const prevStateKey = prevStateKeys[i]
+        const nextStateKey = nextStateKeys[i]
+        if (prevStateKey !== nextStateKey) {
+          return false // Early exit
+        }
+        if (!Object.is(prevState[prevStateKey], nextState[nextStateKey])) {
+          return false // Early exit
+        }
+      }
+
+      return true
+
+    } else {
+      return Object.is(prevState, nextState) // Fallback
+    }
 
   }
 
