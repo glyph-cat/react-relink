@@ -5,6 +5,7 @@
     "checkJs": true,
     "declaration": true,
     "declarationDir": "./temp/tsc/types",
+    "downlevelIteration": true,
     "esModuleInterop": true,
     "importHelpers": false,
     "isolatedModules": true,

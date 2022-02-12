@@ -24,7 +24,7 @@
     "rollup": "rollup -c ./config/rollup.config.js",
     "types": "tsc --declaration",
     "api": "api-extractor run -c ./config/api-extractor.json --local --verbose",
-    "build": "yarn rollup && yarn types && yarn api",
+    "build": "yarn rollup && yarn types && yarn api && yarn ts-node ./scripts/post-process-docs",
     "postbuild": "rm -r ./temp/tsc",
     "test": "jest -c ./jest.config.ts",
     "test:bundled": "scope=\"bundled\" jest -c ./jest.config.ts",

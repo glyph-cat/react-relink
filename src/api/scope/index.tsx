@@ -41,7 +41,8 @@ export function useScopedRelinkSource<S>(source: RelinkSource<S>): RelinkSource<
  * ## 🚧 EXPERIMENTAL 🚧
  * Relink Scope is an experimental feature. Until it is stable, the usage,
  * parameters, and behaviours might change from version to version, potentially
- * causing your app to break when you update the package.
+ * causing your app to break when you update the package between minor and even
+ * patch versions!
  * @public
  */
 export interface RelinkScopeProps {
@@ -58,7 +59,8 @@ export interface RelinkScopeProps {
  * ## 🚧 EXPERIMENTAL 🚧
  * Relink Scope is an experimental feature. Until it is stable, the usage,
  * parameters, and behaviours might change from version to version, potentially
- * causing your app to break when you update the package.
+ * causing your app to break when you update the package between minor and even
+ * patch versions!
  * -----------------------------------------------------------------------------
  * Under the hood, React's Context API is used to allow scoping of different
  * sources. Any sources can be passed into the `sources` prop. Then, child

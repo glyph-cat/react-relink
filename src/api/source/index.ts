@@ -460,7 +460,8 @@ export class RelinkSource<S> {
 
   /**
    * ## 🚧 EXPERIMENTAL 🚧
-   * This method might behave differently or be removed in future versions.
+   * This method might behave differently or get renamed between minor and patch
+   * versions, or even get removed in future versions.
    *
    * ---------------------------------------------------------------------------
    *

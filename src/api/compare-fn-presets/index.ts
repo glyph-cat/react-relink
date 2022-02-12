@@ -135,6 +135,11 @@ export namespace RELINK_COMPARE_FN_PRESET {
         return false // Early exit
       }
 
+      // NOTE: We probably don't need this, if position of the key-value pairs
+      // change without the actual keys or values changing, we should still
+      // treat it as 'not equal'.
+      // const allKeys = [...new Set([...prevStateKeys, ...nextStateKeys])]
+
       for (let i = 0; i < prevStateKeys.length; i++) {
         const prevStateKey = prevStateKeys[i]
         const nextStateKey = nextStateKeys[i]

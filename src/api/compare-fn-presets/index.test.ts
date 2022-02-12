@@ -142,6 +142,14 @@ describe(shallowCompareObject.name, (): void => {
     expect(isEqual).toBe(true)
   })
 
+  test('All same, but arrangement different', (): void => {
+    const ARR = []
+    const prevState = { a: 'foo', b: 42, c: ARR }
+    const nextState = { a: 'foo', c: ARR, b: 42 }
+    const isEqual = shallowCompareObject(prevState, nextState)
+    expect(isEqual).toBe(false)
+  })
+
 })
 
 describe(stringifyCompare.name, (): void => {
