@@ -119,8 +119,13 @@ resetCounter()
 
 ```js
 const rehydrateCounter = useHydrateRelinkSource(CounterSource)
-rehydrateCounter(({ commit }) => {
-  commit(/* new value */)
+rehydrateCounter(({ commit, skip }) => {
+  const persistedState = custom_method_to_fetch_persisted_state()
+  if (persistedState) {
+    commit(persistedState)
+  } else {
+    skip()
+  }
 })
 ```
 
@@ -128,17 +133,8 @@ rehydrateCounter(({ commit }) => {
 
 # Error Codes
 In production builds, error codes are thrown instead of the lengthy messages to save data.
-
-<br/>
-
-## `Relink_E1-typeofRawKey`
-
-Expected `key` to be a string or number but got `${typeofRawKey}`
-
-<br/>
-
-## `Relink_E2-depStack`
-Circular dependencies are not allowed: `${depStack}`
+* `Relink_E1-typeofRawKey` — Expected `key` to be a string or number but got `${typeofRawKey}`
+* `Relink_E2-depStack` — Circular dependencies are not allowed: `${depStack}`
 
 <br/>
 
@@ -146,6 +142,8 @@ Circular dependencies are not allowed: `${depStack}`
 * [From `v0` to `v1`](https://github.com/glyph-cat/react-relink/releases/tag/1.0.0)
 * [From `v1` to `v2`](https://github.com/glyph-cat/react-relink/releases/tag/2.0.0)
 * [From `v2` to `v3`](https://github.com/glyph-cat/react-relink/releases/tag/3.0.0)
+
+<br/>
 
 # Support This Project
 

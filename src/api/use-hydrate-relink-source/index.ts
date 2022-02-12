@@ -3,8 +3,18 @@ import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
 
 /**
+ * Hydrate a source with a previously persisted state. Note that this hydration
+ * is completely UNRELATED to server-side rendering.
  * @example
  * const hydrateSource = useHydrateRelinkSource(Source)
+ * hydrateSource(({ commit, skip }) => {
+ *   const persistedState = custom_method_to_fetch_persisted_state()
+ *   if (persistedState) {
+ *     commit(persistedState)
+ *   } else {
+ *     skip()
+ *   }
+ * })
  * @public
  */
 export function useHydrateRelinkSource<S>(

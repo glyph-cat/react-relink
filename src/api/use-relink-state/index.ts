@@ -6,6 +6,7 @@ import { useRelinkValue_BASE } from '../use-relink-value'
 /**
  * @example
  * const [state, setState, resetState] = useRelinkState(Source)
+ * @returns A tuple containing the current state, the state setter and a resetter.
  * @public
  */
 export function useRelinkState<S>(
@@ -19,6 +20,7 @@ export function useRelinkState<S>(
  *   propertyB: state.propertyB,
  * })
  * const [filteredState, setState, resetState] = useRelinkState(Source, selector)
+ * @returns A tuple containing the current state, the state setter and a resetter.
  * @public
  */
 export function useRelinkState<S, K>(
