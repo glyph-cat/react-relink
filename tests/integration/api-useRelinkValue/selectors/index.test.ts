@@ -2,6 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
+import { act } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource, RELINK_COMPARE_FN_PRESET } from '../../../../src/bundle'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
@@ -42,9 +43,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(hookInterface.get('main')).toBe(1)
 
     // Make sure hook only updates if selected value has changed.
-    await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
+    await act(async () => {
+      await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
+    })
     expect(hookInterface.getRenderCount()).toBe(1)
-    await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
+    await act(async () => {
+      await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
+    })
     expect(hookInterface.getRenderCount()).toBe(2)
     expect(hookInterface.get('main')).toBe(2)
 
@@ -74,9 +79,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       expect(hookInterface.get('main')).toBe(1)
 
       // Make sure hook only updates if selected value has changed.
-      await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
+      await act(async () => {
+        await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
+      })
       expect(hookInterface.getRenderCount()).toBe(1)
-      await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
+      await act(async () => {
+        await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
+      })
       expect(hookInterface.getRenderCount()).toBe(2)
       expect(hookInterface.get('main')).toBe(2)
 
@@ -106,7 +115,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
       // Make sure hook does not update for this selector because of the `compareFn`
       // because `Object.is` is not used on the state itself, but it's children.
-      await Source.set((s) => ({ ...s }))
+      await act(async () => {
+        await Source.set((s) => ({ ...s }))
+      })
       expect(hookInterface.getRenderCount()).toBe(1)
       expect(hookInterface.get('main')).toStrictEqual({ foo: 1, bar: 1 })
 

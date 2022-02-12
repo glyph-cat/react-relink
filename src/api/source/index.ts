@@ -172,6 +172,7 @@ export class RelinkSource<S> {
     this.getAsync = this.getAsync.bind(this)
     this.set = this.set.bind(this)
     this.reset = this.reset.bind(this)
+    this.watch = this.watch.bind(this)
     this.cleanup = this.cleanup.bind(this)
 
     registerKey(this.M$key)

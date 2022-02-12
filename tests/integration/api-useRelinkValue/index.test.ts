@@ -2,6 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
+import { act } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
@@ -46,7 +47,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     // Make sure hook updates when state changes.
-    await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
+    await act(async () => {
+      await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
+    })
     expect(hookInterface.getRenderCount()).toBe(2)
     expect(hookInterface.get('main')).toStrictEqual({
       foo: 2,
@@ -55,11 +58,15 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     // (Unintended feature)
     // Hook will update if different state object is returned.
-    await Source.set((s) => ({ ...s }))
+    await act(async () => {
+      await Source.set((s) => ({ ...s }))
+    })
     expect(hookInterface.getRenderCount()).toBe(3)
 
     // Make sure hook DOES NOT update if same state object is returned.
-    await Source.set((s) => { return s })
+    await act(async () => {
+      await Source.set((s) => { return s })
+    })
     expect(hookInterface.getRenderCount()).toBe(3)
 
   })
