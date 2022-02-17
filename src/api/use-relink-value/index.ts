@@ -2,7 +2,6 @@ import { useCallback, useDebugValue } from 'react'
 import { $$INTERNALS, IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
 import { useLayoutEffect, useState } from '../../internals/custom-hooks'
 import { RelinkEvent, RelinkSelector } from '../../schema'
-import { unstable_batchedUpdates } from '../../internals/unstable_batchedUpdates'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
@@ -99,9 +98,7 @@ export function useRelinkValue_BASE<S, K>(
     // `Source.set()` calls... and also because it just makes more sense.
     let debounceRef: ReturnType<typeof setTimeout>
     const compareAndUpdateRightAway = (event: RelinkEvent<S>): void => {
-      unstable_batchedUpdates((): void => {
-        setState(getSelectedState(event.state))
-      })
+      setState(getSelectedState(event.state))
     }
     const compareAndUpdateDebounced = (details: RelinkEvent<S>): void => {
       clearTimeout(debounceRef)

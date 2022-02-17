@@ -1,10 +1,12 @@
 import {
   MutableRefObject,
+  useEffect,
   useReducer,
   useRef, // eslint-disable-line no-restricted-imports
 } from 'react'
 import { useLayoutEffect } from '../isomorphic-layout-effect'
 import { forceUpdateReducer } from '../force-update'
+import { unstable_batchedUpdates } from '../../unstable_batchedUpdates'
 
 /**
  * @internal
@@ -39,6 +41,9 @@ export function useState<S>(
   isEqual: ((prevState: unknown, nextState: unknown) => boolean)
 ): StateHookData<S> {
 
+  const isMounted = useRef(true)
+  useEffect(() => { return () => { isMounted.current = false } }, [])
+
   const id: MutableRefObject<StateId> = useRef({})
   useLayoutEffect(() => {
     const stateId = id.current
@@ -49,10 +54,17 @@ export function useState<S>(
 
   if (!stateCache.has(id.current)) {
     const stateSetter = (nextStateValue: S): void => {
+      if (!isMounted.current) {
+        // KIV: Not sure why sometimes a final `forceUpdate` is still being
+        // triggered when the component should've been unmounted.
+        return // Early exit
+      }
       const [prevStateValue] = stateCache.get(id.current)
       if (!isEqual(prevStateValue, nextStateValue)) {
         stateCache.set(id.current, [nextStateValue, stateSetter])
-        forceUpdate()
+        unstable_batchedUpdates((): void => {
+          forceUpdate()
+        })
       }
     }
     stateCache.set(id.current, [initialState(), stateSetter])
