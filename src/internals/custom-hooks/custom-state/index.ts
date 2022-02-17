@@ -2,8 +2,8 @@ import {
   MutableRefObject,
   useReducer,
   useRef, // eslint-disable-line no-restricted-imports
-  useEffect,
 } from 'react'
+import { useLayoutEffect } from '../isomorphic-layout-effect'
 import { forceUpdateReducer } from '../force-update'
 
 /**
@@ -40,6 +40,11 @@ export function useState<S>(
 ): StateHookData<S> {
 
   const id: MutableRefObject<StateId> = useRef({})
+  useLayoutEffect(() => {
+    const stateId = id.current
+    return (): void => { stateCache.delete(stateId) }
+  }, [])
+
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
 
   if (!stateCache.has(id.current)) {
@@ -52,11 +57,6 @@ export function useState<S>(
     }
     stateCache.set(id.current, [initialState(), stateSetter])
   }
-
-  useEffect(() => {
-    const stateId = id.current
-    return (): void => { stateCache.delete(stateId) }
-  }, [])
 
   return stateCache.get(id.current) as StateHookData<S>
 }

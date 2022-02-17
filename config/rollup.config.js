@@ -86,13 +86,15 @@ function getPlugins(config = {}) {
     preventAssignment: true,
     values: replaceValues,
   }))
-  pluginStack.push(terser({
-    mangle: {
-      properties: {
-        regex: /^M\$/,
+  if (mode === 'production') {
+    pluginStack.push(terser({
+      mangle: {
+        properties: {
+          regex: /^M\$/,
+        },
       },
-    },
-  }))
+    }))
+  }
   pluginStack.push(forceCleanup())
 
   return pluginStack
