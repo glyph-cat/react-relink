@@ -1,12 +1,13 @@
-const OFF = 0
+const { configs } = require('@glyph-cat/eslint-config')
 
-const configs = require('@glyph-cat/swiss-army-knife/eslint-config')
+const strictConfig = configs.strict
+const OFF = 0
 
 module.exports = {
   root: true,
-  ...configs.strict,
+  ...strictConfig,
   rules: {
-    ...configs.strict.rules,
+    ...strictConfig.rules,
     'no-console': OFF,
   },
 }

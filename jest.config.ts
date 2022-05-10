@@ -7,7 +7,7 @@ const config: Config.InitialOptions = {
   ],
   testRegex: '.test.(tsx|ts|jsx|js)',
   testTimeout: 1000,
-  timers: 'real',
+  // Seems like fake timers are disabled by default now
   testEnvironment: 'jsdom',
   verbose: true,
 }
