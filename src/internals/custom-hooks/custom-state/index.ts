@@ -36,7 +36,7 @@ type StateHookData<S> = [S, (newState: S) => void]
  * - State setter only accepts new values (no reducers)
  * @internal
  */
-export function useState<S>(
+export function useCustomState<S>(
   initialState: () => S,
   isEqual: ((prevState: unknown, nextState: unknown) => boolean)
 ): StateHookData<S> {

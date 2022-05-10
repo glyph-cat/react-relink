@@ -1,6 +1,6 @@
 import { useCallback, useDebugValue } from 'react'
 import { $$INTERNALS, IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
-import { useLayoutEffect, useState } from '../../internals/custom-hooks'
+import { useLayoutEffect, useCustomState } from '../../internals/custom-hooks'
 import { RelinkEvent, RelinkSelector } from '../../schema'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
@@ -69,7 +69,7 @@ export function useRelinkValue_BASE<S, K>(
   // either be a faulty value or a function. If other types are passed, let
   // the error automatically surface up so that users are aware of the
   // incorrect type.
-  const [state, setState] = useState(
+  const [state, setState] = useCustomState(
     // State initializer
     () => getSelectedState(source.get()),
     // Equality checker
@@ -115,7 +115,7 @@ export function useRelinkValue_BASE<S, K>(
       unwatch()
       clearTimeout(debounceRef)
     }
-  }, [getSelectedState, source, state])
+  }, [getSelectedState, setState, source, state])
 
   return state
 }

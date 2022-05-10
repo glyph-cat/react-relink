@@ -1,12 +1,11 @@
-const configs = require('@glyph-cat/swiss-army-knife/eslint-config')
+const { configs } = require('@glyph-cat/eslint-config')
 
-const OFF = 0
+const strictConfig = configs.strict
 
 module.exports = {
   root: true,
-  ...configs.strict,
-  rules: {
-    ...configs.strict.rules,
-    'import/no-cycle': OFF,
-  },
+  ...strictConfig,
+  // extends: [
+  //   '@glyph-cat/strict',
+  // ],
 }

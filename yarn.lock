@@ -1109,14 +1109,19 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@glyph-cat/react-test-utils@^0.1.1-experimental.1":
-  version "0.1.1-experimental.1"
-  resolved "https://registry.yarnpkg.com/@glyph-cat/react-test-utils/-/react-test-utils-0.1.1-experimental.1.tgz#538101028af31e1e6fe0be77f405894c29450b8f"
-  integrity sha512-JLKFQNmus/Nhs8XRzS+wwypm7Uwm5YZUD2gsiAhfm5FFSl9dcs/pvSi5rhzhb1b+YJ2hG9J1ky8tLpDWtqbkeA==
+"@glyph-cat/eslint-config@^1.0.0-alpha.0":
+  version "1.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@glyph-cat/eslint-config/-/eslint-config-1.0.0-alpha.0.tgz#230ecf7965ce6a01c368c341564c0f7c9a4b9f78"
+  integrity sha512-iS+wn+sPQuC5YBw/E8d39fBDxQgRkHXwy4643vPoWQr7DDIElf3inill9LroSllWxLmIKmlUziO4+aG4M7Wznw==
+
+"@glyph-cat/react-test-utils@^0.1.1-experimental.2":
+  version "0.1.1-experimental.2"
+  resolved "https://registry.yarnpkg.com/@glyph-cat/react-test-utils/-/react-test-utils-0.1.1-experimental.2.tgz#97433706e5466293b59f95985730a4cb634487d2"
+  integrity sha512-ijA/QyKbDAKRtJ9P0YOSTCbGlTV9ALyTWnz9NNcuXero5IfxTdp145e4U1UiJKCOzDX03Owag5c3fBtBRcpttg==
   dependencies:
     "@glyph-cat/swiss-army-knife" "^0.0.0-experimental.1"
 
-"@glyph-cat/swiss-army-knife@^0.0.0-experimental.1", "@glyph-cat/swiss-army-knife@^0.0.0-experimental.9":
+"@glyph-cat/swiss-army-knife@^0.0.0-experimental.1":
   version "0.0.0-experimental.9"
   resolved "https://registry.yarnpkg.com/@glyph-cat/swiss-army-knife/-/swiss-army-knife-0.0.0-experimental.9.tgz#98034be09e8b2386776f213e0ff68bede291a933"
   integrity sha512-HoT1wglUQheX2MWW0q32gfpapJlPa4BpSm4MaSyNt3Yw+GWaaeZDnIv1bBebMCZjPJl2PcQ6nBkKCww7ImOCCg==

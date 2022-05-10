@@ -1,4 +1,4 @@
-import { useState } from '.'
+import { useCustomState } from '.'
 import {
   createCleanupRef,
   createHookInterface,
@@ -6,7 +6,7 @@ import {
 
 // Test sets: Primitive vs Object
 
-describe(useState.name, (): void => {
+describe(useCustomState.name, (): void => {
 
   const cleanupRef = createCleanupRef()
   afterEach((): void => { cleanupRef.run() })
@@ -14,7 +14,7 @@ describe(useState.name, (): void => {
   test('Primitive data', (): void => {
 
     const hookInterface = createHookInterface({
-      useHook: () => useState(() => 1, Object.is),
+      useHook: () => useCustomState(() => 1, Object.is),
       actions: {
         goodPracticeSet: ({ hookData }): void => {
           const [, setState] = hookData
@@ -57,7 +57,7 @@ describe(useState.name, (): void => {
     interface DemoStateSchema { foo: number, bar: number }
 
     const hookInterface = createHookInterface({
-      useHook: () => useState<DemoStateSchema>(() => ({
+      useHook: () => useCustomState<DemoStateSchema>(() => ({
         foo: 1,
         bar: 2,
       }), Object.is),

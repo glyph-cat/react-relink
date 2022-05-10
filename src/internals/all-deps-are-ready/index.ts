@@ -1,4 +1,4 @@
-import { RelinkSource } from '../../api/source'
+import type { RelinkSource } from '../../api/source'
 
 /**
  * @internal

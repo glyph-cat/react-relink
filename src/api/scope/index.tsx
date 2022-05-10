@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext } from 'react'
 import { RelinkScopeId, RelinkSourceKey } from '../../schema'
-import { RelinkSource } from '../source'
+import type { RelinkSource } from '../source'
 
 /**
  * @internal
