@@ -51,7 +51,9 @@
   "bugs": {
     "url": "https://github.com/glyph-cat/react-relink/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "use-sync-external-store": "^1.1.0"
+  },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.17.9",
     "@babel/preset-react": "^7.16.7",
@@ -61,6 +63,7 @@
     "@jest/types": "^28.1.0",
     "@microsoft/api-extractor": "^7.23.2",
     "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
     "@testing-library/jest-dom": "^5.16.4",
@@ -71,6 +74,7 @@
     "@types/react-dom": "^18.0.3",
     "@types/react-native": "^0.67.6",
     "@types/react-test-renderer": "^18.0.0",
+    "@types/use-sync-external-store": "^0.0.3",
     "eslint": "^8.15.0",
     "jest": "^28.1.0",
     "jest-environment-jsdom": "^28.1.0",

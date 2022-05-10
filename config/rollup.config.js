@@ -1,6 +1,6 @@
 import nodeResolve from '@rollup/plugin-node-resolve'
 // import babel from '@rollup/plugin-babel'
-// import commonjs from '@rollup/plugin-commonjs'
+import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
 import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
@@ -15,6 +15,7 @@ const INPUT_FILE = 'src/bundle.ts'
 const UMD_GLOBALS = {
   react: 'React',
   'react-dom': 'ReactDom',
+  'use-sync-external-store': 'useSyncExternalStore',
 }
 
 const EXTERNAL_LIBS_REACT_DOM = Object.keys(UMD_GLOBALS)
@@ -55,8 +56,10 @@ function getPlugins(config = {}) {
         },
       },
     }),
-
-    // commonjs: commonjs(),
+    commonjs: commonjs(),
+    // ^ Required, otherwise will get Error: "[name] is not exported by [module]"
+    // when importing from 'use-sync-external-store/shim'
+    // See: https://rollupjs.org/guide/en/#error-name-is-not-exported-by-module
   }
 
   // Override plugins

@@ -119,18 +119,3 @@ export function useRelinkValue_BASE<S, K>(
 
   return state
 }
-
-// /**
-//  * @internal
-//  */
-// export function useRelinkValue_BASE_WITH_SYNC_EXT_STORE<S, K>(
-//   source: RelinkSource<S>,
-//   selector?: RelinkSelector<S, K>
-// ): S | K {
-
-//   // Before anything else, perform suspension if source is not ready.
-//   useSuspenseForDataFetching(source)
-
-//   return useSyncExternalStore(source.watch, source.get)
-
-// }

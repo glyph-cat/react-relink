@@ -23,7 +23,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     Source.cleanup()
   })
 
-  test('With Virtual Batch', async (): Promise<void> => {
+  test.skip('With Virtual Batch', async (): Promise<void> => {
 
     Source = new RelinkSource({
       key: 'test/virtual-batch',
