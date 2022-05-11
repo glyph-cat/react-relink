@@ -84,7 +84,6 @@ export function useSuspenseForDataFetching(
   const waitPromise: MutableRefObject<Promise<void>> = useRef(null)
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
 
-
   if (source.M$options.suspense) {
     // [Point A] Don't wait until component mounts, create promise for suspension
     // immediately if source is not ready.

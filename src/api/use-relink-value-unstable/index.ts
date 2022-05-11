@@ -75,10 +75,17 @@ export function useRelinkValue_BASE_UNSTABLE<S, K>(
     const isEqual = selector instanceof RelinkAdvancedSelector
       ? selector[$$INTERNALS].M$compareFn
       : Object.is
-    // @ts-expect-error - If `selector` is provided, `selector` will always
-    // return type `K` and since `compareFn` always compares `K` and always
-    // comes together with `selector`, there should be no problem performing
-    // the comparison below.
+
+    // Originally expecting an error with `@ts-expect-error`, but we get:
+    // - Compile error when bundling types because the compiler doesn't see any
+    //   problem with it (so do I, hence this long-arse explanation)
+    // - Compile error when bundling CJS code if `@ts-expect-error` is removed
+    // NOTE:
+    // - If `selector` is provided, `selector` will always return type `K` and
+    //   since `compareFn` always compares `K` and always comes together with
+    //   `selector`, there should be no problem performing the comparison below.
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const selectedStateAreEqual = isEqual(state.current, nextState)
     if (!selectedStateAreEqual) {
       state.current = nextState
