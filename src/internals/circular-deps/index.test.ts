@@ -1,7 +1,4 @@
-import {
-  RelinkSource,
-  isRelinkSource, // eslint-disable-line import/no-deprecated
-} from '../../api/source'
+import { RelinkSource } from '../../api/source'
 import { checkForCircularDeps } from '.'
 
 describe(checkForCircularDeps.name, (): void => {
@@ -11,9 +8,9 @@ describe(checkForCircularDeps.name, (): void => {
   let SourceC: RelinkSource<number>
   afterEach((): void => {
     /* eslint-disable import/no-deprecated */
-    if (isRelinkSource(SourceA)) { SourceA.cleanup() }
-    if (isRelinkSource(SourceB)) { SourceB.cleanup() }
-    if (isRelinkSource(SourceC)) { SourceC.cleanup() }
+    if (SourceA instanceof RelinkSource) { SourceA.cleanup() }
+    if (SourceB instanceof RelinkSource) { SourceB.cleanup() }
+    if (SourceC instanceof RelinkSource) { SourceC.cleanup() }
     /* eslint-enable import/no-deprecated */
   })
 

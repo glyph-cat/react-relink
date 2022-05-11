@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
-import { useReducer } from 'react'
+import { useCallback, useReducer } from 'react'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { forceUpdateReducer } from '../../../src/internals/custom-hooks'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
@@ -63,7 +63,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     })
 
-    test('With selector', async (): Promise<void> => {
+    test.only('With selector', async (): Promise<void> => {
 
       Source = new RelinkSource<SampleSchema>({
         key: 'test/api-useRelinkValue/external-state-change',
@@ -75,7 +75,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
       function useCompoundHook() {
         const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
-        const state = useRelinkValue(Source, (s) => ({ foo: s.foo }))
+        // NOTE: Selector should be memoized or declared outside of component.
+        const selector = useCallback((s: SampleSchema) => ({ foo: s.foo }), [])
+        const state = useRelinkValue(Source, selector)
         return [state, forceUpdate] as const
       }
 
