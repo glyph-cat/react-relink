@@ -41,17 +41,6 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
 } as const
 
 /**
- * @deprecated Please use the `instanceof` keyword instead.
- * Example: `yourVariable instanceof RelinkSource`
- * @public
- */
-export function isRelinkSource<S = unknown>(
-  value: unknown
-): value is RelinkSource<S> {
-  return value instanceof RelinkSource
-}
-
-/**
  * @public
  */
 export interface RelinkSourceConfig<S> {
@@ -84,15 +73,6 @@ export interface RelinkSourceConfig<S> {
    * Additional options to configure the source.
    */
   options?: RelinkSourceOptions
-}
-
-/**
- * @public
- * @deprecated Kept for compatibility purposes. Will be removed in next major
- * version. Please use `new RelinkSource(...)` instead.
- */
-export function createSource<S>(config: RelinkSourceConfig<S>): RelinkSource<S> {
-  return new RelinkSource(config)
 }
 
 /**

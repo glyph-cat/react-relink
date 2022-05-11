@@ -27,10 +27,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  test('RelinkBasicSelector', async (): Promise<void> => {
+  test.only('RelinkBasicSelector', async (): Promise<void> => {
 
     const hookInterface = createHookInterface({
-      useHook: () => useRelinkValue(Source, (s) => s.bar),
+      useHook: () => useRelinkValue(Source, (s) => {
+        console.log('Selector invoked', s)
+        return s.bar
+      }),
       values: {
         main({ hookData }) {
           return hookData
@@ -46,12 +49,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     await act(async () => {
       await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
     })
+    expect(hookInterface.get('main')).toBe(1)
     expect(hookInterface.getRenderCount()).toBe(1)
     await act(async () => {
       await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
     })
-    expect(hookInterface.getRenderCount()).toBe(2)
     expect(hookInterface.get('main')).toBe(2)
+    expect(hookInterface.getRenderCount()).toBe(2)
 
   })
 
@@ -82,12 +86,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       await act(async () => {
         await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
       })
+      expect(hookInterface.get('main')).toBe(1)
       expect(hookInterface.getRenderCount()).toBe(1)
       await act(async () => {
         await Source.set((s) => ({ ...s, bar: s.bar + 1 }))
       })
-      expect(hookInterface.getRenderCount()).toBe(2)
       expect(hookInterface.get('main')).toBe(2)
+      expect(hookInterface.getRenderCount()).toBe(2)
 
     })
 

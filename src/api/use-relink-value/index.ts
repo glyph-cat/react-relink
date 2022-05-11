@@ -1,7 +1,8 @@
 import { useCallback, useDebugValue } from 'react'
-import { $$INTERNALS, IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
-import { useLayoutEffect, useCustomState } from '../../internals/custom-hooks'
-import { RelinkEvent, RelinkSelector } from '../../schema'
+import { useSyncExternalStore } from 'use-sync-external-store/shim'
+import { $$INTERNALS, IS_DEV_ENV } from '../../constants'
+import { RelinkSelector } from '../../schema'
+import { useRef } from '../../internals/custom-hooks'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
@@ -49,34 +50,51 @@ export function useRelinkValue_BASE<S, K>(
   // Before anything else, perform suspension if source is not ready.
   useSuspenseForDataFetching(source)
 
-  // NOTE: `isFunction` is not used to check the selector because it can only
-  // either be a faulty value or a function. If other types are passed, let
-  // the error automatically surface up so that users are aware of the
-  // incorrect type.
-  const getSelectedState = useCallback((passedState: S): S | K => {
+  const getState = useCallback((): S | K => {
+    // NOTE: `isFunction` is not used to check the selector because it can only
+    // either be a faulty value or a function. If other types are passed, let
+    // the error automatically surface up so that users are aware of the
+    // incorrect type.
+    const currentStateSnapshot = source.get()
     if (selector) {
       if (selector instanceof RelinkAdvancedSelector) {
-        return selector[$$INTERNALS].M$get(passedState)
+        return selector[$$INTERNALS].M$get(currentStateSnapshot)
       } else {
-        return selector(passedState)
+        return selector(currentStateSnapshot)
       }
     } else {
-      return passedState
+      return currentStateSnapshot
     }
-  }, [selector])
+  }, [selector, source])
 
-  // NOTE: `isFunction` is not used to check the selector because it can only
-  // either be a faulty value or a function. If other types are passed, let
-  // the error automatically surface up so that users are aware of the
-  // incorrect type.
-  const [state, setState] = useCustomState(
-    // State initializer
-    () => getSelectedState(source.get()),
-    // Equality checker
-    selector instanceof RelinkAdvancedSelector
+  const state = useRef(getState)
+  const updateCount = useRef(0)
+
+  const getUpdateCount = useCallback((): number => {
+    const nextState = getState()
+    const isEqual = selector instanceof RelinkAdvancedSelector
       ? selector[$$INTERNALS].M$compareFn
       : Object.is
-  )
+
+    // Originally expecting an error with `@ts-expect-error`, but we get:
+    // - Compile error when bundling types because the compiler doesn't see any
+    //   problem with it (so do I, hence this long-arse explanation)
+    // - Compile error when bundling CJS code if `@ts-expect-error` is removed
+    // NOTE:
+    // - If `selector` is provided, `selector` will always return type `K` and
+    //   since `compareFn` always compares `K` and always comes together with
+    //   `selector`, there should be no problem performing the comparison below.
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const selectedStateAreEqual = isEqual(state.current, nextState)
+    if (!selectedStateAreEqual) {
+      state.current = nextState
+      updateCount.current += 1
+    }
+    return updateCount.current
+  }, [getState, selector])
+
+  useSyncExternalStore(source.watch, getUpdateCount)
 
   // Show debug value.
   useDebugValue(undefined, () => {
@@ -91,31 +109,5 @@ export function useRelinkValue_BASE<S, K>(
     }
   })
 
-  // Add/remove watcher, compare & trigger update.
-  useLayoutEffect(() => {
-    // NOTE: Virtual batching is implemented at the hook level instead of the
-    // source (like it used to in V0) because it used to cause faulty
-    // `Source.set()` calls... and also because it just makes more sense.
-    let debounceRef: ReturnType<typeof setTimeout>
-    const compareAndUpdateRightAway = (event: RelinkEvent<S>): void => {
-      setState(getSelectedState(event.state))
-    }
-    const compareAndUpdateDebounced = (details: RelinkEvent<S>): void => {
-      clearTimeout(debounceRef)
-      debounceRef = setTimeout((): void => {
-        compareAndUpdateRightAway(details)
-      })
-    }
-    const unwatch = source.watch(
-      IS_CLIENT_ENV && source.M$options.virtualBatch
-        ? compareAndUpdateDebounced
-        : compareAndUpdateRightAway
-    )
-    return (): void => {
-      unwatch()
-      clearTimeout(debounceRef)
-    }
-  }, [getSelectedState, setState, source, state])
-
-  return state
+  return state.current
 }
