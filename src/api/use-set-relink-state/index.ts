@@ -7,9 +7,9 @@ import { RelinkSource } from '../source'
  * const setState = useSetRelinkState(Source)
  * @public
  */
-export function useSetRelinkState<S>(
-  source: RelinkSource<S>
-): RelinkSource<S>['set'] {
+export function useSetRelinkState<State>(
+  source: RelinkSource<State>
+): RelinkSource<State>['set'] {
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)

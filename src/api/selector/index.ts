@@ -3,31 +3,31 @@ import { $$INTERNALS } from '../../constants'
 /**
  * @public
  */
-export interface RelinkAdvancedSelectorConfig<S, K> {
+export interface RelinkAdvancedSelectorConfig<State, SelectedState> {
   /**
    * The getter of the selected state.
    */
-  get(state: S): K
+  get(state: State): SelectedState
   /**
    * You can provide a custom equality checker through this property.
    * This function should only return `true` if the previous and next states are
    * considered equal, otherwise it should return `false` .
    * @defaultValue `Object.is`
    */
-  compareFn?(prevState: K, nextState: K): boolean
+  compareFn?(prevState: SelectedState, nextState: SelectedState): boolean
 }
 
 /**
  * @public
  */
-export class RelinkAdvancedSelector<S, K> {
+export class RelinkAdvancedSelector<State, SelectedState> {
 
   /**
    * @internal
    */
   [$$INTERNALS]: {
-    M$get(state: S): K
-    M$compareFn?(prevState: K, nextState: K): boolean
+    M$get(state: State): SelectedState
+    M$compareFn?(prevState: SelectedState, nextState: SelectedState): boolean
   }
 
   /**
@@ -67,7 +67,10 @@ export class RelinkAdvancedSelector<S, K> {
    *   // each time the selector is executed.
    * })
    */
-  constructor({ get, compareFn }: RelinkAdvancedSelectorConfig<S, K>) {
+  constructor({
+    get,
+    compareFn,
+  }: RelinkAdvancedSelectorConfig<State, SelectedState>) {
     this[$$INTERNALS] = {
       M$get: get,
       M$compareFn: compareFn || Object.is,

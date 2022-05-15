@@ -43,7 +43,7 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
 /**
  * @public
  */
-export interface RelinkSourceConfig<S> {
+export interface RelinkSourceConfig<State> {
   /**
    * A unique key for the source. Use a string or number for better clarity in a
    * normal project, use a Symbol instead if you're building a library to avoid
@@ -53,11 +53,11 @@ export interface RelinkSourceConfig<S> {
   /**
    *
    */
-  scope?: RelinkSource<S>
+  scope?: RelinkSource<State>
   /**
    * The default state of the source.
    */
-  default: S
+  default: State
   /**
    * Wait for other sources to be hydrated before this one does.
    */
@@ -68,7 +68,7 @@ export interface RelinkSourceConfig<S> {
    * A hooks to this source to run certain callbacks when certain events are
    * fired.
    */
-  lifecycle?: RelinkLifecycleConfig<S>
+  lifecycle?: RelinkLifecycleConfig<State>
   /**
    * Additional options to configure the source.
    */
@@ -78,7 +78,7 @@ export interface RelinkSourceConfig<S> {
 /**
  * @public
  */
-export class RelinkSource<S> {
+export class RelinkSource<State> {
 
   /**
    * @internal
@@ -110,7 +110,7 @@ export class RelinkSource<S> {
   /**
    * @internal
    */
-  M$core: RelinkCore<S>
+  M$core: RelinkCore<State>
 
   /**
    * @internal
@@ -129,7 +129,7 @@ export class RelinkSource<S> {
     default: defaultState,
     lifecycle = {},
     options: rawOptions,
-  }: RelinkSourceConfig<S>) {
+  }: RelinkSourceConfig<State>) {
 
     // === Key checking ===
     const typeofRawKey = typeof rawKey
@@ -277,7 +277,7 @@ export class RelinkSource<S> {
    *   }
    * })
    */
-  hydrate(callback: RelinkHydrateCallback<S>): Promise<void> {
+  hydrate(callback: RelinkHydrateCallback<State>): Promise<void> {
     // NOTE: `core.M$hydrate` was previously not wrapped in 'M$exec'. Firing
     // multiple `.hydrate()` calls will most likely cause bugs because of this.
     this.M$gatedFlow.M$exec((): void => {
@@ -287,7 +287,7 @@ export class RelinkSource<S> {
       const concludeHydration = createNoUselessHydrationWarner(this.M$key)
 
       const executedCallback = callback({
-        commit: (hydratedState: S): void => {
+        commit: (hydratedState: State): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
           if (isFirstHydration) {
             this.M$core.M$hydrate(hydratedState)
@@ -336,7 +336,7 @@ export class RelinkSource<S> {
    * @example
    * Source.get()
    */
-  get(): S {
+  get(): State {
     return this.M$core.M$currentState
   }
 
@@ -347,8 +347,8 @@ export class RelinkSource<S> {
    * @example
    * await Source.getAsync()
    */
-  getAsync(): Promise<S> {
-    return this.M$gatedFlow.M$exec((): S => {
+  getAsync(): Promise<State> {
+    return this.M$gatedFlow.M$exec((): State => {
       return this.M$core.M$currentState
     })
   }
@@ -362,7 +362,7 @@ export class RelinkSource<S> {
    * @example // Directly set new value (State change on next line guaranteed)
    * await Source.set(newValue)
    */
-  set(nextState: S): Promise<void>
+  set(nextState: State): Promise<void>
 
   /**
    * Change the value of the state. Note that state values are not always
@@ -377,9 +377,9 @@ export class RelinkSource<S> {
    * @example // With async reducer (State change on next line guaranteed)
    * await Source.set(async (oldValue) => ({ ...oldValue, ...newValue }))
    */
-  set(reducer: (currentState: S) => S | Promise<S>): Promise<void>
+  set(reducer: (currentState: State) => State | Promise<State>): Promise<void>
 
-  set(stateOrReducer: S | ((currentState: S) => S | Promise<S>)): Promise<void> {
+  set(stateOrReducer: State | ((currentState: State) => State | Promise<State>)): Promise<void> {
     return this.M$gatedFlow.M$exec((): void | Promise<void> => {
       // let nextState: S
       if (isFunction(stateOrReducer)) {
@@ -429,7 +429,7 @@ export class RelinkSource<S> {
    *   return () => { unwatch() }
    * }, [Source])
    */
-  watch(callback: ((event: RelinkEvent<S>) => void)): (() => void) {
+  watch(callback: ((event: RelinkEvent<State>) => void)): (() => void) {
     return this.M$core.M$watcher.M$watch(callback)
   }
 

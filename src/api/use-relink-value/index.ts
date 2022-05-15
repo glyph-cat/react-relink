@@ -13,7 +13,7 @@ import { RelinkAdvancedSelector } from '../selector'
  * const state = useRelinkValue(Source)
  * @public
  */
-export function useRelinkValue<S>(source: RelinkSource<S>): S
+export function useRelinkValue<State>(source: RelinkSource<State>): State
 
 /**
  * @example
@@ -24,15 +24,15 @@ export function useRelinkValue<S>(source: RelinkSource<S>): S
  * const filteredState = useRelinkValue(Source, selector)
  * @public
  */
-export function useRelinkValue<S, K>(
-  source: RelinkSource<S>,
-  selector: RelinkSelector<S, K>
-): K
+export function useRelinkValue<State, SelectedState>(
+  source: RelinkSource<State>,
+  selector: RelinkSelector<State, SelectedState>
+): SelectedState
 
-export function useRelinkValue<S, K>(
-  source: RelinkSource<S>,
-  selector?: RelinkSelector<S, K>
-): S | K {
+export function useRelinkValue<State, SelectedState>(
+  source: RelinkSource<State>,
+  selector?: RelinkSelector<State, SelectedState>
+): State | SelectedState {
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)
@@ -42,16 +42,16 @@ export function useRelinkValue<S, K>(
 /**
  * @internal
  */
-export function useRelinkValue_BASE<S, K>(
-  source: RelinkSource<S>,
-  selector?: RelinkSelector<S, K>
-): S | K {
+export function useRelinkValue_BASE<State, SelectedState>(
+  source: RelinkSource<State>,
+  selector?: RelinkSelector<State, SelectedState>
+): State | SelectedState {
 
   // Before anything else, perform suspension if source is not ready.
   useSuspenseForDataFetching(source)
 
-  const unselectedSnapshotCache = useRef<S | K>()
-  const selectedSnapshotCache = useRef<S | K>()
+  const unselectedSnapshot = useRef<State | SelectedState>()
+  const selectedSnapshot = useRef<State | SelectedState>()
 
   const isEqual = useMemo(() => {
     return selector instanceof RelinkAdvancedSelector
@@ -59,12 +59,14 @@ export function useRelinkValue_BASE<S, K>(
       : Object.is
   }, [selector])
 
-  const getState = useCallback((): S | K => {
+  const getState = useCallback((): State | SelectedState => {
 
     const currentStateSnapshot = source.get()
 
-    if (Object.is(unselectedSnapshotCache.current, currentStateSnapshot)) {
-      return selectedSnapshotCache.current // Early exit
+    if (Object.is(unselectedSnapshot.current, currentStateSnapshot)) {
+      return selectedSnapshot.current // Early exit
+    } else {
+      unselectedSnapshot.current = currentStateSnapshot // and don't exit just yet
     }
 
     // NOTE: `isFunction` is not used to check the selector because it can only
@@ -73,15 +75,15 @@ export function useRelinkValue_BASE<S, K>(
     // incorrect type.
     if (selector) {
       if (selector instanceof RelinkAdvancedSelector) {
-        selectedSnapshotCache.current = selector[$$INTERNALS].M$get(currentStateSnapshot)
+        selectedSnapshot.current = selector[$$INTERNALS].M$get(currentStateSnapshot)
       } else {
-        selectedSnapshotCache.current = selector(currentStateSnapshot)
+        selectedSnapshot.current = selector(currentStateSnapshot)
       }
     } else {
-      selectedSnapshotCache.current = currentStateSnapshot
+      selectedSnapshot.current = currentStateSnapshot
     }
-    unselectedSnapshotCache.current = currentStateSnapshot
-    return selectedSnapshotCache.current
+
+    return selectedSnapshot.current
   }, [selector, source])
 
   const state = useRef(getState)

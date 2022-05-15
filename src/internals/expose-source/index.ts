@@ -4,9 +4,9 @@
 // /**
 //  * @internal
 //  */
-// export function exposeSource<S, K>(
-//   sourceOrSelector: RelinkSource<S> | UNSTABLE_RelinkSelector<S, K>
-// ): RelinkSource<S> {
+// export function exposeSource<State, SelectedState>(
+//   sourceOrSelector: RelinkSource<State> | UNSTABLE_RelinkSelector<State, SelectedState>
+// ): RelinkSource<State> {
 //   if (sourceOrSelector instanceof RelinkSource) {
 //     return sourceOrSelector
 //   } else {

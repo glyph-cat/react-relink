@@ -4,12 +4,12 @@ import { RelinkAdvancedSelector } from './api/selector'
  * Arguments passed to the hydration callback.
  * @public
  */
-export interface RelinkHydrateArgs<S> {
+export interface RelinkHydrateArgs<State> {
   /**
    * Commit a state that was previously saved.
    * @param hydratedState - The previously saved state.
    */
-  commit(hydratedState: S): void
+  commit(hydratedState: State): void
   /**
    * Skip hydration and use the default state.
    */
@@ -19,17 +19,17 @@ export interface RelinkHydrateArgs<S> {
 /**
  * @public
  */
-export type RelinkHydrateCallback<S> = (args: RelinkHydrateArgs<S>) => void
+export type RelinkHydrateCallback<State> = (args: RelinkHydrateArgs<State>) => void
 
 /**
  * @public
  */
-export type RelinkSelector<S, K> = RelinkBasicSelector<S, K> | RelinkAdvancedSelector<S, K>
+export type RelinkSelector<State, K> = RelinkBasicSelector<State, K> | RelinkAdvancedSelector<State, K>
 
 /**
  * @public
  */
-export type RelinkBasicSelector<S, K> = (state: S) => K
+export type RelinkBasicSelector<State, K> = (state: State) => K
 
 /**
  * @public
@@ -44,16 +44,16 @@ export enum RelinkEventType {
  * The event fired when a Relink state is changed by `.set()` or `.reset()`.
  * @public
  */
-export interface RelinkStateChangeEvent<S> {
+export interface RelinkStateChangeEvent<State> {
   type: RelinkEventType.set | RelinkEventType.reset
-  state: S
+  state: State
 }
 
 /**
  * The event fired when a Relink state is changed by `.hydrate()`.
  * @public
  */
-export interface RelinkHydrationEvent<S> {
+export interface RelinkHydrationEvent<State> {
   /**
    * The type of event that was being fired.
    */
@@ -61,7 +61,7 @@ export interface RelinkHydrationEvent<S> {
   /**
    * A snapshot of the state.
    */
-  state: S
+  state: State
   /**
    * A flag indicating whether the source is hydrating at the time the event is
    * fired.
@@ -72,7 +72,7 @@ export interface RelinkHydrationEvent<S> {
 /**
  * @public
  */
-export type RelinkEvent<S> = RelinkHydrationEvent<S> | RelinkStateChangeEvent<S>
+export type RelinkEvent<State> = RelinkHydrationEvent<State> | RelinkStateChangeEvent<State>
 
 /**
  * @example
@@ -98,22 +98,22 @@ export type RelinkEvent<S> = RelinkHydrationEvent<S> | RelinkStateChangeEvent<S>
  * })
  * @public
  */
-export interface RelinkLifecycleConfig<S> {
+export interface RelinkLifecycleConfig<State> {
   /**
    * Equivalent of `Source.hydrate()`. But it runs automatically when the source
    * is created and after its dependencies rehydrated (if any).
    */
-  init?: RelinkHydrateCallback<S>
+  init?: RelinkHydrateCallback<State>
   /**
    * Runs when the state changes. You can use this to persist data to a local
    * storage or database.
    */
-  didSet?(event: RelinkStateChangeEvent<S>): void
+  didSet?(event: RelinkStateChangeEvent<State>): void
   /**
    * Runs when the state resets. You can use this to remove data from the local
    * storage or database.
    */
-  didReset?(event: RelinkStateChangeEvent<S>): void
+  didReset?(event: RelinkStateChangeEvent<State>): void
 }
 
 /**

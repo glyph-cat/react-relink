@@ -29,11 +29,13 @@ const RelinkContext = createContext<RelinkContextSchema>({
 /**
  * @internal
  */
-export function useScopedRelinkSource<S>(source: RelinkSource<S>): RelinkSource<S> {
+export function useScopedRelinkSource<State>(
+  source: RelinkSource<State>
+): RelinkSource<State> {
   const currentContext = useContext(RelinkContext)
   const scopedSource = currentContext.M$pool[source.M$scopeId]
   return scopedSource
-    ? scopedSource as RelinkSource<S> // If in pool, return the scoped source.
+    ? scopedSource as RelinkSource<State> // If in pool, return the scoped source.
     : source // Otherwise, return the original source.
 }
 

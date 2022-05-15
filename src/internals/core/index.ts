@@ -25,14 +25,14 @@ function isIncomingStateOmitted(
  * A barebones state management setup meant to be used internally only.
  * @internal
  */
-export class RelinkCore<S> {
+export class RelinkCore<State> {
 
-  private M$defaultState: S
-  M$currentState: S
+  private M$defaultState: State
+  M$currentState: State
   M$isHydrating = false
-  M$watcher = new Watcher<[RelinkEvent<S>]>()
+  M$watcher = new Watcher<[RelinkEvent<State>]>()
 
-  constructor(defaultState: S) {
+  constructor(defaultState: State) {
     this.M$defaultState = defaultState
     this.M$currentState = defaultState
   }
@@ -43,7 +43,7 @@ export class RelinkCore<S> {
   M$dynamicSet(
     // incomingState?: S | typeof OMISSION_MARKER
     // Refer to Local Note [A] near end of file
-    incomingState: S | typeof OMISSION_MARKER = OMISSION_MARKER
+    incomingState: State | typeof OMISSION_MARKER = OMISSION_MARKER
   ): void {
     const isReset = isIncomingStateOmitted(incomingState)
     if (isReset) {
@@ -63,7 +63,7 @@ export class RelinkCore<S> {
    */
   M$hydrate(
     // Refer to Local Note [A] near end of file
-    incomingState: S | typeof OMISSION_MARKER = OMISSION_MARKER
+    incomingState: State | typeof OMISSION_MARKER = OMISSION_MARKER
   ): void {
     const isHydrationStart = isIncomingStateOmitted(incomingState)
     const hydrationStateDidChange = this.M$isHydrating !== isHydrationStart
@@ -97,13 +97,13 @@ export class RelinkCore<S> {
 // /**
 //  * A barebones state management setup meant to be used internally only.
 //  */
-// function createRelinkCore<S>(defaultState: S): RelinkCore<S> {
+// function createRelinkCore<State>(defaultState: State): RelinkCore<State> {
 
-//   let currentState: S = defaultState
+//   let currentState: State = defaultState
 //   let isHydrating = false
-//   const M$watcher = new Watcher<[RelinkEvent<S>]>()
+//   const M$watcher = new Watcher<[RelinkEvent<State>]>()
 
-//   const M$get = (): S => currentState
+//   const M$get = (): State => currentState
 
 //   const M$getIsHydrating = (): boolean => isHydrating
 
@@ -140,7 +140,7 @@ export class RelinkCore<S> {
 
 //   const M$dynamicSet = (
 //     // Refer to Local Note [A] near end of file
-//     incomingState: S | typeof OMISSION_MARKER = OMISSION_MARKER
+//     incomingState: State | typeof OMISSION_MARKER = OMISSION_MARKER
 //   ): void => {
 //     const isReset = isIncomingStateOmitted(incomingState)
 //     if (isReset) {

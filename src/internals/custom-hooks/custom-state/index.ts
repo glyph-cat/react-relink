@@ -24,7 +24,7 @@ const stateCache: WeakMap<
 /**
  * @internal
  */
-type StateHookData<S> = [S, (newState: S) => void]
+type StateHookData<State> = [State, (newState: State) => void]
 
 /**
  * A custom state hook that has a similar usage pattern to React's, but is
@@ -36,10 +36,10 @@ type StateHookData<S> = [S, (newState: S) => void]
  * - State setter only accepts new values (no reducers)
  * @internal
  */
-export function useCustomState<S>(
-  initialState: () => S,
+export function useCustomState<State>(
+  initialState: () => State,
   isEqual: ((prevState: unknown, nextState: unknown) => boolean)
-): StateHookData<S> {
+): StateHookData<State> {
 
   const isMounted = useRef(true)
   useEffect(() => { return () => { isMounted.current = false } }, [])
@@ -53,7 +53,7 @@ export function useCustomState<S>(
   const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
 
   if (!stateCache.has(id.current)) {
-    const stateSetter = (nextStateValue: S): void => {
+    const stateSetter = (nextStateValue: State): void => {
       if (!isMounted.current) {
         // KIV: Not sure why sometimes a final `forceUpdate` is still being
         // triggered when the component should've been unmounted.
@@ -70,5 +70,5 @@ export function useCustomState<S>(
     stateCache.set(id.current, [initialState(), stateSetter])
   }
 
-  return stateCache.get(id.current) as StateHookData<S>
+  return stateCache.get(id.current) as StateHookData<State>
 }

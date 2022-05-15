@@ -9,9 +9,9 @@ import { useRelinkValue_BASE } from '../use-relink-value'
  * @returns A tuple containing the current state, the state setter and a resetter.
  * @public
  */
-export function useRelinkState<S>(
-  source: RelinkSource<S>
-): [S, RelinkSource<S>['set'], RelinkSource<S>['reset']]
+export function useRelinkState<State>(
+  source: RelinkSource<State>
+): [State, RelinkSource<State>['set'], RelinkSource<State>['reset']]
 
 /**
  * @example
@@ -23,18 +23,18 @@ export function useRelinkState<S>(
  * @returns A tuple containing the current state, the state setter and a resetter.
  * @public
  */
-export function useRelinkState<S, K>(
-  source: RelinkSource<S>,
-  selector: RelinkSelector<S, K>
-): [K, RelinkSource<S>['set'], RelinkSource<S>['reset']]
+export function useRelinkState<State, SelectedState>(
+  source: RelinkSource<State>,
+  selector: RelinkSelector<State, SelectedState>
+): [SelectedState, RelinkSource<State>['set'], RelinkSource<State>['reset']]
 
 /**
  * @public
  */
-export function useRelinkState<S, K>(
-  source: RelinkSource<S>,
-  selector?: RelinkSelector<S, K>
-): [S | K, RelinkSource<S>['set'], RelinkSource<S>['reset']] {
+export function useRelinkState<State, SelectedState>(
+  source: RelinkSource<State>,
+  selector?: RelinkSelector<State, SelectedState>
+): [State | SelectedState, RelinkSource<State>['set'], RelinkSource<State>['reset']] {
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)
