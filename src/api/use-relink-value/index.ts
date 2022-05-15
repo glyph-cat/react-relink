@@ -50,42 +50,13 @@ export function useRelinkValue_BASE<State, SelectedState>(
   // Before anything else, perform suspension if source is not ready.
   useSuspenseForDataFetching(source)
 
-  const unselectedSnapshot = useRef<State | SelectedState>()
-  const selectedSnapshot = useRef<State | SelectedState>()
-
   const isEqual = useMemo(() => {
     return selector instanceof RelinkAdvancedSelector
       ? selector[$$INTERNALS].M$compareFn
       : Object.is
   }, [selector])
 
-  const getState = useCallback((): State | SelectedState => {
-
-    const currentStateSnapshot = source.get()
-
-    if (Object.is(unselectedSnapshot.current, currentStateSnapshot)) {
-      return selectedSnapshot.current // Early exit
-    } else {
-      unselectedSnapshot.current = currentStateSnapshot // and don't exit just yet
-    }
-
-    // NOTE: `isFunction` is not used to check the selector because it can only
-    // either be a faulty value or a function. If other types are passed, let
-    // the error automatically surface up so that users are aware of the
-    // incorrect type.
-    if (selector) {
-      if (selector instanceof RelinkAdvancedSelector) {
-        selectedSnapshot.current = selector[$$INTERNALS].M$get(currentStateSnapshot)
-      } else {
-        selectedSnapshot.current = selector(currentStateSnapshot)
-      }
-    } else {
-      selectedSnapshot.current = currentStateSnapshot
-    }
-
-    return selectedSnapshot.current
-  }, [selector, source])
-
+  const getState = useCacheableState(source, selector)
   const state = useRef(getState)
   const updateCount = useRef(0)
 
@@ -124,4 +95,48 @@ export function useRelinkValue_BASE<State, SelectedState>(
   })
 
   return state.current
+}
+
+/**
+ * Returns cached value if unselected state does not change.
+ * Cached value can either be selected or unselected; hence 2 `useRef` hooks
+ * are used to store those values.
+ * @internal
+ */
+function useCacheableState<State, SelectedState>(
+  source: RelinkSource<State>,
+  selector?: RelinkSelector<State, SelectedState>
+): (() => State | SelectedState) {
+
+  const unselectedSnapshot = useRef<State | SelectedState>()
+  const selectedSnapshot = useRef<State | SelectedState>()
+
+  const getCachableState = useCallback((): State | SelectedState => {
+
+    const currentStateSnapshot = source.get()
+
+    if (Object.is(unselectedSnapshot.current, currentStateSnapshot)) {
+      return selectedSnapshot.current // Early exit
+    } else {
+      unselectedSnapshot.current = currentStateSnapshot // and don't exit just yet
+    }
+
+    // NOTE: `isFunction` is not used to check the selector because it can only
+    // either be a faulty value or a function. If other types are passed, let
+    // the error automatically surface up so that users are aware of the
+    // incorrect type.
+    if (selector) {
+      if (selector instanceof RelinkAdvancedSelector) {
+        selectedSnapshot.current = selector[$$INTERNALS].M$get(currentStateSnapshot)
+      } else {
+        selectedSnapshot.current = selector(currentStateSnapshot)
+      }
+    } else {
+      selectedSnapshot.current = currentStateSnapshot
+    }
+
+    return selectedSnapshot.current
+  }, [selector, source])
+
+  return getCachableState
 }
