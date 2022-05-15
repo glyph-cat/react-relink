@@ -3,7 +3,10 @@ import {
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
 import { act } from 'react-test-renderer'
-import { RelinkSource as $RelinkSource, RELINK_COMPARE_FN_PRESET } from '../../../../src/bundle'
+import {
+  RelinkSource as $RelinkSource,
+  RELINK_COMPARE_FN_PRESET,
+} from '../../../../src/bundle'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
@@ -27,13 +30,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  test.only('RelinkBasicSelector', async (): Promise<void> => {
+  test('RelinkBasicSelector', async (): Promise<void> => {
 
     const hookInterface = createHookInterface({
-      useHook: () => useRelinkValue(Source, (s) => {
-        console.log('Selector invoked', s)
-        return s.bar
-      }),
+      useHook: () => useRelinkValue(Source, (s) => s.bar),
       values: {
         main({ hookData }) {
           return hookData

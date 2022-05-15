@@ -1,4 +1,4 @@
-import { useCallback, useDebugValue } from 'react'
+import { useCallback, useDebugValue, useMemo } from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
 import { $$INTERNALS, IS_DEV_ENV } from '../../constants'
 import { RelinkSelector } from '../../schema'
@@ -50,23 +50,38 @@ export function useRelinkValue_BASE<S, K>(
   // Before anything else, perform suspension if source is not ready.
   useSuspenseForDataFetching(source)
 
-  // TOFIX: `getState` should return same/memoized object reference if nothing
-  // changes.
+  const unselectedSnapshotCache = useRef<S | K>()
+  const selectedSnapshotCache = useRef<S | K>()
+
+  const isEqual = useMemo(() => {
+    return selector instanceof RelinkAdvancedSelector
+      ? selector[$$INTERNALS].M$compareFn
+      : Object.is
+  }, [selector])
+
   const getState = useCallback((): S | K => {
+
+    const currentStateSnapshot = source.get()
+
+    if (Object.is(unselectedSnapshotCache.current, currentStateSnapshot)) {
+      return selectedSnapshotCache.current // Early exit
+    }
+
     // NOTE: `isFunction` is not used to check the selector because it can only
     // either be a faulty value or a function. If other types are passed, let
     // the error automatically surface up so that users are aware of the
     // incorrect type.
-    const currentStateSnapshot = source.get()
     if (selector) {
       if (selector instanceof RelinkAdvancedSelector) {
-        return selector[$$INTERNALS].M$get(currentStateSnapshot)
+        selectedSnapshotCache.current = selector[$$INTERNALS].M$get(currentStateSnapshot)
       } else {
-        return selector(currentStateSnapshot)
+        selectedSnapshotCache.current = selector(currentStateSnapshot)
       }
     } else {
-      return currentStateSnapshot
+      selectedSnapshotCache.current = currentStateSnapshot
     }
+    unselectedSnapshotCache.current = currentStateSnapshot
+    return selectedSnapshotCache.current
   }, [selector, source])
 
   const state = useRef(getState)
@@ -74,17 +89,12 @@ export function useRelinkValue_BASE<S, K>(
 
   const getUpdateCount = useCallback((): number => {
     const nextState = getState()
-    const isEqual = selector instanceof RelinkAdvancedSelector
-      ? selector[$$INTERNALS].M$compareFn
-      : Object.is
-
     // Originally expecting an error below with `@ts-expect-error`, but we get:
     // - Compile error when bundling types because the compiler doesn't see any
     //   problem with it (so do I, hence this long-arse explanation), or
     // - Compile error when bundling CJS code if `@ts-expect-error` is removed
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // @ts-expect-error If `selector` is provided, `selector` will always return
+    // @ts-ignore If `selector` is provided, `selector` will always return
     // type `K` and since `compareFn` always compares `K` and always comes
     // together with `selector`, there should be no problem performing the
     // comparison below.
@@ -94,7 +104,7 @@ export function useRelinkValue_BASE<S, K>(
       updateCount.current += 1
     }
     return updateCount.current
-  }, [getState, selector])
+  }, [getState, isEqual])
 
   useSyncExternalStore(source.watch, getUpdateCount)
 

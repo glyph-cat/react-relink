@@ -63,7 +63,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     })
 
-    test.only('With selector', async (): Promise<void> => {
+    test('With selector', async (): Promise<void> => {
 
       Source = new RelinkSource<SampleSchema>({
         key: 'test/api-useRelinkValue/external-state-change',
