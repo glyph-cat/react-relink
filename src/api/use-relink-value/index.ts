@@ -1,12 +1,17 @@
-import { useCallback, useDebugValue, useMemo } from 'react'
+import {
+  useCallback,
+  useDebugValue,
+  useMemo,
+  useRef, // eslint-disable-line no-restricted-imports
+} from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
-import { $$INTERNALS, IS_DEV_ENV } from '../../constants'
+import { $$INTERNALS, EMPTY_OBJECT, IS_DEV_ENV } from '../../constants'
 import { RelinkSelector } from '../../schema'
-import { useRef } from '../../internals/custom-hooks'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
 import { RelinkAdvancedSelector } from '../selector'
+import { LazyVariable } from '../../internals/lazy-declare'
 
 /**
  * @example
@@ -59,6 +64,26 @@ export function useRelinkValue<State, SelectedState>(
 /**
  * @internal
  */
+const CacheableStateSymbol = Symbol()
+
+/**
+ * @internal
+ */
+interface SyncValue<State> {
+  [CacheableStateSymbol]: [number, State]
+}
+
+/**
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const EMPTY_CACHED_SYNC_VALUE: SyncValue<any> = {
+  [CacheableStateSymbol]: [-1, EMPTY_OBJECT]
+}
+
+/**
+ * @internal
+ */
 export function useRelinkValue_BASE<State, SelectedState>(
   source: RelinkSource<State>,
   selector?: RelinkSelector<State, SelectedState>
@@ -67,80 +92,67 @@ export function useRelinkValue_BASE<State, SelectedState>(
   // Before anything else, perform suspension if source is not ready.
   useSuspenseForDataFetching(source)
 
-  const isEqual = useMemo(() => {
-    return selector instanceof RelinkAdvancedSelector
-      ? selector[$$INTERNALS].M$compareFn
-      : Object.is
-  }, [selector])
+  const mutableSelector = useRef(selector)
+  mutableSelector.current = selector
 
-  const getState = useCacheableState(source, selector)
-  const state = useRef(getState)
-  const updateCount = useRef(0)
-
-  const getUpdateCount = useCallback((): number => {
-    const nextState = getState()
-    // Originally expecting an error below with `@ts-expect-error`, but we get:
-    // - Compile error when bundling types because the compiler doesn't see any
-    //   problem with it (so do I, hence this long-arse explanation), or
-    // - Compile error when bundling CJS code if `@ts-expect-error` is removed
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore If `selector` is provided, `selector` will always return
-    // type `K` and since `compareFn` always compares `K` and always comes
-    // together with `selector`, there should be no problem performing the
-    // comparison below.
-    const isCurrentAndNextStateEqual = isEqual(state.current, nextState)
-    if (!isCurrentAndNextStateEqual) {
-      state.current = nextState
-      updateCount.current += 1
-    }
-    return updateCount.current
-  }, [getState, isEqual])
-
-  useSyncExternalStore(source.watch, getUpdateCount)
-
-  return state.current
-}
-
-/**
- * Returns cached value if unselected state does not change.
- * Cached value can either be selected or unselected; hence 2 `useRef` hooks
- * are used to store those values.
- * @internal
- */
-function useCacheableState<State, SelectedState>(
-  source: RelinkSource<State>,
-  selector?: RelinkSelector<State, SelectedState>
-): (() => State | SelectedState) {
-
-  const unselectedSnapshot = useRef<State | SelectedState>()
-  const selectedSnapshot = useRef<State | SelectedState>()
-
-  const getCachableState = useCallback((): State | SelectedState => {
-
-    const currentStateSnapshot = source.get()
-
-    if (Object.is(unselectedSnapshot.current, currentStateSnapshot)) {
-      return selectedSnapshot.current // Early exit
-    } else {
-      unselectedSnapshot.current = currentStateSnapshot // and don't exit just yet
-    }
-
+  const selectValue = useCallback(($value: State): State | SelectedState => {
     // NOTE: `isFunction` is not used to check the selector because it can only
     // either be a faulty value or a function. If other types are passed, let
     // the error automatically surface up so that users are aware of the
     // incorrect type.
-    if (selector) {
-      if (selector instanceof RelinkAdvancedSelector) {
-        selectedSnapshot.current = selector[$$INTERNALS].M$get(currentStateSnapshot)
+    if (mutableSelector.current) {
+      if (mutableSelector.current instanceof RelinkAdvancedSelector) {
+        return mutableSelector.current[$$INTERNALS].M$get($value)
       } else {
-        selectedSnapshot.current = selector(currentStateSnapshot)
+        return mutableSelector.current($value)
       }
     } else {
-      selectedSnapshot.current = currentStateSnapshot
+      return $value
     }
+  }, [])
 
-    return selectedSnapshot.current
-  }, [selector, source])
+  const isEqual = useMemo(() => {
+    return mutableSelector.current instanceof RelinkAdvancedSelector
+      ? mutableSelector.current[$$INTERNALS].M$compareFn
+      : Object.is
+  }, [])
 
-  return getCachableState
+  const cachedSyncValue = useRef<SyncValue<State | SelectedState>>(EMPTY_CACHED_SYNC_VALUE)
+
+  return useSyncExternalStore(
+    source.watch,
+    useCallback(() => {
+      const [
+        currentMutationCount,
+        currentSelectedState,
+      ] = cachedSyncValue.current[CacheableStateSymbol]
+      const nextMutationCount = source.M$core.M$mutationCount
+      const nextSelectedState = new LazyVariable(() => selectValue(source.get()))
+
+      const shouldReturnCachedValue = (() => {
+        if (currentMutationCount === nextMutationCount) {
+          return true // Early exit
+        }
+        if (Object.is(currentSelectedState, EMPTY_OBJECT)) {
+          // If the cached value is `null`, there's no way in hell we're
+          // returning that value.
+          return false // Early exit
+        }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return isEqual(currentSelectedState, nextSelectedState.get())
+      })()
+
+      if (shouldReturnCachedValue) {
+        return cachedSyncValue.current
+      } else {
+        const nextSyncValue: SyncValue<State | SelectedState> = {
+          [CacheableStateSymbol]: [nextMutationCount, nextSelectedState.get()],
+        }
+        cachedSyncValue.current = nextSyncValue
+        return nextSyncValue
+      }
+    }, [isEqual, selectValue, source])
+  )[CacheableStateSymbol][1]
+
 }

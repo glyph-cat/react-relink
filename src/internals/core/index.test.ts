@@ -17,7 +17,7 @@ describe(RelinkCore.name, (): void => {
 
   describe('M$dynamicSet', (): void => {
 
-    test('set', (): void => {
+    describe('set', (): void => {
 
       const defaultState = { value: 1 }
       const core = new RelinkCore(defaultState)
@@ -44,7 +44,6 @@ describe(RelinkCore.name, (): void => {
       unwatchStateChange()
 
     })
-
 
     describe('reset', (): void => {
 
@@ -75,6 +74,23 @@ describe(RelinkCore.name, (): void => {
       // Cleanup
       unwatchStateChange()
 
+    })
+
+    test('Mutation count', () => {
+      const defaultState = { value: 1 }
+      const nextState = { value: 2 }
+      const core = new RelinkCore(defaultState)
+      expect(core.M$mutationCount).toBe(0)
+
+      core.M$dynamicSet(nextState)
+      expect(core.M$mutationCount).toBe(1)
+      core.M$dynamicSet(nextState)
+      expect(core.M$mutationCount).toBe(1)
+
+      core.M$dynamicSet(/* Empty means reset */)
+      expect(core.M$mutationCount).toBe(2)
+      core.M$dynamicSet(/* Empty means reset */)
+      expect(core.M$mutationCount).toBe(2)
     })
 
   })
@@ -150,6 +166,30 @@ describe(RelinkCore.name, (): void => {
 
       // Cleanup
       unwatchStateChange()
+
+    })
+
+    test('Mutation count', () => {
+
+      const defaultState = { value: 1 }
+      const hydratedState = { value: 2 }
+      const core = new RelinkCore(defaultState)
+      expect(core.M$mutationCount).toBe(0)
+
+      core.M$hydrate(HYDRATION_SKIP_MARKER)
+      expect(core.M$mutationCount).toBe(0)
+      core.M$hydrate(HYDRATION_SKIP_MARKER)
+      expect(core.M$mutationCount).toBe(0)
+
+      core.M$hydrate(hydratedState)
+      expect(core.M$mutationCount).toBe(1)
+      core.M$hydrate(hydratedState)
+      expect(core.M$mutationCount).toBe(1)
+
+      core.M$hydrate(HYDRATION_SKIP_MARKER)
+      expect(core.M$mutationCount).toBe(2)
+      core.M$hydrate(HYDRATION_SKIP_MARKER)
+      expect(core.M$mutationCount).toBe(2)
 
     })
 

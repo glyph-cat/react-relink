@@ -11,9 +11,23 @@ export interface RelinkHydrateArgs<State> {
    */
   commit(hydratedState: State): void
   /**
-   * Skip hydration and use the default state.
+   * Commit the default state. Will override the current state if it is not
+   * already the default.
    */
   skip(): void
+  /**
+   * 🚧 EXPERIMENTAL 🚧
+   * Commit the default state. Will override the current state if it is not
+   * already the default.
+   * @internal
+   */
+  commitDefault(): void
+  /**
+   * 🚧 EXPERIMENTAL 🚧
+   * Skips hydration completely, not mutating the state at all.
+   * @internal
+   */
+  commitNoop(): void
 }
 
 /**

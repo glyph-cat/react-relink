@@ -1,6 +1,11 @@
 import { IS_DEV_ENV } from '../../constants'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
-import { RelinkCore, HYDRATION_SKIP_MARKER } from '../../internals/core'
+import {
+  RelinkCore,
+  HYDRATION_SKIP_MARKER,
+  HYDRATION_COMMIT_DEFAULT_MARKER,
+  HYDRATION_COMMIT_NOOP_MARKER,
+} from '../../internals/core'
 import { checkForCircularDeps } from '../../internals/circular-deps'
 import { devWarn } from '../../internals/dev'
 import {
@@ -299,6 +304,18 @@ export class RelinkSource<State> {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
           if (isFirstHydration) {
             this.M$core.M$hydrate(HYDRATION_SKIP_MARKER)
+          }
+        },
+        commitDefault: (): void => {
+          const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
+          if (isFirstHydration) {
+            this.M$core.M$hydrate(HYDRATION_COMMIT_DEFAULT_MARKER)
+          }
+        },
+        commitNoop: (): void => {
+          const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
+          if (isFirstHydration) {
+            this.M$core.M$hydrate(HYDRATION_COMMIT_NOOP_MARKER)
           }
         },
       })

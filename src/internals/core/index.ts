@@ -10,7 +10,17 @@ const OMISSION_MARKER: ObjectMarker = {} as const
 /**
  * @internal
  */
-export const HYDRATION_SKIP_MARKER: ObjectMarker = {} as const
+export const HYDRATION_SKIP_MARKER: ObjectMarker = { hello: 'uwu' } as const
+
+/**
+ * @internal
+ */
+export const HYDRATION_COMMIT_NOOP_MARKER: ObjectMarker = {} as const
+
+/**
+ * @internal
+ */
+export const HYDRATION_COMMIT_DEFAULT_MARKER: ObjectMarker = {} as const
 
 /**
  * @internal
@@ -29,12 +39,19 @@ export class RelinkCore<State> {
 
   private M$defaultState: State
   M$currentState: State
+  M$mutationCount = 0
   M$isHydrating = false
   M$watcher = new Watcher<[RelinkEvent<State>]>()
 
   constructor(defaultState: State) {
     this.M$defaultState = defaultState
     this.M$currentState = defaultState
+  }
+
+  private M$bumpMutationCount(prevState: State, nextState: State): void {
+    if (!Object.is(prevState, nextState)) {
+      this.M$mutationCount += 1
+    }
   }
 
   /**
@@ -48,8 +65,10 @@ export class RelinkCore<State> {
     const isReset = isIncomingStateOmitted(incomingState)
     if (isReset) {
       // Refer to Local Note [C] near end of file
+      this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
       this.M$currentState = this.M$defaultState
     } else {
+      this.M$bumpMutationCount(this.M$currentState, incomingState)
       this.M$currentState = incomingState
     }
     this.M$watcher.M$refresh({
@@ -71,10 +90,16 @@ export class RelinkCore<State> {
 
     if (!isHydrationStart) {
       if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
-        // Assume using the initial state
+        this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
         this.M$currentState = this.M$defaultState
-        // Refer to Local Note [C] near end of file
+        // ^ Assume using the initial state
+      } else if (Object.is(incomingState, HYDRATION_COMMIT_DEFAULT_MARKER)) {
+        this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
+        this.M$currentState = this.M$defaultState
+      } else if (Object.is(incomingState, HYDRATION_COMMIT_NOOP_MARKER)) {
+        // Do nothing here
       } else {
+        this.M$bumpMutationCount(this.M$currentState, incomingState)
         this.M$currentState = incomingState
       }
     }

@@ -1,3 +1,5 @@
+import { ObjectMarker } from './internals/helper-types'
+
 export const $$INTERNALS = Symbol()
 
 /**
@@ -11,6 +13,11 @@ export const IS_INTERNAL_DEBUG_ENV = process.env.IS_INTERNAL_DEBUG_ENV !== 'fals
  * @internal
  */
 export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
+
+/**
+ * @internal
+ */
+export const EMPTY_OBJECT: ObjectMarker = {} as const
 
 /**
  * Used to be `IS_BROWSER_ENV` which only `typeof window` is checked.
