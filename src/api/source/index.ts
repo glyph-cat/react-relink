@@ -46,8 +46,9 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
 export interface RelinkSourceConfig<State> {
   /**
    * A unique key for the source. Use a string or number for better clarity in a
-   * normal project, use a Symbol instead if you're building a library to avoid
-   * clashing with user-defined keys.
+   * normal project, use a
+   * [`Symbol`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
+   * instead if you're building a library to avoid clashing with user-defined keys.
    */
   key: RelinkSourceKey
   /**
@@ -256,8 +257,9 @@ export class RelinkSource<State> {
   /**
    * Rehydrates the source. Useful when you need to fetch data from
    * `localStorage` or a server. This will change the state and cause components
-   * to re-render, but won't fire event `lifecycle.didSet` so that the same data
-   * doesn't get persisted back to the `localStorage` or server.
+   * to re-render, but {@link RelinkEventType.set} events will not be fired and
+   * `lifecycle.didSet` will not be called so that the same data doesn't get
+   * persisted back to the `localStorage` or server.
    * @example
    * Source.hydrate(({ commit, skip }) => {
    * const rawValue = localStorage.getItem(storageKey)

@@ -12,7 +12,7 @@ export interface RelinkAdvancedSelectorConfig<State, SelectedState> {
    * You can provide a custom equality checker through this property.
    * This function should only return `true` if the previous and next states are
    * considered equal, otherwise it should return `false` .
-   * @defaultValue `Object.is`
+   * @defaultValue [`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
    */
   compareFn?(prevState: SelectedState, nextState: SelectedState): boolean
 }
