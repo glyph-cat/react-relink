@@ -33,10 +33,27 @@ export function useRelinkValue<State, SelectedState>(
   source: RelinkSource<State>,
   selector?: RelinkSelector<State, SelectedState>
 ): State | SelectedState {
+
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)
-  return useRelinkValue_BASE(scopedSource, selector)
+
+  const value = useRelinkValue_BASE(scopedSource, selector)
+
+  // Show debug value.
+  useDebugValue(undefined, () => {
+    // In case source contains sensitive information, it is hidden away in
+    // production environment by default.
+    if (source.M$options.public || IS_DEV_ENV) {
+      return {
+        key: source.M$key,
+        selector: selector,
+        value: value,
+      }
+    }
+  })
+
+  return value
 }
 
 /**
@@ -71,8 +88,8 @@ export function useRelinkValue_BASE<State, SelectedState>(
     // type `K` and since `compareFn` always compares `K` and always comes
     // together with `selector`, there should be no problem performing the
     // comparison below.
-    const selectedStateAreEqual = isEqual(state.current, nextState)
-    if (!selectedStateAreEqual) {
+    const isCurrentAndNextStateEqual = isEqual(state.current, nextState)
+    if (!isCurrentAndNextStateEqual) {
       state.current = nextState
       updateCount.current += 1
     }
@@ -80,19 +97,6 @@ export function useRelinkValue_BASE<State, SelectedState>(
   }, [getState, isEqual])
 
   useSyncExternalStore(source.watch, getUpdateCount)
-
-  // Show debug value.
-  useDebugValue(undefined, () => {
-    // In case source contains sensitive information, it is hidden away in
-    // production environment by default.
-    if (source.M$options.public || IS_DEV_ENV) {
-      return {
-        key: source.M$key,
-        selector: selector,
-        value: state.current,
-      }
-    }
-  })
 
   return state.current
 }
