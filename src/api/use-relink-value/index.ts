@@ -89,7 +89,7 @@ export function useRelinkValue_BASE<State, SelectedState>(
       return {
         key: source.M$key,
         selector: selector,
-        value: state,
+        value: state.current,
       }
     }
   })
