@@ -15,8 +15,6 @@ let idCounter = 0
  */
 const store: Record<number, MutableRefObject<unknown>> = {}
 
-// TODO: Write test
-
 export function useRef<T>(
   initialValue: T | (() => T) = null
 ): MutableRefObject<T> {
