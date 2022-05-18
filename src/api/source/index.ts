@@ -42,7 +42,6 @@ import { getNewScopeId } from '../scope'
 const DEFAULT_OPTIONS: RelinkSourceOptions = {
   public: false,
   suspense: false,
-  virtualBatch: false,
 } as const
 
 /**

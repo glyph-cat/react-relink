@@ -7,11 +7,9 @@ describe(checkForCircularDeps.name, (): void => {
   let SourceB: RelinkSource<number>
   let SourceC: RelinkSource<number>
   afterEach((): void => {
-    /* eslint-disable import/no-deprecated */
     if (SourceA instanceof RelinkSource) { SourceA.cleanup() }
     if (SourceB instanceof RelinkSource) { SourceB.cleanup() }
     if (SourceC instanceof RelinkSource) { SourceC.cleanup() }
-    /* eslint-enable import/no-deprecated */
   })
 
   // KIV: There used to be a problem where `allDepsAreReady` will be called

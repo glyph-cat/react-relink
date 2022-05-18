@@ -146,23 +146,6 @@ export interface RelinkSourceOptions {
    */
   suspense?: boolean
   /**
-   * ## 🚨 DEPRECATED 🚨
-   * Slightly improve performance by coalescing the "setState" calls on top of
-   * React's batched updates.
-   * - NOT suitable for states consumed by UI components that need to be
-   * responsive. You will notice a delay when typing very quickly, for example.
-   * - Suitable for states consumed by UI components that update almost too
-   * frequently but actualy doesn't need to re-render that often. For example:
-   * a long list discussion threads that updates in real-time.
-   * @defaultValue `false`
-   * @deprecated React's concurrent rendering solves this problem already.
-   * For less significant UI updates, use the
-   * [Transition](https://reactjs.org/docs/hooks-reference.html#usetransition)
-   * API instead. For urgent UI updates, call the `.set()` method on sources as
-   * usual.
-   */
-  virtualBatch?: boolean
-  /**
    * Make the state of this source readable through [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) even in production mode. State values will always be readable from the devtools in debug mode.
    * @defaultValue `false`
    */
