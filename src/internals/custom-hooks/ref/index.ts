@@ -22,7 +22,7 @@ export function useRef<T>(
 ): MutableRefObject<T> {
   const isFirstRender = useRef_React(true)
   const id = useRef_React<number>()
-  if (isFirstRender) {
+  if (isFirstRender.current) {
     isFirstRender.current = false
     id.current = ++idCounter
   }

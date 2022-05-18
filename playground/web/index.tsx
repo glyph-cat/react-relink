@@ -1,13 +1,14 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import { Playground } from './containers/cyclic-calls'
+import ReactDOM from 'react-dom/client'
+import { Playground } from './containers/sync-ext-store'
+// import { Playground } from './containers/cyclic-calls'
 // import { Playground } from './containers/generic'
 // import { Playground } from './containers/scope'
 // import { Playground } from './containers/use-relink-state'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Playground />
-  </React.StrictMode>,
-  document.getElementById('root')
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(
+  <Playground />
+  // <React.StrictMode>
+  // </React.StrictMode>
 )

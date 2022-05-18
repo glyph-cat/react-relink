@@ -139,7 +139,7 @@ export class RelinkSource<State> {
     ) {
       this.M$key = rawKey
       if (rawKey === '') {
-        devWarn('Did you just passed an empty string as a source key? Be careful, it can lead to problems that are hard to diagnose and debug later on.')
+        devWarn('Did you just pass an empty string as a source key? Be careful, it can lead to problems that are hard to diagnose and debug later on.')
       }
     } else {
       throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
