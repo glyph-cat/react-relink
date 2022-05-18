@@ -46,7 +46,7 @@ export function Playground(): JSX.Element {
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       startTransition(() => {
-        MouseSource.set({ x: e.clientX, y: e.clientX })
+        MouseSource.set({ x: e.clientX, y: e.clientY })
       })
     }
     window.addEventListener('mousemove', onMouseMove)
