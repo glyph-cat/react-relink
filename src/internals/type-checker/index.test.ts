@@ -1,4 +1,4 @@
-import { isFunction, isThenable } from '.'
+import { isFunction, isObject, isThenable } from '.'
 
 describe(isFunction.name, (): void => {
 
@@ -14,6 +14,25 @@ describe(isFunction.name, (): void => {
 
   test('With a falsy value', (): void => {
     const output = isFunction(undefined)
+    expect(output).toBe(false)
+  })
+
+})
+
+describe(isObject.name, (): void => {
+
+  test('Plain object', (): void => {
+    const output = isObject({ hello: 'world' })
+    expect(output).toBe(true)
+  })
+
+  test('Class instance', (): void => {
+    const output = isObject(new Date())
+    expect(output).toBe(true)
+  })
+
+  test('Something else', (): void => {
+    const output = isObject(42)
     expect(output).toBe(false)
   })
 

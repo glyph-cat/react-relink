@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 import { MutableRefObject } from 'react'
 import { IS_INTERNAL_DEBUG_ENV } from '../../constants'
 import { isObject } from '../../internals/type-checker'
@@ -21,6 +20,7 @@ export const SHALLOW_COMPARE_INVOCATION_SPY: MutableRefObject<Array<SHALLOW_COMP
 /**
  * @public
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace RELINK_COMPARE_FN_PRESET {
 
   /**

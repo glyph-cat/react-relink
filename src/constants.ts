@@ -1,5 +1,54 @@
 import { ObjectMarker } from './internals/helper-types'
 
+// MARK: Public
+
+/**
+ * @public
+ */
+export enum RelinkBuildType {
+  /**
+   * React Native
+   */
+  RN = 'RN',
+  /**
+   * Common JS
+   */
+  CJS = 'CJS',
+  /**
+   * EcmaScript
+   */
+  ES = 'ES',
+  /**
+   * EcmaScript (minified)
+   */
+  MJS = 'MJS',
+  /**
+   * Universal Module Definition
+   */
+  UMD = 'UMD',
+  /**
+   * Universal Module Definition (Minified)
+   */
+  UMD_MIN = 'UMD_MIN',
+}
+
+/**
+ * @public
+ */
+export const BUILD_TYPE = process.env.BUILD_TYPE as RelinkBuildType
+
+/**
+ * @public
+ */
+export const BUILD_HASH = process.env.BUILD_HASH
+
+/**
+ * @public
+ */
+export const VERSION = process.env.NPM_PACKAGE_VERSION
+
+// MARK: Internal
+
 export const $$INTERNALS = Symbol()
 
 /**
@@ -34,14 +83,10 @@ export const EMPTY_OBJECT: ObjectMarker = {} as const
  * @internal
  */
 export const IS_CLIENT_ENV = IS_INTERNAL_DEBUG_ENV ||
-  process.env.BUILD_TYPE === 'react-native' ||
-  process.env.BUILD_TYPE === 'umd' ||
+  BUILD_TYPE === 'RN' ||
+  BUILD_TYPE === 'UMD' ||
+  BUILD_TYPE === 'UMD_MIN' ||
   typeof window !== 'undefined'
 // ^ NOTE: `typeof window !== 'undefined'` must be placed at the last because
 // the value remains unknown at compile time, and will result in dead code not
 // trimmed even when `IS_CLIENT_ENV` is undoubtedly true.
-
-/**
- * @public
- */
-export const VERSION = process.env.NPM_PACKAGE_VERSION
