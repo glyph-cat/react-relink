@@ -1,6 +1,4 @@
 import * as __relink__ from '../src/bundle'
-// import { RelinkSource } from '../src/api/source'
-// import * as __relink__ from '..'
 
 export interface IntegrationTestConfig {
   buildType: 'cjs' | 'es' | 'umd'

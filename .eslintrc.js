@@ -5,7 +5,4 @@ const strictConfig = configs.strict
 module.exports = {
   root: true,
   ...strictConfig,
-  // extends: [
-  //   '@glyph-cat/strict',
-  // ],
 }

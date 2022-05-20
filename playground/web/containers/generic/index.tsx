@@ -1,7 +1,7 @@
-import { useLayoutEffect } from '@glyph-cat//swiss-army-knife'
+import { delay, useLayoutEffect } from '@glyph-cat//swiss-army-knife'
 import { Suspense } from 'react'
 import { RelinkSource, useRelinkValue } from '../../../../src/bundle'
-import { delay, TIME_GAP } from '../../../../src/debugging'
+import { TIME_GAP } from '../../../../src/debugging'
 
 const localTimeGap = TIME_GAP(25)
 

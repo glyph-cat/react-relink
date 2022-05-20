@@ -52,10 +52,9 @@ export const VERSION = process.env.NPM_PACKAGE_VERSION
 export const $$INTERNALS = Symbol()
 
 /**
- * Refers to the environment used to develop Relink.
  * @internal
  */
-export const IS_INTERNAL_DEBUG_ENV = process.env.IS_INTERNAL_DEBUG_ENV !== 'false'
+export const EMPTY_OBJECT: ObjectMarker = {} as const
 
 /**
  * Refers to the non-production environment where Relink is used by developers.
@@ -64,9 +63,10 @@ export const IS_INTERNAL_DEBUG_ENV = process.env.IS_INTERNAL_DEBUG_ENV !== 'fals
 export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
 
 /**
+ * Refers to the environment used to develop Relink.
  * @internal
  */
-export const EMPTY_OBJECT: ObjectMarker = {} as const
+export const IS_INTERNAL_DEBUG_ENV = process.env.IS_INTERNAL_DEBUG_ENV !== 'false'
 
 /**
  * Used to be `IS_BROWSER_ENV` which only `typeof window` is checked.
@@ -82,11 +82,12 @@ export const EMPTY_OBJECT: ObjectMarker = {} as const
  *
  * @internal
  */
-export const IS_CLIENT_ENV = IS_INTERNAL_DEBUG_ENV ||
+export const IS_CLIENT_ENV =
+  IS_INTERNAL_DEBUG_ENV ||
   BUILD_TYPE === 'RN' ||
   BUILD_TYPE === 'UMD' ||
   BUILD_TYPE === 'UMD_MIN' ||
   typeof window !== 'undefined'
 // ^ NOTE: `typeof window !== 'undefined'` must be placed at the last because
 // the value remains unknown at compile time, and will result in dead code not
-// trimmed even when `IS_CLIENT_ENV` is undoubtedly true.
+// trimmed even if one of the other statements can be evaluated to true.

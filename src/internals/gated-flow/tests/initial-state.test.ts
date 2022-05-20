@@ -1,4 +1,5 @@
-import { delay, TIME_GAP } from '../../../debugging'
+import { delay } from '@glyph-cat/swiss-army-knife'
+import { TIME_GAP } from '../../../debugging'
 import { GatedFlow } from '..'
 
 // NOTE: Every time `M$exec` is called, so is `M$flush`, but the callbacks

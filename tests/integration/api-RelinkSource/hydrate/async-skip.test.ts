@@ -1,5 +1,6 @@
+import { delay } from '@glyph-cat/swiss-army-knife'
 import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
-import { createEventStackPromise, delay, TIME_GAP } from '../../../../src/debugging'
+import { createEventStackPromise, TIME_GAP } from '../../../../src/debugging'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 

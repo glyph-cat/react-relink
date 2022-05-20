@@ -1,4 +1,5 @@
-import { delay, TIME_GAP } from '../../../debugging'
+import { delay } from '@glyph-cat/swiss-army-knife'
+import { TIME_GAP } from '../../../debugging'
 import { GatedFlow } from '..'
 
 // Elaboration: Gate only closes when all currently queued callbacks have been

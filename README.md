@@ -10,7 +10,8 @@
 ![Bundle size](https://img.shields.io/bundlephobia/min/react-relink)
 [![License](https://img.shields.io/github/license/glyph-cat/react-relink)](https://github.com/glyph-cat/react-relink/blob/main/LICENSE)
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/glyph-cat/react-relink)
+<!-- See: https://github.com/microsoft/vscode/issues/128813#issuecomment-943125631 -->
+[![Open in Visual Studio Code](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://open.vscode.dev/glyph-cat/react-relink)
 [![Support me on Ko-fi](https://img.shields.io/static/v1?label&logo=kofi&logoColor=ffffff&message=Support%20me%20on%20Ko-fi&color=FF5E5B)](https://ko-fi.com/glyphcat)
 
 </div>

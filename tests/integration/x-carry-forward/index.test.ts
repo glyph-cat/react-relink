@@ -1,5 +1,6 @@
+import { delay } from '@glyph-cat/swiss-army-knife'
 import { act } from 'react-test-renderer'
-import { delay, TIME_GAP } from '../../../src/debugging'
+import { TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 

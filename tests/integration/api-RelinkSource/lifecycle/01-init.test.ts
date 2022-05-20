@@ -2,9 +2,10 @@ import {
   createHookInterface,
   createCleanupRef,
 } from '@glyph-cat/react-test-utils'
+import { delay } from '@glyph-cat/swiss-army-knife'
 import { act } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
-import { createEventPromise, delay, TIME_GAP } from '../../../../src/debugging'
+import { createEventPromise, TIME_GAP } from '../../../../src/debugging'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 

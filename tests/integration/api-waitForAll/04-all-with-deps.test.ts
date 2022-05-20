@@ -1,4 +1,5 @@
-import { delay, genericDebugLogger, TIME_GAP } from '../../../src/debugging'
+import { delay } from '@glyph-cat/swiss-army-knife'
+import { genericDebugLogger, TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
