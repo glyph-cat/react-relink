@@ -64,7 +64,6 @@ export class RelinkCore<State> {
   ): void {
     const isReset = isIncomingStateOmitted(incomingState)
     if (isReset) {
-      // Refer to Local Note [C] near end of file
       this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
       this.M$currentState = this.M$defaultState
     } else {
@@ -73,7 +72,7 @@ export class RelinkCore<State> {
     }
     this.M$watcher.M$refresh({
       type: isReset ? RelinkEventType.reset : RelinkEventType.set,
-      state: this.M$currentState, // Refer to Local Note [B] near end of file
+      state: this.M$currentState,
     })
   }
 
@@ -119,94 +118,7 @@ export class RelinkCore<State> {
 
 }
 
-// /**
-//  * A barebones state management setup meant to be used internally only.
-//  */
-// function createRelinkCore<State>(defaultState: State): RelinkCore<State> {
-
-//   let currentState: State = defaultState
-//   let isHydrating = false
-//   const M$watcher = new Watcher<[RelinkEvent<State>]>()
-
-//   const M$get = (): State => currentState
-
-//   const M$getIsHydrating = (): boolean => isHydrating
-
-//   const M$hydrate = (
-//     // Refer to Local Note [A] near end of file
-//     incomingState: S | typeof OMISSION_MARKER = OMISSION_MARKER
-//   ): void => {
-//     // const isHydrationStart = isIncomingStateOmitted(incomingState)
-//     // const hydrationStateDidChange = isHydrating !== isHydrationStart
-//     // isHydrating = isHydrationStart
-
-//     // if (!isHydrationStart) {
-//     //   if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
-//     //     // Assume using the initial state
-//     //     currentState = defaultState
-//     //     // Refer to Local Note [C] near end of file
-//     //   } else {
-//     //     currentState = incomingState
-//     //   }
-//     // }
-
-//     // // NOTES:
-//     // // * An event will be fired if hydration ended.
-//     // // * An event will also be fired if hydration started, but only if it hasn't
-//     // // already started, if that makes sense.
-//     // if (!isHydrating || isHydrating && hydrationStateDidChange) {
-//     //   M$watcher.M$refresh({
-//     //     isHydrating,
-//     //     type: RelinkEventType.hydrate,
-//     //     state: M$get(), // Refer to Local Note [B] near end of file
-//     //   })
-//     // }
-//   }
-
-//   const M$dynamicSet = (
-//     // Refer to Local Note [A] near end of file
-//     incomingState: State | typeof OMISSION_MARKER = OMISSION_MARKER
-//   ): void => {
-//     const isReset = isIncomingStateOmitted(incomingState)
-//     if (isReset) {
-//       // Refer to Local Note [C] near end of file
-//       currentState = defaultState
-//     } else {
-//       currentState = incomingState
-//     }
-//     M$watcher.M$refresh({
-//       type: isReset ? RelinkEventType.reset : RelinkEventType.set,
-//       state: M$get(), // Refer to Local Note [B] near end of file
-//     })
-//   }
-
-//   return {
-//     M$get,
-//     M$hydrate,
-//     M$dynamicSet,
-//     M$getIsHydrating,
-//     M$watcher,
-//     // M$watch: M$watcher.M$watch,
-//     // M$unwatchAll: M$watcher.M$unwatchAll,
-//   }
-
-// }
-
-
-
-
-
 // === Local Notes ===
 // [A] If incoming state is not provided, it defaults to the omission marker in
 //     `M$dynamicSet` and `M$hydrate`. This way, we won't mix up with falsey
 //     values because the object reference is clearly different.
-//     ===== No longer relevant, kept as reference for now. =====
-// [B] By using the getter `M$get()` whenever we need to access the current
-//     state, this guarantees a consistent behaviour every-fucking-where in
-//     terms of mutability —— and this preserves sanity.
-// [C] (No longer relevant, kept as archive)
-//     We do not need `copyState` here because is has already been called at
-//     the declaration of `initialState` as a constant variable. If source is
-//     mutable and user somehow changed the default state, it is only the
-//     natural behaviour that when reset is called, the current state  will
-//     'revert' to the tampered `initialState`.

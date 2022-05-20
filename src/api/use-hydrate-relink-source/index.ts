@@ -5,6 +5,7 @@ import { RelinkSource } from '../source'
 /**
  * Hydrate a source with a previously persisted state. Note that this hydration
  * is completely UNRELATED to server-side rendering.
+ * @param source - A {@link RelinkSource}.
  * @example
  * const hydrateSource = useHydrateRelinkSource(Source)
  * hydrateSource(({ commit, skip }) => {

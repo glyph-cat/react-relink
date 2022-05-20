@@ -14,6 +14,7 @@ import { RelinkAdvancedSelector } from '../selector'
 import { LazyVariable } from '../../internals/lazy-declare'
 
 /**
+ * @param source - A {@link RelinkSource}.
  * @example
  * const state = useRelinkValue(Source)
  * @public
@@ -21,6 +22,8 @@ import { LazyVariable } from '../../internals/lazy-declare'
 export function useRelinkValue<State>(source: RelinkSource<State>): State
 
 /**
+ * @param source - A {@link RelinkSource}.
+ * @param selector - A {@link RelinkSelector}.
  * @example
  * const selector = (state) => ({
  *   propertyA: state.propertyA,
@@ -60,6 +63,8 @@ export function useRelinkValue<State, SelectedState>(
 
   return value
 }
+
+// MARK: Internals
 
 /**
  * @internal

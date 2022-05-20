@@ -4,7 +4,7 @@ import { EMPTY_OBJECT } from '../../constants'
  * Allows the declaration of a variable lazily. Constructor or functions that
  * initializes the data will not be run until is is needed (when `.get()` is
  * called).
- * @public
+ * @internal
  */
 export class LazyVariable<T> {
 

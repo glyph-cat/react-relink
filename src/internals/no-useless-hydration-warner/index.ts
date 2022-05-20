@@ -3,13 +3,22 @@ import { RelinkSourceKey } from '../../schema'
 import { devError } from '../dev'
 import { formatFunctionNotationArray } from '../string-formatting'
 
+/**
+ * @internal
+ */
 type UselessHydrationWarner = (concludeType: HydrationConcludeType) => boolean
 
+/**
+ * @internal
+ */
 export enum HydrationConcludeType {
   M$commit = 'commit',
   M$skip = 'skip',
 }
 
+/**
+ * @internal
+ */
 export function formatWarningMessageForNoUselessHydration(
   sourceKey: RelinkSourceKey,
   currentConcludeType: HydrationConcludeType,
@@ -18,6 +27,9 @@ export function formatWarningMessageForNoUselessHydration(
   return `Attempted to ${currentConcludeType} a hydration in '${String(sourceKey)}' even though it has previously been concluded with: ${formatFunctionNotationArray(concludeTypeHistoryStack)}. Only the first attempt to conclude a hydration is effective while the rest are ignored. If this was intentional, please make separate calls to \`Source.hydrate()\` instead, otherwise it might indicate a memory leak in your application.`
 }
 
+/**
+ * @internal
+ */
 export function createNoUselessHydrationWarner_DEV(
   sourceKey: RelinkSourceKey
 ): UselessHydrationWarner {

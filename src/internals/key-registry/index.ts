@@ -6,6 +6,7 @@ export const KEY_REGISTRY: Record<RelinkSourceKey, true> = {}
 
 /**
  * Registers a key into the store. If key already existed, throws an error.
+ * @internal
  */
 export function registerKey(key: RelinkSourceKey): void {
   // Duplicate keys are guaranteed to occur in SSR because the same code can
@@ -22,6 +23,7 @@ export function registerKey(key: RelinkSourceKey): void {
 
 /**
  * Removes a key from the store. If key is already removed, it does nothing.
+ * @internal
  */
 export function unregisterKey(key: RelinkSourceKey): void {
   delete KEY_REGISTRY[key]

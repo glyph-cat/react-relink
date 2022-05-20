@@ -77,6 +77,9 @@ export function createSuspenseWaiter(
 //   }
 // }
 
+/**
+ * @internal
+ */
 export function useSuspenseForDataFetching(
   source: RelinkSource<unknown>
 ): void {

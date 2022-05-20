@@ -4,6 +4,7 @@ import { RelinkSource } from '../source'
 import { useRelinkValue_BASE } from '../use-relink-value'
 
 /**
+ * @param source - A {@link RelinkSource}.
  * @example
  * const [state, setState, resetState] = useRelinkState(Source)
  * @returns A tuple containing the current state, the state setter and a resetter.
@@ -14,6 +15,8 @@ export function useRelinkState<State>(
 ): [State, RelinkSource<State>['set'], RelinkSource<State>['reset']]
 
 /**
+ * @param source - A {@link RelinkSource}.
+ * @param selector - A {@link RelinkSelector}.
  * @example
  * const selector = (state) => ({
  *   propertyA: state.propertyA,
@@ -29,7 +32,7 @@ export function useRelinkState<State, SelectedState>(
 ): [SelectedState, RelinkSource<State>['set'], RelinkSource<State>['reset']]
 
 /**
- * @public
+ * @internal
  */
 export function useRelinkState<State, SelectedState>(
   source: RelinkSource<State>,

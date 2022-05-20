@@ -8,6 +8,9 @@ import { devWarn } from '../dev'
 // the code is conditionally with `IS_INTERNAL_DEBUG_ENV`. A check was made on 5 Oct 2021
 // and so far the code has been bundled with the intended bahaviour.
 
+/**
+ * @internal
+ */
 export function performanceNow(): number {
   // NOTE: For stability purposes we do a check on `typeof window` instead of
   // using the `IS_CLIENT_ENV` constant because we have no control over which
@@ -28,14 +31,27 @@ export function performanceNow(): number {
 // to the next reducer, it might only result in a corrupted state and create
 // more problems.
 
+/**
+ * @internal
+ */
 export const PERFORMANCE_SLOW_THRESHOLD_MS = 500
+
+/**
+ * @internal
+ */
 export const PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS = 10000
 
+/**
+ * @internal
+ */
 type MarkReducerEndPayload = [
   isSlow: boolean,
   isNotResponding: boolean,
 ]
 
+/**
+ * @internal
+ */
 interface ReducerPerformanceMeasurer {
   isAsync: MutableRefObject<boolean>
   stop(): MarkReducerEndPayload
@@ -43,6 +59,7 @@ interface ReducerPerformanceMeasurer {
 
 /**
  * Marks the start of a reducer's execution.
+ * @internal
  */
 export function startMeasuringReducerPerformance(
   sourceKey: RelinkSourceKey
@@ -93,6 +110,7 @@ export function startMeasuringReducerPerformance(
 
 /**
  * Formats the warning message for when reducers are slow.
+ * @internal
  */
 export function formatReducerSlowWarning(
   sourceKey: RelinkSourceKey,
@@ -111,6 +129,7 @@ export function formatReducerSlowWarning(
 
 /**
  * Formats the warning message for when reducers are considered not responding.
+ * @internal
  */
 export function formatReducerNotRespondingWarning(
   sourceKey: RelinkSourceKey,

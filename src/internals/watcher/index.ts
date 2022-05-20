@@ -5,6 +5,7 @@
  * const unwatch = watcher.M$watch(() => { ... })
  * watcher.M$refresh(...) // Arguments can be passed
  * unwatch()
+ * @internal
  */
 export class Watcher<A extends Array<unknown>> {
 

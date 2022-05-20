@@ -138,7 +138,8 @@ export class RelinkSource<State> {
 
     // === Key checking ===
     const typeofRawKey = typeof rawKey
-    if (typeofRawKey === 'string' ||
+    if (
+      typeofRawKey === 'string' ||
       typeofRawKey === 'number' ||
       typeofRawKey === 'symbol'
     ) {

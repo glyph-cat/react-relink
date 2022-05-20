@@ -3,6 +3,7 @@ import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
 
 /**
+ * @param source - A {@link RelinkSource}.
  * @example
  * const setState = useSetRelinkState(Source)
  * @public

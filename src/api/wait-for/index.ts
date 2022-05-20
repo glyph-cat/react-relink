@@ -5,7 +5,7 @@ import { RelinkSource } from '../source'
  * Creates a promise that resolves only when a source has finished hydrating.
  *
  * NOTE: Circular dependencies are not allowed.
- * @param source - The source to wait for.
+ * @param source - The {@link RelinkSource} to wait for.
  * @example
  * // Do something here...
  * await waitForAll([SourceA, SourceB, SourceC])
@@ -40,7 +40,7 @@ export function waitFor(
  * finished hydrating.
  *
  * NOTE: Circular dependencies are not allowed.
- * @param sources - The array of sources to wait for.
+ * @param sources - The array of {@link RelinkSource} to wait for.
  * @example
  * // Do something here...
  * await waitForAll([SourceA, SourceB, SourceC])
