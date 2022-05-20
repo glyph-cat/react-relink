@@ -7,9 +7,13 @@ const config: Config.InitialOptions = {
   ],
   testRegex: '.test.(tsx|ts|jsx|js)',
   testTimeout: 1000,
+  testPathIgnorePatterns: [
+    '.draft',
+    '.old',
+  ],
   // Seems like fake timers are disabled by default now
   testEnvironment: 'jsdom',
-  verbose: true,
+  verbose: false,
 }
 
 export default config
