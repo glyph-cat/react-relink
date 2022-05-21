@@ -31,11 +31,6 @@ import {
 } from '../../schema'
 import { getNewScopeId } from '../scope'
 
-// NOTE:
-// Factory pattern is used throughout the codebase because class method names
-// are not mangled by Terser, this causes problems in production build where
-// variable name mangling takes place.
-
 /**
  * @internal
  */
