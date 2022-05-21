@@ -13,8 +13,24 @@ export enum SHALLOW_COMPARE_INVOCATION_TYPE {
 /**
  * @internal
  */
-export const SHALLOW_COMPARE_INVOCATION_SPY: MutableRefObject<Array<SHALLOW_COMPARE_INVOCATION_TYPE>> = {
-  current: [],
+export const SHALLOW_COMPARE_INVOCATION_SPY: MutableRefObject<SHALLOW_COMPARE_INVOCATION_TYPE> = {
+  current: null,
+}
+
+/**
+ * @internal
+ */
+function setShallowCompareInvocationSpy(type: SHALLOW_COMPARE_INVOCATION_TYPE): void {
+  if (IS_INTERNAL_DEBUG_ENV) {
+    SHALLOW_COMPARE_INVOCATION_SPY.current = type
+  }
+}
+
+/**
+ * @internal
+ */
+export function resetShallowCompareInvocationSpy(): void {
+  SHALLOW_COMPARE_INVOCATION_SPY.current = null
 }
 
 /**
@@ -37,12 +53,6 @@ export namespace RELINK_COMPARE_FN_PRESET {
     prevState: Array<unknown> | unknown,
     nextState: Array<unknown> | unknown,
   ): boolean {
-
-    if (IS_INTERNAL_DEBUG_ENV) {
-      SHALLOW_COMPARE_INVOCATION_SPY.current.push(
-        SHALLOW_COMPARE_INVOCATION_TYPE.array
-      )
-    }
 
     if (Array.isArray(prevState) && Array.isArray(nextState)) {
 
@@ -99,8 +109,10 @@ export namespace RELINK_COMPARE_FN_PRESET {
     }
 
     if (prevStateIsArray && nextStateIsArray) {
+      setShallowCompareInvocationSpy(SHALLOW_COMPARE_INVOCATION_TYPE.array)
       return shallowCompareArray(prevState, nextState)
     } else {
+      setShallowCompareInvocationSpy(SHALLOW_COMPARE_INVOCATION_TYPE.object)
       return shallowCompareObject(prevState, nextState)
     }
   }
@@ -119,12 +131,6 @@ export namespace RELINK_COMPARE_FN_PRESET {
     prevState: unknown,
     nextState: unknown
   ): boolean {
-
-    if (IS_INTERNAL_DEBUG_ENV) {
-      SHALLOW_COMPARE_INVOCATION_SPY.current.push(
-        SHALLOW_COMPARE_INVOCATION_TYPE.object
-      )
-    }
 
     if (isObject(prevState) && isObject(nextState)) {
 

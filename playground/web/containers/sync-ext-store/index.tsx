@@ -1,6 +1,6 @@
 // import {
 //   useEffect,
-//   useRef, // eslint-disable-line no-restricted-imports
+//   useRef,
 // } from 'react'
 import { useEffect, useTransition } from 'react'
 import { RelinkSource, useRelinkValue } from '../../../../src/bundle'

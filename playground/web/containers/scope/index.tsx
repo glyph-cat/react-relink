@@ -1,4 +1,4 @@
-import { useRef } from 'react' // eslint-disable-line no-restricted-imports
+import { useRef } from 'react'
 import { RelinkSource, RelinkScope, useRelinkState } from '../../../../src/bundle'
 
 const ThemeSource = new RelinkSource({

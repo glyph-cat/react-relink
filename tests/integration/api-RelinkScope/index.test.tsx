@@ -2,7 +2,7 @@ import {
   MutableRefObject,
   useCallback,
   useEffect,
-  useRef, // eslint-disable-line no-restricted-imports
+  useRef,
 } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
 import { IntegrationTestConfig } from '../../helpers'

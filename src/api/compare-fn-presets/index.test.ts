@@ -1,5 +1,6 @@
 import {
   RELINK_COMPARE_FN_PRESET,
+  resetShallowCompareInvocationSpy,
   SHALLOW_COMPARE_INVOCATION_SPY,
   SHALLOW_COMPARE_INVOCATION_TYPE,
 } from '.'
@@ -11,7 +12,10 @@ const {
   stringifyCompare
 } = RELINK_COMPARE_FN_PRESET
 
+afterEach(resetShallowCompareInvocationSpy)
+
 describe(shallowCompareArray.name, (): void => {
+
 
   test('Empty array', (): void => {
     const isEqual = shallowCompareArray([], [])
@@ -61,7 +65,7 @@ describe(shallowCompareArrayOrObject.name, (): void => {
   test('[], []', (): void => {
     const isEqual = shallowCompareArrayOrObject([], [])
     expect(isEqual).toBe(true)
-    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toStrictEqual([
+    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe([
       SHALLOW_COMPARE_INVOCATION_TYPE.array,
     ])
   })

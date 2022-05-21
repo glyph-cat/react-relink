@@ -2,7 +2,7 @@ import {
   useCallback,
   useDebugValue,
   useMemo,
-  useRef, // eslint-disable-line no-restricted-imports
+  useRef,
 } from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
 import { $$INTERNALS, EMPTY_OBJECT, IS_DEV_ENV } from '../../constants'
@@ -69,13 +69,15 @@ export function useRelinkValue<State, SelectedState>(
 /**
  * @internal
  */
-const CacheableStateSymbol = Symbol()
+const SyncValueSymbol = Symbol()
 
 /**
+ * State value is nested in a symbol property so that it is not directly
+ * available in the React Dev Tools.
  * @internal
  */
 interface SyncValue<State> {
-  [CacheableStateSymbol]: [number, State]
+  [SyncValueSymbol]: [number, State]
 }
 
 /**
@@ -83,7 +85,7 @@ interface SyncValue<State> {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EMPTY_CACHED_SYNC_VALUE: SyncValue<any> = {
-  [CacheableStateSymbol]: [-1, EMPTY_OBJECT]
+  [SyncValueSymbol]: [-1, EMPTY_OBJECT]
 }
 
 /**
@@ -130,7 +132,7 @@ export function useRelinkValue_BASE<State, SelectedState>(
       const [
         currentMutationCount,
         currentSelectedState,
-      ] = cachedSyncValue.current[CacheableStateSymbol]
+      ] = cachedSyncValue.current[SyncValueSymbol]
       const nextMutationCount = source.M$core.M$mutationCount
       const nextSelectedState = new LazyVariable(() => selectValue(source.get()))
 
@@ -152,12 +154,12 @@ export function useRelinkValue_BASE<State, SelectedState>(
         return cachedSyncValue.current
       } else {
         const nextSyncValue: SyncValue<State | SelectedState> = {
-          [CacheableStateSymbol]: [nextMutationCount, nextSelectedState.get()],
+          [SyncValueSymbol]: [nextMutationCount, nextSelectedState.get()],
         }
         cachedSyncValue.current = nextSyncValue
         return nextSyncValue
       }
     }, [isEqual, selectValue, source])
-  )[CacheableStateSymbol][1]
+  )[SyncValueSymbol][1]
 
 }

@@ -1,7 +1,7 @@
 import {
   MutableRefObject,
   useReducer,
-  useRef, // eslint-disable-line no-restricted-imports
+  useRef,
 } from 'react'
 import { waitFor } from '../../api/wait-for'
 import { RelinkSource } from '../../api/source'
