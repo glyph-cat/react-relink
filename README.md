@@ -143,6 +143,7 @@ In production builds, error codes are thrown instead of the lengthy messages to 
 * [From `v0` to `v1`](https://github.com/glyph-cat/react-relink/releases/tag/1.0.0)
 * [From `v1` to `v2`](https://github.com/glyph-cat/react-relink/releases/tag/2.0.0)
 * [From `v2` to `v3`](https://github.com/glyph-cat/react-relink/releases/tag/3.0.0)
+* [From `v3` to `v4`](https://github.com/glyph-cat/react-relink/releases/tag/4.0.0)
 
 <br/>
 
