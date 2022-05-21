@@ -12,6 +12,7 @@ import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
 import { RelinkAdvancedSelector } from '../selector'
 import { LazyVariable } from '../../internals/lazy-declare'
+import { SyncValue } from '../../internals/helper-types'
 
 /**
  * @param source - A {@link RelinkSource}.
@@ -46,6 +47,8 @@ export function useRelinkValue<State, SelectedState>(
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)
 
+  useSuspenseForDataFetching(source)
+
   const value = useRelinkValue_BASE(scopedSource, selector)
 
   // Show debug value.
@@ -69,23 +72,9 @@ export function useRelinkValue<State, SelectedState>(
 /**
  * @internal
  */
-const SyncValueSymbol = Symbol()
-
-/**
- * State value is nested in a symbol property so that it is not directly
- * available in the React Dev Tools.
- * @internal
- */
-interface SyncValue<State> {
-  [SyncValueSymbol]: [number, State]
-}
-
-/**
- * @internal
- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const EMPTY_CACHED_SYNC_VALUE: SyncValue<any> = {
-  [SyncValueSymbol]: [-1, EMPTY_OBJECT]
+const INITIAL_STATE_SYNC_VALUE: SyncValue<[number, any]> = {
+  [$$INTERNALS]: [-1, EMPTY_OBJECT]
 }
 
 /**
@@ -95,9 +84,6 @@ export function useRelinkValue_BASE<State, SelectedState>(
   source: RelinkSource<State>,
   selector?: RelinkSelector<State, SelectedState>
 ): State | SelectedState {
-
-  // Before anything else, perform suspension if source is not ready.
-  useSuspenseForDataFetching(source)
 
   const mutableSelector = useRef(selector)
   mutableSelector.current = selector
@@ -124,7 +110,10 @@ export function useRelinkValue_BASE<State, SelectedState>(
       : Object.is
   }, [])
 
-  const cachedSyncValue = useRef<SyncValue<State | SelectedState>>(EMPTY_CACHED_SYNC_VALUE)
+  // NOTE: State value is nested in a symbol property so that it is not directly
+  // available in the React Dev Tools.
+  type CachedValueSchema = [mutationCount: number, stateValue: State | SelectedState]
+  const cachedSyncValue = useRef<SyncValue<CachedValueSchema>>(INITIAL_STATE_SYNC_VALUE)
 
   return useSyncExternalStore(
     source.watch,
@@ -132,7 +121,7 @@ export function useRelinkValue_BASE<State, SelectedState>(
       const [
         currentMutationCount,
         currentSelectedState,
-      ] = cachedSyncValue.current[SyncValueSymbol]
+      ] = cachedSyncValue.current[$$INTERNALS]
       const nextMutationCount = source.M$core.M$mutationCount
       const nextSelectedState = new LazyVariable(() => selectValue(source.get()))
 
@@ -153,13 +142,13 @@ export function useRelinkValue_BASE<State, SelectedState>(
       if (shouldReturnCachedValue) {
         return cachedSyncValue.current
       } else {
-        const nextSyncValue: SyncValue<State | SelectedState> = {
-          [SyncValueSymbol]: [nextMutationCount, nextSelectedState.get()],
+        const nextSyncValue: SyncValue<CachedValueSchema> = {
+          [$$INTERNALS]: [nextMutationCount, nextSelectedState.get()],
         }
         cachedSyncValue.current = nextSyncValue
         return nextSyncValue
       }
     }, [isEqual, selectValue, source])
-  )[SyncValueSymbol][1]
+  )[$$INTERNALS][1]
 
 }

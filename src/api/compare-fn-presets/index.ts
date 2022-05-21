@@ -1,28 +1,9 @@
-import { MutableRefObject } from 'react'
 import { IS_INTERNAL_DEBUG_ENV } from '../../constants'
 import { isObject } from '../../internals/type-checker'
-
-/**
- * @internal
- */
-export enum SHALLOW_COMPARE_INVOCATION_TYPE {
-  array = 1,
-  object,
-}
-
-/**
- * @internal
- */
-export const SHALLOW_COMPARE_INVOCATION_SPY: MutableRefObject<SHALLOW_COMPARE_INVOCATION_TYPE> = {
-  current: null,
-}
-
-/**
- * @internal
- */
-export function resetShallowCompareInvocationSpy(): void {
-  SHALLOW_COMPARE_INVOCATION_SPY.current = null
-}
+import {
+  SHALLOW_COMPARE_INVOCATION_SPY,
+  SHALLOW_COMPARE_INVOCATION_TYPE,
+} from './internals'
 
 /**
  * @public

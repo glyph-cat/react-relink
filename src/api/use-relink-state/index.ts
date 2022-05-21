@@ -1,3 +1,4 @@
+import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { RelinkSelector } from '../../schema'
 import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
@@ -23,7 +24,7 @@ export function useRelinkState<State>(
  *   propertyB: state.propertyB,
  * })
  * const [filteredState, setState, resetState] = useRelinkState(Source, selector)
- * @returns A tuple containing the current state, the state setter and a resetter.
+ * @returns A tuple containing the selected state, the state setter and a resetter.
  * @public
  */
 export function useRelinkState<State, SelectedState>(
@@ -41,6 +42,7 @@ export function useRelinkState<State, SelectedState>(
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
   // using this hook is not nested in any scopes.
   const scopedSource = useScopedRelinkSource(source)
+  useSuspenseForDataFetching(source)
   const state = useRelinkValue_BASE(scopedSource, selector)
   return [state, scopedSource.set, scopedSource.reset]
 }

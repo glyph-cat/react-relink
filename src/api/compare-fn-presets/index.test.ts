@@ -1,9 +1,8 @@
 import {
-  RELINK_COMPARE_FN_PRESET,
-  resetShallowCompareInvocationSpy,
   SHALLOW_COMPARE_INVOCATION_SPY,
   SHALLOW_COMPARE_INVOCATION_TYPE,
-} from '.'
+} from './internals'
+import { RELINK_COMPARE_FN_PRESET } from '.'
 
 const {
   shallowCompareArray,
@@ -12,10 +11,11 @@ const {
   stringifyCompare
 } = RELINK_COMPARE_FN_PRESET
 
-afterEach(resetShallowCompareInvocationSpy)
+afterEach((): void => {
+  SHALLOW_COMPARE_INVOCATION_SPY.current = null
+})
 
 describe(shallowCompareArray.name, (): void => {
-
 
   test('Empty array', (): void => {
     const isEqual = shallowCompareArray([], [])

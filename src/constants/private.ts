@@ -1,4 +1,4 @@
-import { ObjectMarker } from '../internals/helper-types'
+import type { ObjectMarker } from '../internals/helper-types'
 import { BUILD_TYPE } from './public'
 
 export const $$INTERNALS = Symbol()
@@ -29,8 +29,8 @@ export const IS_INTERNAL_DEBUG_ENV = process.env.IS_INTERNAL_DEBUG_ENV !== 'fals
  * Here, it is also assumed that the internal debug environment and UMD builds
  * run on a client.
  *
- * NOTE: This should only be used to control the library's behaviour in different
- * environments, NOT for checking whether browser APIs are available.
+ * NOTE: This should only be used to control the library's behaviour in
+ * different environments, NOT for checking whether browser APIs are available.
  *
  * @internal
  */

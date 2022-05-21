@@ -1,4 +1,4 @@
-export { RELINK_COMPARE_FN_PRESET } from './api/compare-fn-presets'
+export * from './api/compare-fn-presets'
 export * from './api/config'
 export * from './api/scope'
 export * from './api/selector'
