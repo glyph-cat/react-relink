@@ -65,33 +65,29 @@ describe(shallowCompareArrayOrObject.name, (): void => {
   test('[], []', (): void => {
     const isEqual = shallowCompareArrayOrObject([], [])
     expect(isEqual).toBe(true)
-    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe([
-      SHALLOW_COMPARE_INVOCATION_TYPE.array,
-    ])
+    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(
+      SHALLOW_COMPARE_INVOCATION_TYPE.array
+    )
   })
 
   test('[], {}', (): void => {
     const isEqual = shallowCompareArrayOrObject([], {})
     expect(isEqual).toBe(false)
-    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toStrictEqual([
-      // Empty
-    ])
+    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(null)
   })
 
   test('{}, []', (): void => {
     const isEqual = shallowCompareArrayOrObject({}, [])
     expect(isEqual).toBe(false)
-    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toStrictEqual([
-      // Empty
-    ])
+    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(null)
   })
 
   test('{}, {}', (): void => {
     const isEqual = shallowCompareArrayOrObject({}, {})
     expect(isEqual).toBe(true)
-    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toStrictEqual([
-      SHALLOW_COMPARE_INVOCATION_TYPE.object,
-    ])
+    expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(
+      SHALLOW_COMPARE_INVOCATION_TYPE.object
+    )
   })
 
 })
