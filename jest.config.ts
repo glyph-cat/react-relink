@@ -5,12 +5,12 @@ const config: Config.InitialOptions = {
     '<rootDir>/jest.setup.ts',
     '@testing-library/jest-dom/extend-expect',
   ],
-  testRegex: '.test.(tsx|ts|jsx|js)',
-  testTimeout: 1000,
   testPathIgnorePatterns: [
     '.draft',
     '.old',
   ],
+  testRegex: '.test.(tsx|ts|jsx|js)',
+  testTimeout: 1000,
   // Seems like fake timers are disabled by default now
   testEnvironment: 'jsdom',
   verbose: false,

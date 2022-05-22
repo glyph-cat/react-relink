@@ -4,6 +4,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
 import { execSync } from 'child_process'
 import { Plugin as RollupPlugin, RollupOptions } from 'rollup'
+// import sourcemaps from 'rollup-plugin-sourcemaps'
 import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
 import { version } from '../package.json'
@@ -48,6 +49,7 @@ function getPlugins(config: PluginConfigSchema = {}): Array<RollupPlugin> {
     //   exclude: '**/node_modules/**',
     //   babelHelpers: 'bundled',
     // }),
+    // sourcemaps: sourcemaps(),
     typescript: typescript({
       tsconfigOverride: {
         compilerOptions: {
@@ -115,6 +117,7 @@ const config: Array<RollupOptions> = [
       file: 'lib/cjs/index.js',
       format: 'cjs',
       exports: 'named',
+      sourcemap: false,
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
@@ -128,6 +131,7 @@ const config: Array<RollupOptions> = [
       file: 'lib/es/index.js',
       format: 'es',
       exports: 'named',
+      sourcemap: false,
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
@@ -141,6 +145,7 @@ const config: Array<RollupOptions> = [
       file: 'lib/es/index.mjs',
       format: 'es',
       exports: 'named',
+      sourcemap: true,
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
@@ -155,6 +160,7 @@ const config: Array<RollupOptions> = [
       file: 'lib/native/index.js',
       format: 'es',
       exports: 'named',
+      sourcemap: false,
     },
     external: [...EXTERNAL_LIBS_REACT_DOM, 'react-native'].filter((item) => {
       return item !== 'react-dom'
@@ -182,6 +188,7 @@ const config: Array<RollupOptions> = [
       name: 'Relink',
       exports: 'named',
       globals: UMD_GLOBALS,
+      sourcemap: false,
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
@@ -198,6 +205,7 @@ const config: Array<RollupOptions> = [
       name: 'Relink',
       exports: 'named',
       globals: UMD_GLOBALS,
+      sourcemap: true,
     },
     external: EXTERNAL_LIBS_REACT_DOM,
     plugins: getPlugins({
@@ -212,13 +220,16 @@ export default config
 /**
  * Automatically `imports React from "react"` if a file ends with '.tsx'.
  */
-function autoImportReact() {
+function autoImportReact(): RollupPlugin {
   return {
     name: 'autoImportReact',
     transform(code, id) {
       if (/tsx/gi.test(id)) {
         code = 'import React from "react";\n' + code
-        return { code }
+        return {
+          code,
+          map: null,
+        }
       }
       return null
     },
