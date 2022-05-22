@@ -1,6 +1,9 @@
 import type { ObjectMarker } from '../internals/helper-types'
 import { BUILD_TYPE } from './public'
 
+/**
+ * @internal
+ */
 export const $$INTERNALS = Symbol()
 
 /**
