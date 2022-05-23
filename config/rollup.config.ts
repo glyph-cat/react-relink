@@ -27,10 +27,10 @@ const EXTERNAL_LIBS_REACT_DOM = Object.keys(UMD_GLOBALS)
 interface PluginConfigSchema {
   overrides?: Record<string, unknown>
   mode?: 'development' | 'production'
-  buildType?: RelinkBuildType
+  buildType: RelinkBuildType
 }
 
-function getPlugins(config: PluginConfigSchema = {}): Array<RollupPlugin> {
+function getPlugins(config: PluginConfigSchema): Array<RollupPlugin> {
   const { overrides = {}, mode, buildType } = config
   const basePlugins = {
     nodeResolve: nodeResolve(NODE_RESOLVE_CONFIG_BASE),

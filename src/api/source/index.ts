@@ -46,7 +46,7 @@ export interface RelinkSourceConfig<State> {
   /**
    * A unique key for the source. Use a string or number for better clarity in a
    * normal project, use a
-   * [`Symbol`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
+   * [`Symbol`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
    * instead if you're building a library to avoid clashing with user-defined keys.
    */
   key: RelinkSourceKey
