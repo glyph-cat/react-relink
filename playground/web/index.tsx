@@ -8,7 +8,7 @@ import { Playground } from './containers/sync-ext-store'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <Playground />
-  // <React.StrictMode>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <Playground />
+  </React.StrictMode>
 )

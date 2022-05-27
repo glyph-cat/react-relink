@@ -22,6 +22,18 @@ const BUNDLED_BUILDS: Array<IntegrationTestConfig> = [
     description: 'EcmaScript',
     Relink: require('../../lib/es/index.js'),
   },
+  // {
+  //   buildEnv: 'prod',
+  //   buildType: 'es',
+  //   description: 'EcmaScript (Minified)',
+  //   Relink: require('../../lib/es/index.mjs'),
+  // },
+  // {
+  //   buildEnv: 'debug',
+  //   buildType: 'rn',
+  //   description: 'React Native',
+  //   Relink: require('../../lib/native/index.js'),
+  // },
   {
     buildEnv: 'dev',
     buildType: 'umd',

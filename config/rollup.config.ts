@@ -1,16 +1,14 @@
 import nodeResolve from '@rollup/plugin-node-resolve'
-// import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
 import { execSync } from 'child_process'
 import { Plugin as RollupPlugin, RollupOptions } from 'rollup'
-// import sourcemaps from 'rollup-plugin-sourcemaps'
 import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
 import { version } from '../package.json'
 import { RelinkBuildType } from '../src/constants'
 
-const NODE_RESOLVE_CONFIG_BASE = {
+const BASE_NODE_RESOLVE_CONFIG = {
   extensions: ['.ts', '.js'],
 }
 
@@ -22,7 +20,12 @@ const UMD_GLOBALS = {
   'use-sync-external-store': 'useSyncExternalStore',
 }
 
-const EXTERNAL_LIBS_REACT_DOM = Object.keys(UMD_GLOBALS)
+const REACT_DOM_EXTERNAL_LIBS = Object.keys(UMD_GLOBALS)
+
+const REACT_NATIVE_EXTERNAL_LIBS = [
+  ...REACT_DOM_EXTERNAL_LIBS,
+  'react-native',
+].filter((item) => item !== 'react-dom')
 
 interface PluginConfigSchema {
   overrides?: Record<string, unknown>
@@ -33,23 +36,8 @@ interface PluginConfigSchema {
 function getPlugins(config: PluginConfigSchema): Array<RollupPlugin> {
   const { overrides = {}, mode, buildType } = config
   const basePlugins = {
-    nodeResolve: nodeResolve(NODE_RESOLVE_CONFIG_BASE),
+    nodeResolve: nodeResolve(BASE_NODE_RESOLVE_CONFIG),
     autoImportReact: autoImportReact(),
-    // babel: babel({
-    //   presets: [
-    //     // '@babel/preset-react',
-    //     '@babel/preset-env',
-    //   ],
-    //   plugins: [
-    //     ['@babel/plugin-proposal-class-properties', {
-    //       loose: true,
-    //       setPublicClassFields: true,
-    //     }],
-    //   ],
-    //   exclude: '**/node_modules/**',
-    //   babelHelpers: 'bundled',
-    // }),
-    // sourcemaps: sourcemaps(),
     typescript: typescript({
       tsconfigOverride: {
         compilerOptions: {
@@ -119,7 +107,7 @@ const config: Array<RollupOptions> = [
       exports: 'named',
       sourcemap: false,
     },
-    external: EXTERNAL_LIBS_REACT_DOM,
+    external: REACT_DOM_EXTERNAL_LIBS,
     plugins: getPlugins({
       buildType: RelinkBuildType.CJS,
     }),
@@ -133,7 +121,7 @@ const config: Array<RollupOptions> = [
       exports: 'named',
       sourcemap: false,
     },
-    external: EXTERNAL_LIBS_REACT_DOM,
+    external: REACT_DOM_EXTERNAL_LIBS,
     plugins: getPlugins({
       buildType: RelinkBuildType.ES,
     }),
@@ -147,7 +135,7 @@ const config: Array<RollupOptions> = [
       exports: 'named',
       sourcemap: true,
     },
-    external: EXTERNAL_LIBS_REACT_DOM,
+    external: REACT_DOM_EXTERNAL_LIBS,
     plugins: getPlugins({
       buildType: RelinkBuildType.MJS,
       mode: 'production',
@@ -162,18 +150,16 @@ const config: Array<RollupOptions> = [
       exports: 'named',
       sourcemap: false,
     },
-    external: [...EXTERNAL_LIBS_REACT_DOM, 'react-native'].filter((item) => {
-      return item !== 'react-dom'
-    }),
+    external: REACT_NATIVE_EXTERNAL_LIBS,
     plugins: getPlugins({
       buildType: RelinkBuildType.RN,
       overrides: {
         nodeResolve: nodeResolve({
-          ...NODE_RESOLVE_CONFIG_BASE,
+          ...BASE_NODE_RESOLVE_CONFIG,
           extensions: [
             '.native.ts',
             '.native.js',
-            ...NODE_RESOLVE_CONFIG_BASE.extensions,
+            ...BASE_NODE_RESOLVE_CONFIG.extensions,
           ],
         }),
       },
@@ -190,7 +176,7 @@ const config: Array<RollupOptions> = [
       globals: UMD_GLOBALS,
       sourcemap: false,
     },
-    external: EXTERNAL_LIBS_REACT_DOM,
+    external: REACT_DOM_EXTERNAL_LIBS,
     plugins: getPlugins({
       buildType: RelinkBuildType.UMD,
       mode: 'development',
@@ -207,7 +193,7 @@ const config: Array<RollupOptions> = [
       globals: UMD_GLOBALS,
       sourcemap: true,
     },
-    external: EXTERNAL_LIBS_REACT_DOM,
+    external: REACT_DOM_EXTERNAL_LIBS,
     plugins: getPlugins({
       buildType: RelinkBuildType.UMD_MIN,
       mode: 'production',

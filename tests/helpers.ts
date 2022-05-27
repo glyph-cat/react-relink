@@ -1,7 +1,7 @@
 import * as __relink__ from '../src/bundle'
 
 export interface IntegrationTestConfig {
-  buildType: 'cjs' | 'es' | 'umd'
+  buildType: 'cjs' | 'es' | 'rn' | 'umd'
   buildEnv: 'debug' | 'dev' | 'prod'
   description: string
   Relink: typeof __relink__

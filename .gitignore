@@ -23,7 +23,7 @@ node_modules
 .yarn/install-state.gz
 .pnp.*
 
-# Optional eslint cache
+# ESLint cache
 .eslintcache
 
 # Temporary
