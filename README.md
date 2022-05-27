@@ -6,7 +6,7 @@
 <br/>
 
 [![Version](https://img.shields.io/npm/v/react-relink.svg)](https://www.npmjs.com/package/react-relink)
-![Build Status](https://img.shields.io/github/workflow/status/glyph-cat/langutil/Test/main)
+![Build Status](https://img.shields.io/github/workflow/status/glyph-cat/react-relink/Test/main)
 ![Bundle size](https://img.shields.io/bundlephobia/min/react-relink)
 [![License](https://img.shields.io/github/license/glyph-cat/react-relink)](https://github.com/glyph-cat/react-relink/blob/main/LICENSE)
 
