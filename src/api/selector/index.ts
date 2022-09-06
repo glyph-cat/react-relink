@@ -1,4 +1,7 @@
 import { $$INTERNALS } from '../../constants'
+import type {
+  RELINK_COMPARE_FN_PRESET, // eslint-disable-line @typescript-eslint/no-unused-vars
+} from '../compare-fn-presets'
 
 /**
  * @public
@@ -13,6 +16,8 @@ export interface RelinkAdvancedSelectorConfig<State, SelectedState> {
    * This function should only return `true` if the previous and next states are
    * considered equal, otherwise it should return `false` .
    * @defaultValue [`Object.is`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
+   *
+   * Also see {@link RELINK_COMPARE_FN_PRESET}
    */
   compareFn?(prevState: SelectedState, nextState: SelectedState): boolean
 }

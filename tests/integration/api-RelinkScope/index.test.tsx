@@ -16,8 +16,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     let root: ReactTestRenderer
 
-    const CounterSource = new RelinkSource({
-      key: 'test/RelinkScope/main-counter',
+    const MainCounterSource = new RelinkSource({
+      key: 'test/RelinkScope/counter/main',
       default: 1,
     })
 
@@ -31,11 +31,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     }
 
     function App(): JSX.Element {
-      const SubCounterSource = useRef<typeof CounterSource>()
+      const SubCounterSource = useRef<typeof MainCounterSource>()
       if (!SubCounterSource.current) {
         SubCounterSource.current = new RelinkSource({
-          key: 'test/RelinkScope/main-counter',
-          scope: CounterSource,
+          key: 'test/RelinkScope/counter/sub',
+          scope: MainCounterSource,
           default: 100,
         })
       }
@@ -70,7 +70,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       onMount,
       onChangeValueRequestedRef,
     }: SandboxProps): JSX.Element {
-      const [counter, setCounter] = useRelinkState(CounterSource)
+      const [counter, setCounter] = useRelinkState(MainCounterSource)
       useEffect(() => { onMount(counter) }, [counter, onMount])
       useEffect(() => {
         onChangeValueRequestedRef.current = async () => {
@@ -95,7 +95,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(counterValueFromInnerSandbox).toBe(202)
 
     // Cleanup
-    CounterSource.cleanup()
+    MainCounterSource.cleanup()
     root.unmount()
 
   })
