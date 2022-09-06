@@ -12,7 +12,6 @@ import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
 import { RelinkAdvancedSelector } from '../selector'
 import { LazyVariable } from '../../internals/lazy-declare'
-import { SyncValue } from '../../internals/helper-types'
 
 /**
  * @param source - A {@link RelinkSource}.
@@ -70,10 +69,19 @@ export function useRelinkValue<State, SelectedState>(
 // MARK: Internals
 
 /**
+ * State values are nested in a symbol property so that they are not directly
+ * available in the React Dev Tools.
+ * @internal
+ */
+interface SyncValue<T> {
+  [$$INTERNALS]: T
+}
+
+/**
  * @internal
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const INITIAL_STATE_SYNC_VALUE: SyncValue<[number, any]> = {
+const INITIAL_STATE_SYNC_VALUE: SyncValue<[mutationCount: number, stateValue: any]> = {
   [$$INTERNALS]: [-1, EMPTY_OBJECT]
 }
 
@@ -110,11 +118,11 @@ export function useRelinkValue_BASE<State, SelectedState>(
       : Object.is
   }, [])
 
-  // NOTE: State value is nested in a symbol property so that it is not directly
-  // available in the React Dev Tools.
+
   type CachedValueSchema = [mutationCount: number, stateValue: State | SelectedState]
   const cachedSyncValue = useRef<SyncValue<CachedValueSchema>>(INITIAL_STATE_SYNC_VALUE)
 
+  // TODO: getServerSnapshot
   return useSyncExternalStore(
     source.watch,
     useCallback(() => {

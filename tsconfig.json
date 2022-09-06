@@ -23,6 +23,7 @@
     "node_modules",
     "./src/**/*.draft*",
     "./src/**/*.old*",
+    "./src/**/*.test*",
   ],
   "include": [
     "src",

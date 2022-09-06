@@ -1,16 +1,8 @@
-import {
-  MutableRefObject,
-  // useCallback,
-  useReducer,
-  useRef,
-} from 'react'
-// import { useSyncExternalStore } from 'use-sync-external-store/shim'
+import { MutableRefObject, useReducer, useRef } from 'react'
 import { waitFor } from '../../api/wait-for'
 import { RelinkSource } from '../../api/source'
 import { RelinkEventType } from '../../schema'
 import { forceUpdateReducer, useLayoutEffect } from '../custom-hooks'
-// import { SyncValue } from '../helper-types'
-// import { $$INTERNALS } from '../../constants'
 
 // Modified based from ovieokeh's `wrapPromise` method. Reference:
 // https://github.com/ovieokeh/suspense-data-fetching/blob/master/lib/api/wrapPromise.js
@@ -113,25 +105,6 @@ export function useSuspenseForDataFetching(
       createSuspenseWaiter(waitPromise.current)()
     }
   }
-
-  // const cachedSyncValue = useRef<SyncValue<CachedValueSchema>>(INITIAL_STATE_SYNC_VALUE)
-  // useSyncExternalStore(
-  //   source.watch,
-  //   useCallback(() => {
-  //     const [previousCounter, isPreviouslyHydrating] = cachedSyncValue.current[$$INTERNALS]
-  //     const isCurrentlyHydrating = source.M$core.M$isHydrating
-  //     if (isPreviouslyHydrating !== isCurrentlyHydrating) {
-  //       const nextCounter = previousCounter + 1
-  //       const nextSyncValue: SyncValue<CachedValueSchema> = {
-  //         [$$INTERNALS]: [nextCounter, isCurrentlyHydrating],
-  //       }
-  //       cachedSyncValue.current = nextSyncValue
-  //       return nextSyncValue
-  //     } else {
-  //       return cachedSyncValue.current
-  //     }
-  //   }, [source.M$core.M$isHydrating])
-  // )
 
   useLayoutEffect(() => {
     if (source.M$options.suspense) {
