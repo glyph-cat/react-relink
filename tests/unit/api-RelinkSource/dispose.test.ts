@@ -65,7 +65,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(eventStack).toStrictEqual([])
   })
 
-  describe.only('options', (): void => {
+  describe('options', (): void => {
 
     // KIV: Attempts to class methods were made, resulting in error in bundled builds on `callback`
     // TypeError: Cannot read properties of undefined (reading 'M$dynamicSet')
@@ -73,7 +73,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     /**
      * Should wait for all gated executions to complete.
      */
-    test.only('.force = false (default)', async (): Promise<void> => {
+    test('.force = false (default)', async (): Promise<void> => {
       const Source = new RelinkSource({
         key: 'test/dispose/options.force=false',
         default: 1,
