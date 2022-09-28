@@ -65,12 +65,15 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(eventStack).toStrictEqual([])
   })
 
-  describe('options', (): void => {
+  describe.only('options', (): void => {
+
+    // KIV: Attempts to class methods were made, resulting in error in bundled builds on `callback`
+    // TypeError: Cannot read properties of undefined (reading 'M$dynamicSet')
 
     /**
      * Should wait for all gated executions to complete.
      */
-    test('.force = false (default)', async (): Promise<void> => {
+    test.only('.force = false (default)', async (): Promise<void> => {
       const Source = new RelinkSource({
         key: 'test/dispose/options.force=false',
         default: 1,
@@ -84,7 +87,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
         return new Promise((resolve) => {
           setTimeout(() => { resolve(2) }, 100)
         })
-      })
+      }).catch((e) => { console.log(e) }) // eslint-disable-line no-console
       await Source.dispose()
 
       expect(watchedEvent).toStrictEqual({
@@ -111,7 +114,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
         return new Promise((resolve) => {
           setTimeout(() => { resolve(2) }, 100)
         })
-      })
+      }).catch((e) => { console.log(e) }) // eslint-disable-line no-console
       await Source.dispose({ force: true })
 
       expect(watchedEvent).toBe(null)

@@ -5,7 +5,9 @@ These commands will be available after you run `yarn install` upon first cloning
 * `yarn clean` Remove (automatically-generated) temporary files. This does not include `.draft` files and folders.
 * `yarn lint` Checks code for problems.
 * `yarn debug` Run a test on the unbundled code only.
+* `yarn debug <path>` Run a test only on the unbundled code for a specific path.
 * `yarn test` Run tests both unbundled and bundled code.
+* `yarn test <path>` Run tests both unbundled and bundled code for a specific path.
 * `yarn build` Equivalent of `yarn rollup` && `yarn types` && `yarn api`.
 * `yarn all` Equivalent of `yarn clean` && `yarn lint:fix` && `yarn build` && `yarn test` && `yarn pack`.
 
