@@ -65,31 +65,86 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(eventStack).toStrictEqual([])
   })
 
-  // TODO: Also test with the `force` option
-  test('Should wait for all gated executions to complete', async (): Promise<void> => {
-    const Source = new RelinkSource({
-      key: 'test/dispose/executions',
-      default: 1,
-    })
+  describe('options', (): void => {
 
-    let watchedEvent: RelinkEvent<number> = null
-    Source.watch((event) => { watchedEvent = event })
-
-    // NOTE: `await` is not used here
-    Source.set((): Promise<number> => {
-      return new Promise((resolve) => {
-        setTimeout(() => { resolve(2) }, 100)
+    /**
+     * Should wait for all gated executions to complete.
+     */
+    test('.force = false (default)', async (): Promise<void> => {
+      const Source = new RelinkSource({
+        key: 'test/dispose/options.force=false',
+        default: 1,
       })
-    })
-    await Source.dispose()
 
-    expect(watchedEvent).toStrictEqual({
-      type: RelinkEventType.set,
-      state: 2,
+      let watchedEvent: RelinkEvent<number> = null
+      Source.watch((event) => { watchedEvent = event })
+
+      // NOTE: `await` is not used here
+      Source.set((): Promise<number> => {
+        return new Promise((resolve) => {
+          setTimeout(() => { resolve(2) }, 100)
+        })
+      })
+      await Source.dispose()
+
+      expect(watchedEvent).toStrictEqual({
+        type: RelinkEventType.set,
+        state: 2,
+      })
+
+    })
+
+    /**
+     * Should not wait for all gated executions to complete.
+     */
+    test('.force = true', async (): Promise<void> => {
+      const Source = new RelinkSource({
+        key: 'test/dispose/options.force=true',
+        default: 1,
+      })
+
+      let watchedEvent: RelinkEvent<number> = null
+      Source.watch((event) => { watchedEvent = event })
+
+      // NOTE: `await` is not used here
+      Source.set((): Promise<number> => {
+        return new Promise((resolve) => {
+          setTimeout(() => { resolve(2) }, 100)
+        })
+      })
+      await Source.dispose({ force: true })
+
+      expect(watchedEvent).toBe(null)
+
     })
 
   })
 
-  // TODO: Test if other source instances are still intact
+  test('Make sure other sources are still intact', async (): Promise<void> => {
+    const SourceA = new RelinkSource({
+      key: 'test/dispose/pollution-check/a',
+      default: 1,
+    })
+
+    // NOTE: `SourceB` is created before disposal of `SourceA`, whereas `SourceC`
+    // is created after. We want to make sure the disposal of one source has no
+    // side effects on other sources regardless of when and how they're created.
+
+    const SourceB = new RelinkSource({
+      key: 'test/dispose/pollution-check/b',
+      default: 'meow',
+    })
+
+    await SourceA.dispose()
+
+    const SourceC = new RelinkSource({
+      key: 'test/dispose/pollution-check/c',
+      default: { foo: 'bar' },
+    })
+
+    expect(SourceB.getAsync()).resolves.toBe('meow')
+    expect(SourceC.getAsync()).resolves.toStrictEqual({ foo: 'bar' })
+
+  })
 
 })
