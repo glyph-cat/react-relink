@@ -25,11 +25,11 @@ export function warnDuplicateKey(key: RelinkSourceKey): void {
       const dynamicMessageFragment = tempKeyStack.length === 1
         ? `key '${String(tempKeyStack[0])}'`
         : `keys: ${formatSourceKeyArray(tempKeyStack)}`
-      devWarn(
-        `Duplicate source ${dynamicMessageFragment}. This is a FATAL ERROR in ` +
-        'production. But it is safe to ignore this warning if it occurred ' +
-        'because of hot module replacement.'
-      )
+      devWarn([
+        `Duplicate source ${dynamicMessageFragment}. This is a FATAL ERROR in`,
+        'production. But it is safe to ignore this warning if it occurred',
+        'because of hot module replacement.',
+      ].join(' '))
       tempKeyStack = []
     })
   }

@@ -9,7 +9,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   const { RelinkSource, waitFor } = Relink
 
   let Source: $RelinkSource<number>
-  afterEach((): void => { Source.cleanup() })
+  afterEach(async (): Promise<void> => {
+    await Source.dispose()
+  })
 
   test('Ready to use', async (): Promise<void> => {
     Source = new RelinkSource<number>({

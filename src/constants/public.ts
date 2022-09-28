@@ -41,4 +41,4 @@ export const BUILD_HASH = process.env.BUILD_HASH
 /**
  * @public
  */
-export const VERSION = process.env.NPM_PACKAGE_VERSION
+export const VERSION = process.env.PACKAGE_VERSION

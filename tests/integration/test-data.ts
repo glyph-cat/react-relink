@@ -15,6 +15,9 @@ export interface TestDataSchema {
   userStack: Array<TestDataUserSchema>
 }
 
+/**
+ * Data generated from https://www.bestrandoms.com/random-address-in-my
+ */
 export function getFreshTestData(): TestDataSchema {
   return {
     userStack: [
@@ -55,5 +58,3 @@ export function getFreshTestData(): TestDataSchema {
     ],
   }
 }
-
-// Data generated from https://www.bestrandoms.com/random-address-in-my

@@ -5,7 +5,12 @@ import {
   useRef,
 } from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
-import { $$INTERNALS, EMPTY_OBJECT, IS_DEV_ENV } from '../../constants'
+import {
+  $$INTERNALS,
+  DEFAULT_HOOK_ACTIVE_STATE,
+  EMPTY_OBJECT,
+  IS_DEV_ENV,
+} from '../../constants'
 import { RelinkSelector } from '../../schema'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
@@ -37,9 +42,28 @@ export function useRelinkValue<State, SelectedState>(
   selector: RelinkSelector<State, SelectedState>
 ): SelectedState
 
+/**
+ * @param source - A {@link RelinkSource}.
+ * @param selector - A {@link RelinkSelector}.
+ * @param active - Controls whether the hook should listen for state changes and
+ * trigger re-renders. Default value is `true`.
+ * @example
+ * const isActive = true
+ * const filteredState = useRelinkValue(Source, null, isActive)
+ * // If you wish to pass a selector, just replace `null` with the selector that
+ * // you need.
+ * @public
+ */
 export function useRelinkValue<State, SelectedState>(
   source: RelinkSource<State>,
-  selector?: RelinkSelector<State, SelectedState>
+  selector: RelinkSelector<State, SelectedState>,
+  active: boolean
+): SelectedState
+
+export function useRelinkValue<State, SelectedState>(
+  source: RelinkSource<State>,
+  selector?: RelinkSelector<State, SelectedState>,
+  active = DEFAULT_HOOK_ACTIVE_STATE
 ): State | SelectedState {
 
   // NOTE: `scopedSource` will still be the original (unscoped) one if component
@@ -48,7 +72,7 @@ export function useRelinkValue<State, SelectedState>(
 
   useSuspenseForDataFetching(source)
 
-  const value = useRelinkValue_BASE(scopedSource, selector)
+  const value = useRelinkValue_BASE(scopedSource, selector, active)
 
   // Show debug value.
   useDebugValue(undefined, () => {
@@ -90,7 +114,8 @@ const INITIAL_STATE_SYNC_VALUE: SyncValue<[mutationCount: number, stateValue: an
  */
 export function useRelinkValue_BASE<State, SelectedState>(
   source: RelinkSource<State>,
-  selector?: RelinkSelector<State, SelectedState>
+  selector: RelinkSelector<State, SelectedState>,
+  active: boolean
 ): State | SelectedState {
 
   const mutableSelector = useRef(selector)
@@ -118,14 +143,12 @@ export function useRelinkValue_BASE<State, SelectedState>(
       : Object.is
   }, [])
 
-
   type CachedValueSchema = [mutationCount: number, stateValue: State | SelectedState]
   const cachedSyncValue = useRef<SyncValue<CachedValueSchema>>(INITIAL_STATE_SYNC_VALUE)
 
-  // TODO: getServerSnapshot
   return useSyncExternalStore(
     source.watch,
-    useCallback(() => {
+    useCallback((): SyncValue<CachedValueSchema> => {
       const [
         currentMutationCount,
         currentSelectedState,
@@ -134,6 +157,9 @@ export function useRelinkValue_BASE<State, SelectedState>(
       const nextSelectedState = new LazyVariable(() => selectValue(source.get()))
 
       const shouldReturnCachedValue = (() => {
+        if (!active) {
+          return true // Early exit
+        }
         if (currentMutationCount === nextMutationCount) {
           return true // Early exit
         }
@@ -142,8 +168,16 @@ export function useRelinkValue_BASE<State, SelectedState>(
           // returning that value.
           return false // Early exit
         }
+
+        // KIV: Not sure why TS error is present in editor but not during compilation
+        // So `ts-expect-error` cannot be used.
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
+        // Argument of type 'State | SelectedState' is not assignable to
+        // parameter of type 'SelectedState'. 'SelectedState' could be
+        // instantiated with an arbitrary type which could be unrelated to
+        // 'State | SelectedState'.ts(2345) This type parameter might need an
+        // `extends SelectedState` constraint.
         return isEqual(currentSelectedState, nextSelectedState.get())
       })()
 
@@ -156,7 +190,9 @@ export function useRelinkValue_BASE<State, SelectedState>(
         cachedSyncValue.current = nextSyncValue
         return nextSyncValue
       }
-    }, [isEqual, selectValue, source])
+    }, [active, isEqual, selectValue, source]),
+    (): SyncValue<CachedValueSchema> => ({ [$$INTERNALS]: [-1, source.get()] }),
+    // KIV: Not sure if this server snapshot implementation is stable in the long run
   )[$$INTERNALS][1]
 
 }

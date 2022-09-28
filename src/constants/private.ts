@@ -24,6 +24,17 @@ export const IS_DEV_ENV = process.env.NODE_ENV !== 'production'
 export const IS_INTERNAL_DEBUG_ENV = process.env.IS_INTERNAL_DEBUG_ENV !== 'false'
 
 /**
+ * @internal
+ */
+export const REPORT_ISSUE_URL: string = process.env.REPORT_ISSUE_URL
+
+/**
+ * Default value of the `active` parameter for `useRelink...()` hooks.
+ * @internal
+ */
+export const DEFAULT_HOOK_ACTIVE_STATE = true
+
+/**
  * Used to be `IS_BROWSER_ENV` which only `typeof window` is checked.
  * In React Native, the window is not exactly the same as what it is in the
  * browser. Even though it is accessible now, there's no guarantee it will stay

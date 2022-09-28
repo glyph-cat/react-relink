@@ -12,7 +12,7 @@ import {
 export namespace RELINK_COMPARE_FN_PRESET {
 
   /**
-   * Compares each item in the array using `Object.is`.
+   * Compares each item in the array using [`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is).
    * Use this when your selected state returns an array.
    * @example
    * // Your selector should be something that looks like this:
@@ -48,9 +48,10 @@ export namespace RELINK_COMPARE_FN_PRESET {
   }
 
   /**
-   * A wrapper around `shallowCompareArray` and `shallowCompareObject`
-   * ONLY use this when you cannot determine whether your selected state will
-   * return an array or an object as it exhausts a lot of computing resources.
+   * A wrapper around {@link shallowCompareArray} and {@link shallowCompareObject}.
+   * Only use this when you cannot determine whether your selected state will
+   * return an array or an object as it exhausts additional computing resources
+   * that could otherwise be prevented.
    * @example
    * // Your selector might be something that looks like this:
    * (state) => {
@@ -94,7 +95,7 @@ export namespace RELINK_COMPARE_FN_PRESET {
   }
 
   /**
-   * Compares each item in the object using `Object.is`.
+   * Compares each item in the object using [`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is).
    * Use this when your selected state returns an object.
    * @example
    * // Your selector should be something that looks like this:
@@ -142,7 +143,7 @@ export namespace RELINK_COMPARE_FN_PRESET {
   }
 
   /**
-   * Compares the previous and next states with `JSON.stringify`.
+   * Compares the previous and next states with [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
    */
   export function stringifyCompare(
     prevState: unknown,

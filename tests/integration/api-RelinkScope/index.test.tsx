@@ -95,7 +95,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(counterValueFromInnerSandbox).toBe(202)
 
     // Cleanup
-    MainCounterSource.cleanup()
+    await MainCounterSource.dispose()
     root.unmount()
 
   })

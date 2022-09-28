@@ -38,7 +38,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     // Cleanup
-    Source.cleanup()
+    await Source.dispose()
 
   })
 

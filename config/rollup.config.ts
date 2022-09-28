@@ -5,7 +5,7 @@ import { execSync } from 'child_process'
 import { Plugin as RollupPlugin, RollupOptions } from 'rollup'
 import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
-import { version } from '../package.json'
+import pkg from '../package.json'
 import { RelinkBuildType } from '../src/constants'
 
 const BASE_NODE_RESOLVE_CONFIG = {
@@ -75,7 +75,8 @@ function getPlugins(config: PluginConfigSchema): Array<RollupPlugin> {
     ),
     'process.env.BUILD_TYPE': JSON.stringify(buildType),
     'process.env.IS_INTERNAL_DEBUG_ENV': JSON.stringify('false'),
-    'process.env.NPM_PACKAGE_VERSION': JSON.stringify(version),
+    'process.env.PACKAGE_VERSION': JSON.stringify(pkg.version),
+    'process.env.REPORT_ISSUE_URL': JSON.stringify(pkg.bugs.url),
   }
   if (mode) {
     replaceValues['process.env.NODE_ENV'] = JSON.stringify(mode)

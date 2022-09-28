@@ -10,8 +10,8 @@ import { wrapper } from '../../wrapper'
 // appropriate times when `.set()`, `.reset()` and `.hydrate()` are called.
 
 let Source: $RelinkSource<number> = null
-afterEach((): void => {
-  Source.cleanup()
+afterEach(async (): Promise<void> => {
+  await Source.dispose()
 })
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {

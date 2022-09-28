@@ -25,9 +25,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(promise).toBe(undefined)
 
     // Cleanup
-    SourceA.cleanup()
-    SourceB.cleanup()
-    SourceC.cleanup()
+    await SourceA.dispose()
+    await SourceB.dispose()
+    await SourceC.dispose()
 
   })
 

@@ -19,8 +19,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     // Set a state first so there is something to reset later on
     await Source.set({ foo: 2, bar: 2 })
   })
-  afterEach((): void => {
-    Source.cleanup()
+  afterEach(async (): Promise<void> => {
+    await Source.dispose()
   })
 
   test('Without await', async (): Promise<void> => {

@@ -16,7 +16,11 @@
     "sourceMap": true,
     "strict": false,
     "stripInternal": true,
-    // "target": "ESNext"
+    /*
+     * Since this package is released in 2020.
+     * See: https://github.com/glyph-cat/react-relink/releases/tag/0.0.1
+     */
+    "target": "ES2020",
   },
   "exclude": [
     "node_modules",

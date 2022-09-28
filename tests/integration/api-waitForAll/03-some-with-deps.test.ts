@@ -58,11 +58,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     await delay(TIME_GAP(2))
 
     // Cleanup
-    SourceA.cleanup()
-    SourceA_sub1.cleanup()
-    SourceB.cleanup()
-    SourceB_sub1.cleanup()
-    SourceC.cleanup()
+    await SourceA.dispose({ force: true })
+    await SourceA_sub1.dispose({ force: true })
+    await SourceB.dispose({ force: true })
+    await SourceB_sub1.dispose({ force: true })
+    await SourceC.dispose({ force: true })
 
   })
 

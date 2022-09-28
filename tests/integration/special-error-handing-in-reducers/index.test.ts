@@ -21,8 +21,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
         default: 0,
       })
     })
-    afterEach((): void => {
-      Source.cleanup()
+    afterEach(async (): Promise<void> => {
+      await Source.dispose()
     })
 
     class CustomError extends Error { }

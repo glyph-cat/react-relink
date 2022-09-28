@@ -12,8 +12,8 @@ describe(useSuspenseForDataFetching.name, (): void => {
 
   let root: ReactTestRenderer
   let Source: RelinkSource<number>
-  afterEach((): void => {
-    Source.cleanup()
+  afterEach(async (): Promise<void> => {
+    await Source.dispose()
     root.unmount()
   })
 

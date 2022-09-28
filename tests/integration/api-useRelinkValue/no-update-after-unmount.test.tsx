@@ -15,8 +15,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<Schema>
   let root: ReactTestRenderer
-  afterEach((): void => {
-    Source.cleanup()
+  afterEach(async (): Promise<void> => {
+    await Source.dispose()
     root.unmount()
     root = null
   })

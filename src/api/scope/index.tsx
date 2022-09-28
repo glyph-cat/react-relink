@@ -64,10 +64,11 @@ export interface RelinkScopeProps {
  * causing your app to break when you update the package between minor and even
  * patch versions!
  * -----------------------------------------------------------------------------
- * Under the hood, React's Context API is used to allow scoping of different
- * sources. Any sources can be passed into the `sources` prop. Then, child
- * components will consume from whichever source that is available if no source
- * is available, it will consume from the orignal "unscoped" source.
+ * Under the hood, [React's Context API](https://reactjs.org/docs/context.html#gatsby-focus-wrapper)
+ * is used to allow scoping of different sources. Any sources can be passed into
+ * the `sources` prop. Then, child components will consume from whichever source
+ * that is available if no source is available, it will consume from the orignal
+ * "unscoped" source.
  * @example
  * // First approach
  *

@@ -10,7 +10,7 @@ const OMISSION_MARKER: ObjectMarker = {} as const
 /**
  * @internal
  */
-export const HYDRATION_SKIP_MARKER: ObjectMarker = { hello: 'uwu' } as const
+export const HYDRATION_SKIP_MARKER: ObjectMarker = {} as const
 
 /**
  * @internal

@@ -15,8 +15,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
-  afterEach((): void => {
-    Source.cleanup()
+  afterEach(async (): Promise<void> => {
+    await Source.dispose()
     cleanupRef.run()
   })
 

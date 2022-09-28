@@ -11,7 +11,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       default: 1,
     })
     expect(await (Source.getAsync())).toBe(1)
-    Source.cleanup()
+    await Source.dispose()
   })
 
 })

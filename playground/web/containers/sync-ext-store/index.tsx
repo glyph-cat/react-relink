@@ -4,6 +4,7 @@
 // } from 'react'
 import { useEffect, useTransition } from 'react'
 import { RelinkSource, useRelinkValue } from '../../../../src/bundle'
+// import { RelinkSource, useRelinkValue } from '../../../..' // Imports from 'lib'
 
 const MySource = new RelinkSource({
   key: 'test/api-useRelinkValue/selector',

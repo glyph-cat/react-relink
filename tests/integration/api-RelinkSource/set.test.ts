@@ -20,8 +20,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
   })
-  afterEach((): void => {
-    Source.cleanup()
+  afterEach(async (): Promise<void> => {
+    await Source.dispose()
   })
 
   describe('Without await', (): void => {

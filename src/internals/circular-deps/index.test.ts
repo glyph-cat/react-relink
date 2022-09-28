@@ -6,10 +6,10 @@ describe(checkForCircularDeps.name, (): void => {
   let SourceA: RelinkSource<number>
   let SourceB: RelinkSource<number>
   let SourceC: RelinkSource<number>
-  afterEach((): void => {
-    if (SourceA instanceof RelinkSource) { SourceA.cleanup() }
-    if (SourceB instanceof RelinkSource) { SourceB.cleanup() }
-    if (SourceC instanceof RelinkSource) { SourceC.cleanup() }
+  afterEach(async (): Promise<void> => {
+    if (SourceA instanceof RelinkSource) { await SourceA.dispose({ force: true }) }
+    if (SourceB instanceof RelinkSource) { await SourceB.dispose({ force: true }) }
+    if (SourceC instanceof RelinkSource) { await SourceC.dispose({ force: true }) }
   })
 
   // KIV: There used to be a problem where `allDepsAreReady` will be called

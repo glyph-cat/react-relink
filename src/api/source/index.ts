@@ -7,9 +7,11 @@ import {
   HYDRATION_COMMIT_NOOP_MARKER,
 } from '../../internals/core'
 import { checkForCircularDeps } from '../../internals/circular-deps'
-import { devWarn } from '../../internals/dev'
+import { devError, devWarn } from '../../internals/dev'
 import {
+  getErrorMessageOnFailToRemoveSelfKeyFromParentDep,
   getWarningForForwardedHydrationCallbackValue,
+  getWarningForSourceDisposalWithActiveDeps,
   TYPE_ERROR_SOURCE_KEY,
 } from '../../internals/errors'
 import { GatedFlow } from '../../internals/gated-flow'
@@ -19,7 +21,6 @@ import {
   HydrationConcludeType,
 } from '../../internals/no-useless-hydration-warner'
 import { startMeasuringReducerPerformance } from '../../internals/performance'
-import { safeStringJoin } from '../../internals/string-formatting'
 import { isFunction, isThenable } from '../../internals/type-checker'
 import {
   RelinkEventType,
@@ -38,6 +39,17 @@ const DEFAULT_OPTIONS: RelinkSourceOptions = {
   public: false,
   suspense: false,
 } as const
+
+export interface DisposeOptions {
+  /**
+   * When `true`, the source will be disposed even if there are pending calls to
+   * methods such as `.set(...)`, `.reset()`, `.getAsync()` and `.hydrate(...)`.
+   *
+   * ## *WARNING: This is a niche feature that is almost never used except for when handling sources with cyclic dependencies in a test environment.*
+   * @defaultValue `false`
+   */
+  force?: boolean
+}
 
 /**
  * @public
@@ -83,44 +95,63 @@ export class RelinkSource<State> {
   /**
    * @internal
    */
-  M$key: RelinkSourceKey
+  readonly M$key: RelinkSourceKey
 
   /**
    * @internal
    */
-  M$scopeId: number
+  readonly M$defaultState: State
+
+  /**
+   * @internal
+   */
+  readonly M$scopeId: number
 
   /**
    * @internal
    */
   // Refer to Special Note 'A' in 'src/README.md'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  M$parentDeps: Array<RelinkSource<any>>
+  readonly M$parentDeps: Array<RelinkSource<any>>
 
   /**
    * @internal
    */
-  M$gatedFlow: GatedFlow
+  readonly M$gatedFlow: GatedFlow
 
   /**
    * @internal
    */
-  M$options: RelinkSourceOptions
+  readonly M$options: RelinkSourceOptions
 
   /**
    * @internal
    */
-  M$core: RelinkCore<State>
+  readonly M$core: RelinkCore<State>
 
   /**
+   * Since `.watch()` methods returns an `unwatch` callback, we need a place to
+   * store them. Then, when disposing the source, we can iterate this array to
+   * unwatch all of them.
    * @internal
    */
-  M$depWatchers: Array<() => void> = []
+  readonly M$depWatchers: Array<() => void> = []
 
   /**
+   * An array containing keys of child sources.
    * @internal
    */
-  M$childDeps: Record<RelinkSourceKey, true> = {}
+  readonly M$childDeps: Array<RelinkSourceKey> = []
+
+  /**
+   * @see {@link RelinkSourceConfig.key}
+   */
+  get key(): RelinkSourceKey { return this.M$key }
+
+  /**
+   * @see {@link RelinkSourceConfig.default}
+   */
+  get default(): State { return this.M$defaultState }
 
   constructor({
     key: rawKey,
@@ -155,6 +186,7 @@ export class RelinkSource<State> {
     this.reset = this.reset.bind(this)
     this.watch = this.watch.bind(this)
     this.cleanup = this.cleanup.bind(this)
+    this.dispose = this.dispose.bind(this)
 
     registerKey(this.M$key)
     // const debugLogger = createDebugLogger(normalizedKey)
@@ -171,6 +203,7 @@ export class RelinkSource<State> {
 
     this.M$options = { ...DEFAULT_OPTIONS, ...rawOptions }
     this.M$core = new RelinkCore(defaultState)
+    this.M$defaultState = defaultState
 
     const attemptHydration = async (): Promise<void> => {
       if (isFunction(lifecycle.init)) {
@@ -189,7 +222,7 @@ export class RelinkSource<State> {
 
     for (const dep of deps) {
       // Register child depenency to this source
-      dep.M$childDeps[this.M$key] = true
+      dep.M$childDeps.push(this.M$key)
       const unwatchDepHydration = dep.watch((event) => {
         // Ignore if event is not caused by hydration
         if (event.type !== RelinkEventType.hydrate) { return }
@@ -447,21 +480,18 @@ export class RelinkSource<State> {
     return this.M$core.M$watcher.M$watch(callback)
   }
 
-  // KIV:
-  // We still haven't been able to find a way to check if sources are still in
-  // use so that we can automatically clean them up, but since for most cases,
-  // sources are used for as long as an app is opened, this can be temporarily
-  // disregarded.
-
   /**
-   * ## 🚧 EXPERIMENTAL 🚧
-   * This method might behave differently or get renamed between minor and patch
-   * versions, or even get removed in future versions.
+   * ## 🚨 DEPRECATED 🚨
+   * Please refer to the `@deprecated` tag for more information.
    *
    * ---------------------------------------------------------------------------
    *
-   * If sources are dynamically created, it is best to call this
-   * cleanup function when they are no longer needed.
+   * Dispose the source when it is no longer in use to reduce memory consumption.
+   *
+   * Use cases where this method is useful:
+   * - When dynamically created sources are no longer needed;
+   * - Inside the teardown function of a test.
+   *
    * @example
    * function MyComponent() {
    *   const Source = useRef(null)
@@ -471,30 +501,96 @@ export class RelinkSource<State> {
    *   }, [])
    *   return '...'
    * }
+   * @deprecated Please use {@link dispose} instead. This method will be removed
+   * in the next major version.
    */
   cleanup(): void {
     // Check if there are any child dependants and proceed to cleanup anyway,
     // but show a warning if there are child dependants so that developers will
     // be aware that there might be unintended behaviours.
     if (IS_DEV_ENV) {
-      const childDepStack = Object.keys(this.M$childDeps)
-      if (childDepStack.length !== 0) {
-        devWarn(
-          `Attempted to cleanup '${String(this.M$key)}' while there are ` +
-          'still other sources that depend on it: ' +
-          `'${safeStringJoin(childDepStack, '\', \'')}'.`
-        )
+      if (this.M$childDeps.length !== 0) {
+        devWarn(getWarningForSourceDisposalWithActiveDeps(this.M$key, this.M$childDeps))
       }
     }
-    for (const dep of this.M$parentDeps) {
-      // Unregister child depenency from this source
-      delete dep.M$childDeps[this.M$key]
+
+    // Unregister current source as child dependency from all parent sources
+    for (const parentDep of this.M$parentDeps) {
+      if (!parentDep.M$childDeps) { continue }
+      // ^ Parent dep has probably been disposed of already.
+      const indexOfSelfKeyInParentSource = parentDep.M$childDeps.findIndex((value) => {
+        return Object.is(value, this.M$key)
+      })
+      if (indexOfSelfKeyInParentSource >= 0) {
+        parentDep.M$childDeps.splice(indexOfSelfKeyInParentSource, 1)
+      } else {
+        if (IS_DEV_ENV) {
+          devError(getErrorMessageOnFailToRemoveSelfKeyFromParentDep(this.M$key, parentDep.M$key))
+        }
+      }
     }
+
     this.M$core.M$watcher.M$unwatchAll()
     unregisterKey(this.M$key)
+
+    // Stop receiving events from parent sources
     while (this.M$depWatchers.length > 0) {
       this.M$depWatchers.shift()() // Immediately invokes `unwatch()`
     }
+  }
+
+  /**
+   * ## 🚧 EXPERIMENTAL 🚧
+   * This method might behave differently or get renamed between minor and patch
+   * versions, or even get removed in future versions.
+   *
+   * ---------------------------------------------------------------------------
+   *
+   * Dispose the source when it is no longer in use to reduce memory consumption.
+   *
+   * Use cases where this method is useful:
+   * - When dynamically created sources are no longer needed;
+   * - Inside the teardown function of a test.
+   *
+   * There are some differences between this method and {@link cleanup}.
+   * After invoking this method:
+   * - the source will no longer emit events or trigger comopnent re-renders
+   * upon state change; and
+   * - all properties and methods of the source will no longer be accessible.
+   *
+   * @example
+   * function MyComponent() {
+   *   const Source = useRef(null)
+   *   if (!Source.current) { Source = new RelinkSource(...) }
+   *   useEffect(() => {
+   *     return () => { Source.current.dispose() }
+   *   }, [])
+   *   return '...'
+   * }
+   */
+  async dispose(options: DisposeOptions = {}): Promise<void> {
+    if (!options.force) {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      await this.M$gatedFlow.M$exec(() => { })
+      // ^ Nothing needs to be done here, but it allows us to wait for all
+      //   queued executions to complete before cleaning up.
+    }
+    this.cleanup()
+    for (const propertyOrMethod in this) {
+      delete this[propertyOrMethod]
+    }
+    // KIV
+    // Binded methods seem to remain intact without explicitly changing setting
+    // their values to undefined. The other class properties that are used by
+    // these methods, however, have already become undefined.
+    this.get = undefined
+    this.getAsync = undefined
+    this.set = undefined
+    this.reset = undefined
+    this.hydrate = undefined
+    this.cleanup = undefined
+    this.dispose = undefined
+    this.watch = undefined
   }
 
 }
@@ -514,7 +610,7 @@ export class RelinkSource<State> {
 //     .M$exec(async (): Promise<void> => { ...
 //     ```
 //
-//     And for unclear reasons, this creates a delay in integration tests that
+//     And for unclear reasons, this creates a delay in the tests that
 //     would result in inaccurate assertions. At the same time, if, by
 //     conditionally making the execution asynchronous eliminates unnecessary
 //     delay, this also means we get a little bit of performance gain.
