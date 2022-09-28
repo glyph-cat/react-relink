@@ -21,9 +21,8 @@
 **Key features:**
 * Components don't need to be wrapped in Providers
 * States can be shared across different React components trees
-* Supports asynchronous reducers
+* Supports asynchronous "setState" functions
 * Declarative lifecycle management
-* Less boilerplate code in general
 
 <br/>
 
