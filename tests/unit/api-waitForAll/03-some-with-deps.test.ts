@@ -1,5 +1,5 @@
 import { delay } from '@glyph-cat/swiss-army-knife'
-import { genericDebugLogger, TIME_GAP } from '../../../src/debugging'
+import { TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -48,13 +48,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       default: null,
     })
 
-    genericDebugLogger.echo('await delay(TIME_GAP(2))')
     await delay(TIME_GAP(2))
 
     const promise = await waitForAll([SourceA, SourceB, SourceC])
     expect(promise).toBe(undefined)
 
-    genericDebugLogger.echo('await delay(TIME_GAP(2))')
     await delay(TIME_GAP(2))
 
     // Cleanup

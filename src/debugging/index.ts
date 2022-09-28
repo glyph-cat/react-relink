@@ -1,5 +1,4 @@
 export * from './event'
-export * from './logger'
 export * from './timing'
 
 // export function mockDatabase() { }

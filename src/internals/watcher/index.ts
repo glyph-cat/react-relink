@@ -19,11 +19,7 @@ export class Watcher<A extends Array<unknown>> {
   M$watch = (callback: ((...args: A) => void)): (() => void) => {
     const newId = ++this.M$incrementalWatchId
     this.M$watcherCollection[newId] = callback
-    // genericDebugLogger.echo(`Added watcher (ID: ${newId})`)
-    const unwatch = (): void => {
-      delete this.M$watcherCollection[newId]
-      // genericDebugLogger.echo(`Removed watcher (ID: ${newId})`)
-    }
+    const unwatch = (): void => { delete this.M$watcherCollection[newId] }
     return unwatch
   }
 

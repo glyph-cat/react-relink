@@ -1,3 +1,5 @@
+import { delay } from '@glyph-cat/swiss-army-knife'
+import { TIME_GAP } from '../../../src/debugging'
 import { RelinkEvent } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
@@ -67,9 +69,6 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   describe('options', (): void => {
 
-    // KIV: Attempts to class methods were made, resulting in error in bundled builds on `callback`
-    // TypeError: Cannot read properties of undefined (reading 'M$dynamicSet')
-
     /**
      * Should wait for all gated executions to complete.
      */
@@ -83,10 +82,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       Source.watch((event) => { watchedEvent = event })
 
       // NOTE: `await` is not used here
-      Source.set((): Promise<number> => {
-        return new Promise((resolve) => {
-          setTimeout(() => { resolve(2) }, 100)
-        })
+      Source.set(async (): Promise<number> => {
+        await delay(TIME_GAP(1))
+        return 2
       }).catch((e) => { console.log(e) }) // eslint-disable-line no-console
       await Source.dispose()
 
@@ -110,10 +108,9 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       Source.watch((event) => { watchedEvent = event })
 
       // NOTE: `await` is not used here
-      Source.set((): Promise<number> => {
-        return new Promise((resolve) => {
-          setTimeout(() => { resolve(2) }, 100)
-        })
+      Source.set(async (): Promise<number> => {
+        await delay(TIME_GAP(1))
+        return 2
       }).catch((e) => { console.log(e) }) // eslint-disable-line no-console
       await Source.dispose({ force: true })
 
