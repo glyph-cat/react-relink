@@ -23,15 +23,16 @@ node_modules
 .yarn/install-state.gz
 .pnp.*
 
-# ESLint cache
-.eslintcache
-
-# Temporary
+# Caches
 .cache
+.eslintcache
+.parcel-cache
 temp/
-*.draft*
-*.old*
 
 # OS
 .DS_Store
 thumbs.db
+
+# Special
+*.draft*
+*.old*
