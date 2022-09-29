@@ -5,6 +5,7 @@ const recommendedConfig = configs.recommended
 const [NRIstatus, NRIconfig] = recommendedConfig.rules['no-restricted-imports']
 
 module.exports = {
+  root: true,
   ...recommendedConfig,
   rules: {
     ...recommendedConfig.rules,

@@ -28,7 +28,7 @@
 
 # Installation
 
-With [Yarn](https://yarnpkg.com/package/react-relink) (Recommended)
+With [Yarn](https://yarnpkg.com/package/react-relink)
 ```sh
 yarn add react-relink
 ```

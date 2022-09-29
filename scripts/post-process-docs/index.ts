@@ -30,7 +30,6 @@ for (const filePath of FILES_TO_PROCESS) {
       replacementValue
     )
   })
-  // console.log(fileContents)
   fs.writeFileSync(filePath, fileContents, 'utf-8')
 }
 
