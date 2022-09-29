@@ -1,6 +1,7 @@
 import { Config } from '@jest/types'
 
 const config: Config.InitialOptions = {
+  preset: 'jest-puppeteer',
   setupFilesAfterEnv: [
     '<rootDir>/jest.setup.ts',
     '@testing-library/jest-dom/extend-expect',

@@ -1,4 +1,5 @@
 import { delay } from '@glyph-cat/swiss-army-knife'
+import chalk from 'chalk'
 import { TIME_GAP } from '../../../src/debugging'
 import { RelinkEvent } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
@@ -111,7 +112,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       Source.set(async (): Promise<number> => {
         await delay(TIME_GAP(1))
         return 2
-      }).catch((e) => { console.log(e) }) // eslint-disable-line no-console
+      }).catch((e) => {
+        // eslint-disable-next-line no-console
+        console.log(chalk.grey(e))
+      })
       await Source.dispose({ force: true })
 
       expect(watchedEvent).toBe(null)
