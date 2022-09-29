@@ -12,12 +12,12 @@ describe(useSuspenseForDataFetching.name, (): void => {
 
   let root: ReactTestRenderer
   let Source: RelinkSource<number>
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     root.unmount()
   })
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
 
     Source = new RelinkSource({
       key: 'test/suspense',
@@ -80,7 +80,7 @@ describe(useSuspenseForDataFetching.name, (): void => {
     })
 
     // Refer to Local Note [A] near end of file
-    await act(async (): Promise<void> => {
+    await act(async () => {
       await delay(TIME_GAP(2))
     })
     expect(getComponentMountStatus()).toStrictEqual({
@@ -90,7 +90,7 @@ describe(useSuspenseForDataFetching.name, (): void => {
 
     // Check if component enters suspense mode again if source rehydrates
     act((): void => {
-      Source.hydrate(async ({ commit }): Promise<void> => {
+      Source.hydrate(async ({ commit }) => {
         await delay(TIME_GAP(1))
         act((): void => {
           commit(2)
@@ -105,7 +105,7 @@ describe(useSuspenseForDataFetching.name, (): void => {
     })
 
     // Refer to Local Note [A] near end of file
-    await act(async (): Promise<void> => {
+    await act(async () => {
       await delay(TIME_GAP(2))
     })
     expect(getComponentMountStatus()).toStrictEqual({

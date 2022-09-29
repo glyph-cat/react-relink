@@ -42,7 +42,7 @@ describe(isThenable.name, (): void => {
 
   test('With a normal promise', (): void => {
     // NOTE: Plain promise evaluates to false, it has to be an executed promise.
-    const output = isThenable((async (): Promise<void> => { /* */ })())
+    const output = isThenable((async () => { /* */ })())
     expect(output).toBe(true)
   })
 

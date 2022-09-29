@@ -17,12 +17,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     cleanupRef.run()
   })
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
     Source = new RelinkSource({
       key: 'test/use-hydrate-relink-source',
       default: 1,
@@ -30,11 +30,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     const hookInterface = createHookInterface({
       useHook: () => useHydrateRelinkSource(Source),
       actions: {
-        async hydrateCommit({ hookData }): Promise<void> {
+        async hydrateCommit({ hookData }) {
           const hydrate = hookData
           await hydrate(({ commit }) => { commit(2) })
         },
-        async hydrateSkip({ hookData }): Promise<void> {
+        async hydrateSkip({ hookData }) {
           const hydrate = hookData
           await hydrate(({ skip }) => { skip() })
         },

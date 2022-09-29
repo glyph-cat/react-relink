@@ -9,11 +9,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   const { RelinkSource, RelinkEventType } = Relink
 
   let Source: $RelinkSource<SampleSchema>
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
   })
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
 
     Source = new RelinkSource({
       key: 'test/Source.hydrate()',
@@ -25,7 +25,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     const conclusionRef = { current: null }
     const eventStackPromise = createEventStackPromise(Source, 2)
-    const hydrationPromise = Source.hydrate(async ({ skip }): Promise<void> => {
+    const hydrationPromise = Source.hydrate(async ({ skip }) => {
       conclusionRef.current = skip
       await delay(TIME_GAP(1))
       skip()

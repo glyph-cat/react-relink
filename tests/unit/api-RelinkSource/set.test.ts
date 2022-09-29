@@ -20,13 +20,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
   })
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
   })
 
   describe('Without await', (): void => {
 
-    test('Direct set', async (): Promise<void> => {
+    test('Direct set', async () => {
       const eventPromise = createEventPromise(Source)
       const setPromise = Source.set({
         foo: 2,
@@ -43,7 +43,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       })
     })
 
-    test('Reducer', async (): Promise<void> => {
+    test('Reducer', async () => {
       const eventPromise = createEventPromise(Source)
       const setPromise = Source.set((state) => ({
         ...state,
@@ -60,7 +60,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       })
     })
 
-    test('Async reducer', async (): Promise<void> => {
+    test('Async reducer', async () => {
       const eventPromise = createEventPromise(Source)
       const promise = Source.set(async (state) => ({
         ...state,
@@ -81,7 +81,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   describe('With await', (): void => {
 
-    test('Direct set', async (): Promise<void> => {
+    test('Direct set', async () => {
       const eventPromise = createEventPromise(Source)
       const awaitedPromise = await Source.set({
         foo: 2,
@@ -97,7 +97,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       })
     })
 
-    test('Reducer', async (): Promise<void> => {
+    test('Reducer', async () => {
       const eventPromise = createEventPromise(Source)
       const awaitedPromise = await Source.set((state) => ({
         ...state,
@@ -113,7 +113,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       })
     })
 
-    test('Async reducer', async (): Promise<void> => {
+    test('Async reducer', async () => {
       const eventPromise = createEventPromise(Source)
       const awaitedPromise = await Source.set(async (state) => ({
         ...state,

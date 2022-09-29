@@ -5,7 +5,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { waitForAll } = Relink
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
     const promise = await waitForAll([])
     expect(promise).toBe(undefined)
   })

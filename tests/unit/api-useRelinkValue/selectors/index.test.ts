@@ -25,12 +25,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
   })
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     cleanupRef.run()
   })
 
-  test('RelinkBasicSelector', async (): Promise<void> => {
+  test('RelinkBasicSelector', async () => {
 
     const hookInterface = createHookInterface({
       useHook: () => useRelinkValue(Source, (s) => s.bar),
@@ -61,7 +61,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   describe(RelinkAdvancedSelector.name, (): void => {
 
-    test('Simulation of `RelinkBasicSelector`', async (): Promise<void> => {
+    test('Simulation of `RelinkBasicSelector`', async () => {
 
       const selector = new RelinkAdvancedSelector<SampleSchema, SampleSchema['bar']>({
         get(state) {
@@ -96,7 +96,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     })
 
-    test('Custom equality checker', async (): Promise<void> => {
+    test('Custom equality checker', async () => {
 
       const selector = new RelinkAdvancedSelector<SampleSchema, SampleSchema>({
         get(state) {

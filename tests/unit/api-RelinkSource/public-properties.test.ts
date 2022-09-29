@@ -11,13 +11,13 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
 
     const SOURCE_KEY = 'test/public-properties/key'
     let Source: $RelinkSource<number>
-    beforeEach(async (): Promise<void> => {
+    beforeEach(async () => {
       Source = new RelinkSource({
         key: SOURCE_KEY,
         default: 1,
       })
     })
-    afterEach(async (): Promise<void> => {
+    afterEach(async () => {
       await Source.dispose()
     })
 
@@ -42,17 +42,17 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
   describe('.default', (): void => {
 
     let Source: $RelinkSource<number>
-    beforeEach(async (): Promise<void> => {
+    beforeEach(async () => {
       Source = new RelinkSource({
         key: 'test/public-properties/default',
         default: 1,
       })
     })
-    afterEach(async (): Promise<void> => {
+    afterEach(async () => {
       await Source.dispose()
     })
 
-    test('Returned value is correct', async (): Promise<void> => {
+    test('Returned value is correct', async () => {
       expect(Source.default).toBe(1) // before
       await Source.set(2)
       expect(Source.default).toBe(1) // and after set state

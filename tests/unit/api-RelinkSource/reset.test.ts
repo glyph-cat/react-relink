@@ -8,7 +8,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   const { RelinkSource, RelinkEventType } = Relink
 
   let Source: $RelinkSource<SampleSchema>
-  beforeEach(async (): Promise<void> => {
+  beforeEach(async () => {
     Source = new RelinkSource({
       key: 'test/Source.reset()',
       default: {
@@ -19,11 +19,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     // Set a state first so there is something to reset later on
     await Source.set({ foo: 2, bar: 2 })
   })
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
   })
 
-  test('Without await', async (): Promise<void> => {
+  test('Without await', async () => {
     const eventPromise = createEventPromise(Source)
     const promise = Source.reset()
     expect(Source.get()).toStrictEqual({ foo: 1, bar: 1 })
@@ -35,7 +35,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
   })
 
-  test('With await', async (): Promise<void> => {
+  test('With await', async () => {
     const eventPromise = createEventPromise(Source)
     const awaitedPromise = await Source.reset()
     expect(Source.get()).toStrictEqual({ foo: 1, bar: 1 })

@@ -12,7 +12,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, RelinkScope, useRelinkState } = Relink
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
 
     let root: ReactTestRenderer
 
@@ -87,7 +87,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(counterValueFromInnerSandbox).toBe(100)
 
     // After change value
-    await act(async (): Promise<void> => {
+    await act(async () => {
       await REF_changeValueForOuterSandbox.current()
       await REF_changeValueForInnerSandbox.current()
     })

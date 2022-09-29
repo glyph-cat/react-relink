@@ -17,14 +17,14 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<SampleSchema>
   const cleanupRef = createCleanupRef()
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     cleanupRef.run()
   })
 
   describe('If no state change, value should be same across renders', (): void => {
 
-    test('Without selector', async (): Promise<void> => {
+    test('Without selector', async () => {
 
       Source = new RelinkSource<SampleSchema>({
         key: 'test/api-useRelinkValue/external-state-change',
@@ -63,7 +63,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     })
 
-    test('With selector', async (): Promise<void> => {
+    test('With selector', async () => {
 
       Source = new RelinkSource<SampleSchema>({
         key: 'test/api-useRelinkValue/external-state-change',

@@ -17,12 +17,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     cleanupRef.run()
   })
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
     Source = new RelinkSource({
       key: 'test/use-set-relink-state',
       default: 1,
@@ -30,7 +30,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     const hookInterface = createHookInterface({
       useHook: () => useSetRelinkState(Source),
       actions: {
-        async setState({ hookData }): Promise<void> {
+        async setState({ hookData }) {
           const setState = hookData
           await setState(c => c + 1)
         }

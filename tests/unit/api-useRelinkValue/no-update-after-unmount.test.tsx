@@ -15,13 +15,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<Schema>
   let root: ReactTestRenderer
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     root.unmount()
     root = null
   })
 
-  test('Main', async (): Promise<void> => {
+  test('Main', async () => {
 
     Source = new RelinkSource<Schema>({
       key: 'test/no-update-after-unmount',

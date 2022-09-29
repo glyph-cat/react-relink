@@ -42,7 +42,7 @@ const actions = {
   },
   clearConsole: console.clear,
   reset: CounterSource.reset,
-  async hydrate(): Promise<void> {
+  async hydrate() {
     const res = await CounterSource.hydrate(async ({ commit }) => {
       console.log('Comitting in 3...')
       await delay(localTimeGap)

@@ -9,11 +9,11 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   const { RelinkSource, waitFor } = Relink
 
   let Source: $RelinkSource<number>
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
   })
 
-  test('Ready to use', async (): Promise<void> => {
+  test('Ready to use', async () => {
     Source = new RelinkSource<number>({
       key: 'test/waitFor',
       default: 1,
@@ -23,12 +23,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(promise).toBe(undefined)
   })
 
-  test('Needs hydration', async (): Promise<void> => {
+  test('Needs hydration', async () => {
     Source = new RelinkSource<number>({
       key: 'test/waitFor',
       default: null,
       lifecycle: {
-        async init({ commit }): Promise<void> {
+        async init({ commit }) {
           await delay(TIME_GAP(1))
           commit(1)
         },

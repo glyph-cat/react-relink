@@ -16,12 +16,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<SampleSchema>
   const cleanupRef = createCleanupRef()
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     cleanupRef.run()
   })
 
-  test('Main', async (): Promise<void> => {
+  test('Main', async () => {
 
     Source = new RelinkSource<SampleSchema>({
       key: 'test/api-useRelinkValue/basic-usage',
@@ -72,7 +72,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  test('`active` parameter', async (): Promise<void> => {
+  test('`active` parameter', async () => {
 
     Source = new RelinkSource<SampleSchema>({
       key: 'test/api-useRelinkValue/active-parameter',

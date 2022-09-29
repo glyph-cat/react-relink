@@ -3,7 +3,7 @@ import { createSuspenseWaiter } from '../../internals/suspense-waiter'
 
 describe(createSuspenseWaiter.name, (): void => {
 
-  test('Error', (): Promise<void> => {
+  test('Error', () => {
     const promise = new Promise<void>((_resolve, reject): void => {
       reject('match-key')
     })
@@ -26,7 +26,7 @@ describe(createSuspenseWaiter.name, (): void => {
     expect(callback).toThrow()
   })
 
-  test('Completed', async (): Promise<void> => {
+  test('Completed', async () => {
     const promise = new Promise<void>((resolve): void => {
       resolve()
     })
@@ -54,7 +54,7 @@ describe(createSuspenseWaiter.name, (): void => {
 
 // describe(performSuspension.name, (): void => {
 
-//   test('Error', (): Promise<void> => {
+//   test('Error', () => {
 //     const callback = (): void => {
 //       const promise = new Promise((_resolve, reject) => {
 //         reject('match-key')
@@ -69,7 +69,7 @@ describe(createSuspenseWaiter.name, (): void => {
 //     })
 //   })
 
-//   test('Pending', async (): Promise<void> => {
+//   test('Pending', async () => {
 //     const promise = new Promise<void>((resolve) => {
 //       setTimeout(() => {
 //         resolve()
@@ -80,7 +80,7 @@ describe(createSuspenseWaiter.name, (): void => {
 //     expect(Object.is(caughtItemFrom(callback), promise)).toBe(true)
 //   })
 
-//   test('Completed', async (): Promise<void> => {
+//   test('Completed', async () => {
 //     const promise = new Promise<void>((resolve) => {
 //       resolve()
 //     })

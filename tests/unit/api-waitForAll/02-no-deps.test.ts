@@ -6,7 +6,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   const { RelinkSource, waitForAll } = Relink
   const testName = 'waitForAll'
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
 
     const SourceA = new RelinkSource({
       key: `test/${testName}/no-deps/a`,

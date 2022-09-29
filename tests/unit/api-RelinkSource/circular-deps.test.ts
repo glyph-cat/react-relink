@@ -12,7 +12,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   let SourceA: $RelinkSource<number>
   let SourceB: $RelinkSource<number>
   let SourceC: $RelinkSource<number>
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     if (SourceA instanceof RelinkSource) { await SourceA.dispose({ force: true }) }
     if (SourceB instanceof RelinkSource) { await SourceB.dispose({ force: true }) }
     if (SourceC instanceof RelinkSource) { await SourceC.dispose({ force: true }) }

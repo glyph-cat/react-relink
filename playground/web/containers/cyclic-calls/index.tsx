@@ -5,7 +5,7 @@ const CounterSource = new RelinkSource({
   default: 0,
 })
 
-async function onButtonClick(): Promise<void> {
+async function onButtonClick() {
   console.log('Invoked `onButtonClick()`')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   await CounterSource.set(async (counter) => {

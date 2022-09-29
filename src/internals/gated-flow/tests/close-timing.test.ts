@@ -4,7 +4,7 @@ import { GatedFlow } from '..'
 
 // Elaboration: Gate only closes when all currently queued callbacks have been
 // flushed, but callbacks placed after a lock is requested remains queued.
-test('Gate closes at appropriate timing', async (): Promise<void> => {
+test('Gate closes at appropriate timing', async () => {
   const gateKeeper = new GatedFlow(true, 'test/gated-flow/close-timing')
   const array: Array<string> = []
 
@@ -12,17 +12,17 @@ test('Gate closes at appropriate timing', async (): Promise<void> => {
   gateKeeper.M$exec((): void => {
     array.push('group-1,item-1')
   })
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(1))
     array.push('group-1,item-2')
   })
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     array.push('group-1,item-3')
   })
   gateKeeper.M$exec((): void => {
     array.push('group-1,item-4')
   })
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(1))
     array.push('group-1,item-5')
   })
@@ -40,7 +40,7 @@ test('Gate closes at appropriate timing', async (): Promise<void> => {
   gateKeeper.M$exec((): void => {
     array.push('group-2,item-1')
   })
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     array.push('group-2,item-2')
   })
 

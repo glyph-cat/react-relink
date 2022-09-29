@@ -2,7 +2,7 @@ import { delay } from '@glyph-cat/swiss-army-knife'
 import { TIME_GAP } from '../../../debugging'
 import { GatedFlow } from '..'
 
-test('Stress test', async (): Promise<void> => {
+test('Stress test', async () => {
 
   const gateKeeper = new GatedFlow(true, 'test/gated-flow/stress')
   const array: Array<number> = []
@@ -15,13 +15,13 @@ test('Stress test', async (): Promise<void> => {
   // Stage 2
   gateKeeper.M$lock()
   expect(array).toStrictEqual([1]) // because locked
-  gateKeeper.M$exec(async (): Promise<void> => { array.push(2) })
+  gateKeeper.M$exec(async () => { array.push(2) })
   expect(array).toStrictEqual([1]) // because locked
 
   // Stage 3
   gateKeeper.M$open()
   expect(array).toStrictEqual([1, 2])
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(1))
     array.push(3)
   })
@@ -31,7 +31,7 @@ test('Stress test', async (): Promise<void> => {
   // the callbacks enough time to complete.
 
   // Stage 4
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(1))
     array.push(4)
   })
@@ -50,14 +50,14 @@ test('Stress test', async (): Promise<void> => {
   // Stage 6
   gateKeeper.M$open()
   expect(array).toStrictEqual([1, 2])
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(2))
     array.push(6)
   })
   expect(array).toStrictEqual([1, 2])
   gateKeeper.M$exec((): void => { array.push(7) })
   expect(array).toStrictEqual([1, 2])
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(2))
     array.push(8)
   })
@@ -66,7 +66,7 @@ test('Stress test', async (): Promise<void> => {
   // Stage 7
   gateKeeper.M$open()
   expect(array).toStrictEqual([1, 2])
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(2))
     array.push(9)
   })
@@ -75,7 +75,7 @@ test('Stress test', async (): Promise<void> => {
   // Stage 8
   gateKeeper.M$lock()
   expect(array).toStrictEqual([1, 2])
-  gateKeeper.M$exec(async (): Promise<void> => {
+  gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(2))
     array.push(10)
   })

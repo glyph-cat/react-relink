@@ -1,5 +1,5 @@
 import { delay } from '@glyph-cat/swiss-army-knife'
-import chalk from 'chalk'
+import * as chalk from 'chalk'
 import { TIME_GAP } from '../../../src/debugging'
 import { RelinkEvent } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
@@ -13,7 +13,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   // and disposed within the `test` callback because *it is* the `dispose` method
   // that we want to test.
 
-  test('value instanceof RelinkSource', async (): Promise<void> => {
+  test('value instanceof RelinkSource', async () => {
     const Source = new RelinkSource({
       key: 'test/dispose/instanceof',
       default: 1,
@@ -22,7 +22,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(Source instanceof RelinkSource).toBe(true)
   })
 
-  test('Class methods and properties should be inaccessible', async (): Promise<void> => {
+  test('Class methods and properties should be inaccessible', async () => {
     const Source = new RelinkSource({
       key: 'test/dispose/methods-properties',
       default: 1,
@@ -51,7 +51,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     ].sort())
   })
 
-  test('Listeners should not be active after disposal', async (): Promise<void> => {
+  test('Listeners should not be active after disposal', async () => {
     const Source = new RelinkSource({
       key: 'test/dispose/listeners',
       default: 1,
@@ -73,7 +73,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     /**
      * Should wait for all gated executions to complete.
      */
-    test('.force = false (default)', async (): Promise<void> => {
+    test('.force = false (default)', async () => {
       const Source = new RelinkSource({
         key: 'test/dispose/options.force=false',
         default: 1,
@@ -99,7 +99,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     /**
      * Should not wait for all gated executions to complete.
      */
-    test('.force = true', async (): Promise<void> => {
+    test('.force = true', async () => {
       const Source = new RelinkSource({
         key: 'test/dispose/options.force=true',
         default: 1,
@@ -124,7 +124,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  test('Make sure other sources are still intact', async (): Promise<void> => {
+  test('Make sure other sources are still intact', async () => {
     const SourceA = new RelinkSource({
       key: 'test/dispose/pollution-check/a',
       default: 1,

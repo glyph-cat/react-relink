@@ -11,7 +11,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource } = Relink
 
-  test('Carry forward', async (): Promise<void> => {
+  test('Carry forward', async () => {
 
     const Source = new RelinkSource<SampleSchema>({
       key: 'test/x-carry-forward',

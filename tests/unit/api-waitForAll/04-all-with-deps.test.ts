@@ -8,7 +8,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   const { RelinkSource, waitForAll } = Relink
   const testName = 'waitForAll'
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
 
     const SourceA_sub1 = new RelinkSource<number>({
       key: `test/${testName}/all-with-deps/a/sub-1`,
@@ -24,7 +24,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       key: `test/${testName}/all-with-deps/b/sub-1`,
       default: 0,
       lifecycle: {
-        init: async ({ commit }): Promise<void> => {
+        init: async ({ commit }) => {
           await delay(TIME_GAP(1))
           commit(1)
         },

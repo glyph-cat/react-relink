@@ -20,7 +20,7 @@ describe('Initial state', (): void => {
       expect(callback).toHaveBeenCalledTimes(3)
     })
 
-    test('Mixed with asynchronous callbacks', async (): Promise<void> => {
+    test('Mixed with asynchronous callbacks', async () => {
       const gateKeeper = new GatedFlow(true, 'test/gated-flow/initial-state/open/mixed-cb')
       const callback = jest.fn()
       gateKeeper.M$exec(() => { callback() })
@@ -50,12 +50,12 @@ describe('Initial state', (): void => {
       expect(callback).toHaveBeenCalledTimes(3)
     })
 
-    test('Mixed with asynchronous callbacks', async (): Promise<void> => {
+    test('Mixed with asynchronous callbacks', async () => {
       const gateKeeper = new GatedFlow(false, 'test/gated-flow/initial-state/closed/mixed-cb')
       const callback = jest.fn()
       gateKeeper.M$exec((): void => { callback() })
-      gateKeeper.M$exec(async (): Promise<void> => { callback() })
-      gateKeeper.M$exec(async (): Promise<void> => {
+      gateKeeper.M$exec(async () => { callback() })
+      gateKeeper.M$exec(async () => {
         await delay(TIME_GAP(1))
         callback()
       })

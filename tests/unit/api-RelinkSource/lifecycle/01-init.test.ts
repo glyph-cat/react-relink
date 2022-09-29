@@ -15,12 +15,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
-  afterEach(async (): Promise<void> => {
+  afterEach(async () => {
     await Source.dispose()
     cleanupRef.run()
   })
 
-  test('Synchronous commit', async (): Promise<void> => {
+  test('Synchronous commit', async () => {
 
     Source = new RelinkSource({
       key: 'test/Source/lifecycle.init/sync/commit',
@@ -52,7 +52,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  test('Synchronous skip', async (): Promise<void> => {
+  test('Synchronous skip', async () => {
 
     Source = new RelinkSource({
       key: 'test/RelinkSource/lifecycle.init/sync/skip',
@@ -84,14 +84,14 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  test('Asynchronous commit', async (): Promise<void> => {
+  test('Asynchronous commit', async () => {
 
     Source = new RelinkSource({
       key: 'test/Source/lifecycle.init/async/commit',
       default: null,
       lifecycle: {
-        async init({ commit }): Promise<void> {
-          await act(async (): Promise<void> => {
+        async init({ commit }) {
+          await act(async () => {
             await delay(TIME_GAP(1))
             commit(1)
           })
@@ -122,14 +122,14 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  test('Asynchronous skip', async (): Promise<void> => {
+  test('Asynchronous skip', async () => {
 
     Source = new RelinkSource({
       key: 'test/Source/lifecycle.init/async/commit',
       default: null,
       lifecycle: {
-        async init({ skip }): Promise<void> {
-          await act(async (): Promise<void> => {
+        async init({ skip }) {
+          await act(async () => {
             await delay(TIME_GAP(1))
             skip()
           })

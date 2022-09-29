@@ -5,7 +5,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource } = Relink
 
-  test('main', async (): Promise<void> => {
+  test('main', async () => {
     const Source = new RelinkSource({
       key: 'test/Source.getAsync()',
       default: 1,

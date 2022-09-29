@@ -21,13 +21,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
         default: 0,
       })
     })
-    afterEach(async (): Promise<void> => {
+    afterEach(async () => {
       await Source.dispose()
     })
 
     class CustomError extends Error { }
 
-    test('Synchronous reducers', async (): Promise<void> => {
+    test('Synchronous reducers', async () => {
 
       // Normal sync and async set
       Source.set((c) => { return c + 1 })
@@ -51,7 +51,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     })
 
-    test('Asynchronous reducers', async (): Promise<void> => {
+    test('Asynchronous reducers', async () => {
 
       // Normal sync and async set
       Source.set((c) => { return c + 1 })
@@ -75,7 +75,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     })
 
-    test('Promises', async (): Promise<void> => {
+    test('Promises', async () => {
 
       // Normal sync and async set
       Source.set((c) => { return c + 1 })
