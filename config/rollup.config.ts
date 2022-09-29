@@ -37,15 +37,18 @@ function getPlugins(config: PluginConfigSchema): Array<RollupPlugin> {
   const { overrides = {}, mode, buildType } = config
   const basePlugins = {
     nodeResolve: nodeResolve(BASE_NODE_RESOLVE_CONFIG),
-    autoImportReact: autoImportReact(),
+    // KIV
+    // autoImportReact: autoImportReact(),
     typescript: typescript({
       tsconfigOverride: {
         compilerOptions: {
           declaration: false,
           declarationDir: null,
-          jsx: 'react',
           outDir: null,
         },
+        exclude: [
+          './src/**/*.test*',
+        ],
       },
     }),
     commonjs: commonjs(),
@@ -204,21 +207,21 @@ const config: Array<RollupOptions> = [
 
 export default config
 
-/**
- * Automatically `imports React from "react"` if a file ends with '.tsx'.
- */
-function autoImportReact(): RollupPlugin {
-  return {
-    name: 'autoImportReact',
-    transform(code, id) {
-      if (/tsx/gi.test(id)) {
-        code = 'import React from "react";\n' + code
-        return {
-          code,
-          map: null,
-        }
-      }
-      return null
-    },
-  }
-}
+// /**
+//  * Automatically `imports React from "react"` if a file ends with '.tsx'.
+//  */
+// function autoImportReact(): RollupPlugin {
+//   return {
+//     name: 'autoImportReact',
+//     transform(code, id) {
+//       if (/tsx/gi.test(id)) {
+//         code = 'import React from "react";\n' + code
+//         return {
+//           code,
+//           map: null,
+//         }
+//       }
+//       return null
+//     },
+//   }
+// }
