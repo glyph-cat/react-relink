@@ -1,0 +1,22 @@
+.underlay {
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+}
+
+.menuContainer {
+  background-color: #111111;
+  border: solid 1px #80808080;
+  width: 250px;
+}
+
+.listButtonContainer {
+  align-items: center;
+  border: solid 1px #80808080;
+  cursor: pointer;
+  display: grid;
+  font-size: 14pt;
+  grid-template-columns: auto 1fr;
+  min-height: 42px;
+}

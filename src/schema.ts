@@ -17,6 +17,11 @@ export interface RelinkHydrateArgs<State> {
   skip(): void
   /**
    * 🚧 EXPERIMENTAL 🚧
+   * This is an experimental feature. Until it is stable, the usage, parameters,
+   * and behaviours might change from version to version, potentially causing
+   * your app to break when you update the package between minor and even patch
+   * versions!
+   *
    * Commit the default state. Will override the current state if it is not
    * already the default.
    * @internal
@@ -24,6 +29,11 @@ export interface RelinkHydrateArgs<State> {
   commitDefault(): void
   /**
    * 🚧 EXPERIMENTAL 🚧
+   * This is an experimental feature. Until it is stable, the usage, parameters,
+   * and behaviours might change from version to version, potentially causing
+   * your app to break when you update the package between minor and even patch
+   * versions!
+   *
    * Skips hydration completely, not mutating the state at all.
    * @internal
    */

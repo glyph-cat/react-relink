@@ -541,8 +541,10 @@ export class RelinkSource<State> {
 
   /**
    * ## 🚧 EXPERIMENTAL 🚧
-   * This method might behave differently or get renamed between minor and patch
-   * versions, or even get removed in future versions.
+   * This is an experimental feature. Until it is stable, the usage, parameters,
+   * and behaviours might change from version to version, potentially causing
+   * your app to break when you update the package between minor and even patch
+   * versions!
    *
    * ---------------------------------------------------------------------------
    *

@@ -113,8 +113,17 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
         await delay(TIME_GAP(1))
         return 2
       }).catch((e) => {
-        // eslint-disable-next-line no-console
-        console.log(chalk.grey(e))
+        if (typeof chalk.grey === 'function') {
+          // eslint-disable-next-line no-console
+          console.log(chalk.grey(e))
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+        } else if (typeof chalk.Chalk?.grey === 'function') {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // eslint-disable-next-line no-console
+          console.log(chalk.Chalk.grey(e))
+        }
       })
       await Source.dispose({ force: true })
 

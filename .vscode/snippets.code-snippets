@@ -15,6 +15,12 @@
   // 	],
   // 	"description": "Log output to console"
   // }
+  "Import scoped CSS": {
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "prefix": "import styles",
+    "body": "import styles from './index.module.css'",
+    "description": "Import scoped CSS"
+  },
   "TS expect error on purpose": {
     "scope": "typescript,typescriptreact",
     "prefix": "@ts-expect-error",

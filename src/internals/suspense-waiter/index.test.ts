@@ -9,7 +9,7 @@ describe(createSuspenseWaiter.name, (): void => {
     })
     const wait = createSuspenseWaiter(promise)
     const callback = (): void => { wait() }
-    return new Promise((resolve): void => {
+    return new Promise<void>((resolve) => {
       setTimeout((): void => {
         expect(callback).toThrowError('match-key')
         resolve()
@@ -31,8 +31,8 @@ describe(createSuspenseWaiter.name, (): void => {
       resolve()
     })
     const wait = createSuspenseWaiter(promise)
-    const callback = (): void => { wait() }
-    return new Promise((resolve): void => {
+    const callback = () => { wait() }
+    return new Promise<void>((resolve) => {
       setTimeout((): void => {
         expect(callback).not.toThrow()
         resolve()
