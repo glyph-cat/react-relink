@@ -47,7 +47,7 @@ function Sandbox(): JSX.Element {
     <DebugFrame className={styles.container}>
       <div>
         <h1
-          data-testid='counter-value'
+          data-test-id='counter-value'
           className={styles.counterValue}
         >
           {counter}
@@ -63,17 +63,17 @@ function Sandbox(): JSX.Element {
               gap: 10,
               gridAutoFlow: 'column',
             }}>
-              <button data-testid='button-increase-counter' onClick={increaseCounter}>
+              <button data-test-id='button-increase-counter' onClick={increaseCounter}>
                 {'+1'}
               </button>
-              <button data-testid='button-set-counter-42' onClick={setCounter42}>
+              <button data-test-id='button-set-counter-42' onClick={setCounter42}>
                 {'Set value to 42'}
               </button>
             </div>
-            <button data-testid='button-reset-counter' onClick={resetCounter}>
+            <button data-test-id='button-reset-counter' onClick={resetCounter}>
               {'Reset'}
             </button>
-            <button data-testid='button-hydrate-counter' onClick={hydrateCounter}>
+            <button data-test-id='button-hydrate-counter' onClick={hydrateCounter}>
               {'Hydrate to 36'}
             </button>
           </div>

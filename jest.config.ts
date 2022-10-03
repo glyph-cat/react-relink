@@ -14,7 +14,7 @@ const config: Config.InitialOptions = {
   // KIV: Seems like fake timers are disabled by default now
   // testEnvironment: 'jsdom',
   // KIV: Seems like tests can now work even without `testEnvironment` specified
-  verbose: false,
+  verbose: true,
 }
 
 export default config

@@ -1,3 +1,4 @@
+import { StorageViewerTestId } from './constants'
 
 export interface StorageViewerProps {
   storageKey: string
@@ -23,12 +24,14 @@ export function StorageViewer({
           {`// ${type === 'session' ? 'Session' : 'Local'} Storage`}
         </span>
         <br />
-        {Object.is(storageData, null)
-          ? <span style={{ opacity: 0.5 }}>null</span>
-          : shouldTreatAsJSON
-            ? JSON.stringify(JSON.parse(storageData))
-            : storageData
-        }
+        <span data-test-id={StorageViewerTestId.STORAGE_VIEWER}>
+          {Object.is(storageData, null)
+            ? <span style={{ opacity: 0.5 }}>null</span>
+            : shouldTreatAsJSON
+              ? JSON.stringify(JSON.parse(storageData))
+              : storageData
+          }
+        </span>
       </code>
     </pre>
   )

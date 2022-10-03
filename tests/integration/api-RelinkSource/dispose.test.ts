@@ -62,7 +62,7 @@ wrapper(({ Relink }: UnitTestConfig): void => {
     Source.watch((event) => { eventStack.push(event) })
     await Source.dispose()
     const callback = async () => { await Source.set(c => c + 1) }
-    expect(callback()).rejects.toThrowError(
+    await expect(callback()).rejects.toThrowError(
       new TypeError('Source.set is not a function')
     )
     expect(eventStack).toStrictEqual([])
@@ -155,8 +155,8 @@ wrapper(({ Relink }: UnitTestConfig): void => {
       default: { foo: 'bar' },
     })
 
-    expect(SourceB.getAsync()).resolves.toBe('meow')
-    expect(SourceC.getAsync()).resolves.toStrictEqual({ foo: 'bar' })
+    await expect(SourceB.getAsync()).resolves.toBe('meow')
+    await expect(SourceC.getAsync()).resolves.toStrictEqual({ foo: 'bar' })
 
   })
 

@@ -1,6 +1,8 @@
 import * as fs from 'fs'
-import { IntegrationTestConfig } from '../helpers'
 import { stringifyUrl } from 'query-string'
+import { IntegrationTestConfig } from '../helpers'
+import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
+import { MutableRefObject } from 'react'
 
 const BASE_TEST_DIR = './tests/e2e'
 const LOCAL_HOST = 'http://localhost:3000'
@@ -11,94 +13,103 @@ type BuildConfig = Partial<{
   p: boolean | 0 | 1
 }>
 
-interface SandboxUtils {
-  loadSandbox: IntegrationTestConfig['loadSandbox']
-  screenshotFactory: IntegrationTestConfig['screenshotFactory']
-}
-
-function createSandboxUtils(
-  buildConfig: BuildConfig = {},
-  scnshotSuffix?: string
-): SandboxUtils {
-  return {
-    async loadSandbox(sandboxName: string) {
-      await page.setViewport({ height: 900, width: 1200 })
-      await page.goto(stringifyUrl({
-        url: `${LOCAL_HOST}/${sandboxName}`,
-        query: buildConfig,
-      }))
-      await page.waitForSelector('div[data-testid="debug-frame"]', { visible: true })
-    },
-    screenshotFactory(testName: string) {
-      const suffix = scnshotSuffix || buildConfig?.t
-      const screenshotsPath = `${BASE_TEST_DIR}/${testName}/${SCREENSHOTS_DIR_NAME}`
-      if (!fs.existsSync(screenshotsPath)) { fs.mkdirSync(screenshotsPath) }
-      return {
-        async snap(screenshotName: string) {
-          await page.screenshot({
-            path: `${screenshotsPath}/${screenshotName}.${suffix}.png`,
-            fullPage: true,
-          })
-        }
-      }
-    },
-  }
-}
-
 const SCOPE = process.env.scope
-const DEBUG_BUILDS: Array<IntegrationTestConfig> = [
-  {
+const testConfigStack: Array<IntegrationTestConfig> = []
+if (!SCOPE || SCOPE === 'debug') {
+  testConfigStack.push({
     buildEnv: 'debug',
     buildType: 'es',
     description: 'Debug',
-    ...createSandboxUtils({}, 'debug'),
-  },
-]
-const BUNDLED_BUILDS: Array<IntegrationTestConfig> = [
-  {
+    loadSandbox: createSandboxLoader({}, 'debug'),
+  })
+}
+if (!SCOPE || SCOPE === 'bundled') {
+  testConfigStack.push({
     buildEnv: 'dev',
     buildType: 'cjs',
     description: 'CJS',
-    ...createSandboxUtils({ t: 'cjs' }),
-  },
-  {
+    loadSandbox: createSandboxLoader({ t: 'cjs' }),
+  })
+  testConfigStack.push({
     buildEnv: 'dev',
     buildType: 'es',
     description: 'EcmaScript',
-    ...createSandboxUtils({ t: 'es' }),
-  },
-  {
+    loadSandbox: createSandboxLoader({ t: 'es' }),
+  })
+  testConfigStack.push({
     buildEnv: 'prod',
     buildType: 'es',
     description: 'EcmaScript (Minified)',
-    ...createSandboxUtils({ t: 'es', p: 1 }, 'mjs'),
-  },
-  {
+    loadSandbox: createSandboxLoader({ t: 'es', p: 1 }, 'mjs'),
+  })
+  testConfigStack.push({
     buildEnv: 'debug',
     buildType: 'rn',
     description: 'React Native',
-    ...createSandboxUtils({ t: 'rn' }),
-  },
-  {
+    loadSandbox: createSandboxLoader({ t: 'rn' }),
+  })
+  testConfigStack.push({
     buildEnv: 'dev',
     buildType: 'umd',
     description: 'UMD',
-    ...createSandboxUtils({ t: 'umd' }),
-  },
-  {
+    loadSandbox: createSandboxLoader({ t: 'umd' }),
+  })
+  testConfigStack.push({
     buildEnv: 'prod',
     buildType: 'umd',
     description: 'UMD (Minified)',
-    ...createSandboxUtils({ t: 'umd', p: 1 }, 'umd-min'),
-  },
-]
-
-const testConfigStack: Array<IntegrationTestConfig> = []
-if (!SCOPE || SCOPE === 'debug') {
-  testConfigStack.push(...DEBUG_BUILDS)
+    loadSandbox: createSandboxLoader({ t: 'umd', p: 1 }, 'umd-min'),
+  })
 }
-if (!SCOPE || SCOPE === 'bundled') {
-  testConfigStack.push(...BUNDLED_BUILDS)
+
+function createSandboxLoader(
+  buildConfig: BuildConfig = {},
+  scnshotSuffix?: string
+) {
+  const loadSandbox = async (sandboxName: string) => {
+    const renderCounterElement: MutableRefObject<HTMLSpanElement> = { current: null }
+    await page.goto(stringifyUrl({
+      url: `${LOCAL_HOST}/${sandboxName}`,
+      query: buildConfig,
+    }))
+    await page.waitForSelector('div[data-test-id="debug-frame"]', { visible: true })
+    await page.evaluateHandle(($renderCounterElement, $dataTestId) => {
+      const element = document.querySelector(`span[data-test-id="${$dataTestId}"]`)
+      $renderCounterElement.current = element as HTMLSpanElement
+    }, renderCounterElement, StatusBarTestId.RENDER_COUNT)
+    return {
+      screenshotFactory() {
+        const suffix = scnshotSuffix || buildConfig?.t
+        const screenshotsPath = `${BASE_TEST_DIR}/${sandboxName}/${SCREENSHOTS_DIR_NAME}`
+        if (!fs.existsSync(screenshotsPath)) { fs.mkdirSync(screenshotsPath) }
+        return {
+          async snap(screenshotName: string) {
+            await page.screenshot({
+              path: `${screenshotsPath}/${screenshotName}.${suffix}.png`,
+              fullPage: true,
+            })
+          }
+        }
+      },
+      async getRenderCount(): Promise<number> {
+        await page.waitForSelector(`span[data-test-id="${StatusBarTestId.RENDER_COUNT}"]`)
+        const evaluation = await page.evaluateHandle(($dataTestId) => {
+          const element = document.querySelector(`span[data-test-id="${$dataTestId}"]`)
+          return Number(element.textContent)
+        }, StatusBarTestId.RENDER_COUNT)
+        return evaluation.jsonValue()
+      },
+      sessionStorage: {
+        async getItem(key: string): Promise<string> {
+          const evaluation = await page.evaluateHandle(($key) => {
+            return sessionStorage.getItem($key)
+          }, key)
+          return evaluation.jsonValue()
+        }
+      },
+    }
+  }
+  return loadSandbox
 }
 
 export function wrapper(
@@ -106,7 +117,9 @@ export function wrapper(
 ): void {
   for (const testConfig of testConfigStack) {
     describe(testConfig.description, (): void => {
-      // TODO: Find a way to change window size
+      beforeEach(async () => {
+        await page.setViewport({ height: 900, width: 1200 })
+      })
       executor(testConfig)
     })
   }

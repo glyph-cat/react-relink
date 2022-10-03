@@ -3,6 +3,7 @@ import { useRelinkPackage } from '../../../utils'
 import { STATUS_BAR_HEIGHT } from '../constants'
 import { ListMenu } from './list-menu'
 import styles from './index.module.css'
+import { StatusBarTestId } from './constants'
 
 export interface StatusBarProps {
   renderCount: number
@@ -25,11 +26,6 @@ export function StatusBar({ renderCount }: StatusBarProps): JSX.Element {
     setListMenuVisibility(false)
   }, [])
 
-  const [shouldShowFullHash, setFullHashVisibility] = useState(false)
-  const toggleFullHashVisibility = useCallback(() => {
-    setFullHashVisibility(v => !v)
-  }, [])
-
   return (
     <>
       <div
@@ -45,24 +41,25 @@ export function StatusBar({ renderCount }: StatusBarProps): JSX.Element {
       >
         <code onClick={showListMenu} style={{ cursor: 'pointer' }}>
           <span>Relink v</span>
-          <span data-testid='relink-version'>{VERSION}</span>
+          <span data-test-id={StatusBarTestId.RELINK_VERSION}>
+            {VERSION}
+          </span>
           <span>{' ('}</span>
-          <span data-testid='relink-build-type'>{BUILD_TYPE}</span>
+          <span data-test-id={StatusBarTestId.RELINK_BUILD_TYPE}>
+            {BUILD_TYPE}
+          </span>
           <span>{')'}</span>
         </code>
         <code style={{ minWidth: 200 }}>
           <span>{' | Render count: '}</span>
-          <span data-testid='sandbox-render-count'>{renderCount}</span>
+          <span data-test-id={StatusBarTestId.RENDER_COUNT}>
+            {renderCount}
+          </span>
         </code>
         <div />
-        <code
-          onClick={toggleFullHashVisibility}
-          style={{ textAlign: 'end' }}
-          title={shouldShowFullHash ? null : `Hash: ${BUILD_HASH}`}
-        >
+        <code style={{ textAlign: 'end' }}>
           <span>{'Hash: '}</span>
-          <span data-testid='relink-build-hash'>
-            {/* {shouldShowFullHash ? BUILD_HASH : BUILD_HASH.substring(0, 6)} */}
+          <span data-test-id={StatusBarTestId.RELINK_BUILD_HASH}>
             {BUILD_HASH}
           </span>
         </code>

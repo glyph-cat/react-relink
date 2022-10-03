@@ -12,7 +12,7 @@
   "types": "lib/types/index.d.ts",
   "scripts": {
     "deps": "yarn ts-node ./scripts/update-project-dependencies",
-    "clean": "rm -rf .cache .parcel-cache ./dist ./lib ./temp ./yarn-error.log",
+    "clean": "ts-node ./scripts/detete-e2e-screenshots && rm -rf .cache .parcel-cache ./dist ./lib ./temp ./yarn-error.log",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:path": "eslint",
