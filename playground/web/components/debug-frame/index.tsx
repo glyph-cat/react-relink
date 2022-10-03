@@ -30,6 +30,7 @@ export function DebugFrame({
     <>
       <StatusBar renderCount={renderCount.current} />
       <div
+        data-testid='debug-frame'
         className={className}
         style={{
           alignItems: 'flex-start',

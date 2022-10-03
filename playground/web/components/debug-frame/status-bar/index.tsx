@@ -62,7 +62,8 @@ export function StatusBar({ renderCount }: StatusBarProps): JSX.Element {
         >
           <span>{'Hash: '}</span>
           <span data-testid='relink-build-hash'>
-            {shouldShowFullHash ? BUILD_HASH : BUILD_HASH.substring(0, 6)}
+            {/* {shouldShowFullHash ? BUILD_HASH : BUILD_HASH.substring(0, 6)} */}
+            {BUILD_HASH}
           </span>
         </code>
       </div>

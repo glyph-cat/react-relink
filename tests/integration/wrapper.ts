@@ -62,6 +62,9 @@ if (!SCOPE || SCOPE === 'bundled') {
 export function wrapper(
   executor: ((cfg: UnitTestConfig) => void)
 ): void {
+  // These tests usually don't take very long to complete because they do not
+  // depend on Puppeteer, so a shorter timeout is set.
+  jest.setTimeout(1000)
   for (const testConfig of testConfigStack) {
     describe(testConfig.description, (): void => {
       executor(testConfig)

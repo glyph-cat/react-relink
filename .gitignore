@@ -28,7 +28,7 @@ node_modules
 .eslintcache
 .parcel-cache
 temp/
-tests/integration/**/screenshots/
+tests/e2e/**/screenshots/
 
 # OS
 .DS_Store

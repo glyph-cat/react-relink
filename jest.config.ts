@@ -11,7 +11,6 @@ const config: Config.InitialOptions = {
     '.old',
   ],
   testRegex: '.test.(tsx|ts|jsx|js)',
-  testTimeout: 1000,
   // KIV: Seems like fake timers are disabled by default now
   // testEnvironment: 'jsdom',
   // KIV: Seems like tests can now work even without `testEnvironment` specified
