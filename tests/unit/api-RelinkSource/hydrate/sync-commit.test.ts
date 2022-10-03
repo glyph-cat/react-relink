@@ -1,9 +1,9 @@
 import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
 import { createEventStackPromise } from '../../../../src/debugging'
-import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
+import { UnitTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource, RelinkEventType } = Relink
 

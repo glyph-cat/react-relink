@@ -1,12 +1,12 @@
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { IntegrationTestConfig } from '../../helpers'
+import { UnitTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objectives:
 // * Make sure subsequent reducers are executed even if there are errors or
 //   unhandled promise rejection halfway through.
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource } = Relink
 

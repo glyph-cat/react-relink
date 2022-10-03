@@ -2,7 +2,7 @@ import {
   RelinkEvent,
   RelinkSource as $RelinkSource,
 } from '../../../../src/bundle'
-import { IntegrationTestConfig } from '../../../helpers'
+import { UnitTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 // Test objectives:
@@ -14,7 +14,7 @@ afterEach(async () => {
   await Source.dispose()
 })
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource, RelinkEventType } = Relink
 

@@ -1,13 +1,13 @@
 import { delay } from '@glyph-cat/swiss-army-knife'
 import { act } from 'react-test-renderer'
 import { TIME_GAP } from '../../../src/debugging'
-import { IntegrationTestConfig, SampleSchema } from '../../helpers'
+import { UnitTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objectives:
 // * States are carried forward from one reducer to the next
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource } = Relink
 

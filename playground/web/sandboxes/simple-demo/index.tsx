@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { DebugFrame } from '../../components/debug-frame'
+import { StorageViewer } from '../../components/storage-viewer'
 import { useRef, useRelinkPackage } from '../../utils'
 import styles from './index.module.css'
 
@@ -79,13 +80,10 @@ function Sandbox(): JSX.Element {
         </div>
       </div>
       <div>
-        <pre>
-          <code>
-            <span style={{ opacity: 0.5 }}>{'// Session Storage'}</span>
-            <br />
-            {JSON.stringify(JSON.parse(sessionStorage.getItem(SOURCE_KEY)), null, 2)}
-          </code>
-        </pre>
+        <StorageViewer
+          type='session'
+          storageKey={SOURCE_KEY}
+        />
       </div>
     </DebugFrame>
   )

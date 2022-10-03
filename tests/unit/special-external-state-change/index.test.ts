@@ -5,13 +5,13 @@ import {
 import { useCallback, useReducer } from 'react'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { forceUpdateReducer } from '../../../src/internals/custom-hooks'
-import { IntegrationTestConfig, SampleSchema } from '../../helpers'
+import { UnitTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objective: Check if state values reference to the same object if
 // component is re-rendered due to external factors.
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource, useRelinkValue } = Relink
 

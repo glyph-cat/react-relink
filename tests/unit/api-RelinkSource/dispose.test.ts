@@ -2,10 +2,10 @@ import { delay } from '@glyph-cat/swiss-army-knife'
 import * as chalk from 'chalk'
 import { TIME_GAP } from '../../../src/debugging'
 import { RelinkEvent } from '../../../src/schema'
-import { IntegrationTestConfig } from '../../helpers'
+import { UnitTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkEventType, RelinkSource } = Relink
 

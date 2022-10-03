@@ -5,10 +5,10 @@ import {
   useRef,
 } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
-import { IntegrationTestConfig } from '../../helpers'
+import { UnitTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource, RelinkScope, useRelinkState } = Relink
 

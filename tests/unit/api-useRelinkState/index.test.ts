@@ -3,13 +3,13 @@ import {
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { IntegrationTestConfig } from '../../helpers'
+import { UnitTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objectives:
 // * Make sure the returned hook data is a setter
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource, useRelinkState } = Relink
 

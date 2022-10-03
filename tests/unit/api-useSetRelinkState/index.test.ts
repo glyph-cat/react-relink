@@ -3,7 +3,7 @@ import {
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { IntegrationTestConfig } from '../../helpers'
+import { UnitTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objectives:
@@ -11,7 +11,7 @@ import { wrapper } from '../wrapper'
 // * Check if components have unnecessary renders (it should not watch for state
 //   changes)
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource, useSetRelinkState } = Relink
 

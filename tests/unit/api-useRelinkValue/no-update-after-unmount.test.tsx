@@ -1,10 +1,10 @@
 import { StrictMode, useEffect } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { IntegrationTestConfig } from '../../helpers'
+import { UnitTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: UnitTestConfig): void => {
 
   const { RelinkSource, useRelinkValue } = Relink
 

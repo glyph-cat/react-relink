@@ -1,0 +1,10 @@
+.container {
+  display: grid;
+  height: 90vh;
+  place-items: center;
+  width: 100vw;
+}
+
+.label {
+  margin: 0;
+}

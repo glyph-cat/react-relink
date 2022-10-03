@@ -1,7 +1,7 @@
-import { IntegrationTestConfig } from '../../helpers'
+import { UnitTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
+wrapper(({ Relink, buildEnv, buildType }: UnitTestConfig): void => {
   test('main', (): void => {
     if (buildEnv === 'debug') {
       expect(Relink.BUILD_TYPE).toBe(undefined)

@@ -1,7 +1,7 @@
-import { IntegrationTestConfig } from '../helpers'
+import { UnitTestConfig } from '../helpers'
 
 const SCOPE = process.env.scope
-const DEBUG_BUILDS: Array<IntegrationTestConfig> = [
+const DEBUG_BUILDS: Array<UnitTestConfig> = [
   {
     buildEnv: 'debug',
     buildType: 'es',
@@ -9,7 +9,7 @@ const DEBUG_BUILDS: Array<IntegrationTestConfig> = [
     Relink: require('../../src/bundle.ts'),
   },
 ]
-const BUNDLED_BUILDS: Array<IntegrationTestConfig> = [
+const BUNDLED_BUILDS: Array<UnitTestConfig> = [
   {
     buildEnv: 'dev',
     buildType: 'cjs',
@@ -51,7 +51,7 @@ const BUNDLED_BUILDS: Array<IntegrationTestConfig> = [
 // NOTE: RN and ES minified builds will fail to run with the error
 // > unexpected token "import"
 
-const testConfigStack: Array<IntegrationTestConfig> = []
+const testConfigStack: Array<UnitTestConfig> = []
 if (!SCOPE || SCOPE === 'debug') {
   testConfigStack.push(...DEBUG_BUILDS)
 }
@@ -60,7 +60,7 @@ if (!SCOPE || SCOPE === 'bundled') {
 }
 
 export function wrapper(
-  executor: ((cfg: IntegrationTestConfig) => void)
+  executor: ((cfg: UnitTestConfig) => void)
 ): void {
   for (const testConfig of testConfigStack) {
     describe(testConfig.description, (): void => {
