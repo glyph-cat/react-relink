@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { DebugFrame } from '../../components/debug-frame'
-import { StorageViewer } from '../../components/storage-viewer'
 import { useRef, useRelinkPackage } from '../../utils'
 import styles from './index.module.css'
 
@@ -44,47 +43,40 @@ function Sandbox(): JSX.Element {
   }, [CounterSource])
 
   return (
-    <DebugFrame className={styles.container}>
-      <div>
-        <h1
-          data-test-id='counter-value'
-          className={styles.counterValue}
-        >
-          {counter}
-        </h1>
-        <div style={{ display: 'grid', justifyContent: 'center' }}>
+    <DebugFrame>
+      <h1
+        data-test-id='counter-value'
+        className={styles.counterValue}
+      >
+        {counter}
+      </h1>
+      <div style={{ display: 'grid', justifyContent: 'center' }}>
+        <div style={{
+          display: 'grid',
+          gap: 10,
+          width: 600,
+        }}>
           <div style={{
             display: 'grid',
             gap: 10,
-            width: 600,
+            gridAutoFlow: 'column',
           }}>
-            <div style={{
-              display: 'grid',
-              gap: 10,
-              gridAutoFlow: 'column',
-            }}>
-              <button data-test-id='button-increase-counter' onClick={increaseCounter}>
-                {'+1'}
-              </button>
-              <button data-test-id='button-set-counter-42' onClick={setCounter42}>
-                {'Set value to 42'}
-              </button>
-            </div>
-            <button data-test-id='button-reset-counter' onClick={resetCounter}>
-              {'Reset'}
+            <button data-test-id='button-increase-counter' onClick={increaseCounter}>
+              {'+1'}
             </button>
-            <button data-test-id='button-hydrate-counter' onClick={hydrateCounter}>
-              {'Hydrate to 36'}
+            <button data-test-id='button-set-counter-42' onClick={setCounter42}>
+              {'Set value to 42'}
             </button>
           </div>
+          <button data-test-id='button-reset-counter' onClick={resetCounter}>
+            {'Reset'}
+          </button>
+          <button data-test-id='button-hydrate-counter' onClick={hydrateCounter}>
+            {'Hydrate to 36'}
+          </button>
         </div>
       </div>
-      <div>
-        <StorageViewer
-          type='session'
-          storageKey={SOURCE_KEY}
-        />
-      </div>
+
     </DebugFrame>
   )
 }

@@ -11,11 +11,32 @@ export interface IntegrationTestConfig {
   buildType: UnitTestConfig['buildType']
   buildEnv: UnitTestConfig['buildEnv']
   description: UnitTestConfig['description']
-  loadSandbox(sandboxName: string): Promise<ISandboxUtility>
+  sandboxConfig: SandboxConfig
 }
 
-export interface ISandboxUtility {
-  screenshotFactory(): {
+export interface WrapperObject extends IntegrationTestConfig {
+  loadSandbox(sandboxName: string): Promise<ISandbox>
+}
+
+export interface SandboxConfig {
+  /**
+   * Build type.
+   */
+  t?: IntegrationTestConfig['buildType']
+  /**
+   * Is production build?
+   */
+  p?: boolean | 0 | 1
+  screenshotSuffix?: string
+}
+
+export interface ISandbox {
+  screenshot: {
+    /**
+     * Call this function to take a screenshots after each mocked user interaction.
+     * In case assertion fails, we can know what the UI looks like at that time.
+     */
+    checkpoint(): Promise<void>
     snap(screenshotName: string): Promise<void>
   }
   getRenderCount(): Promise<number>
@@ -23,6 +44,11 @@ export interface ISandboxUtility {
     // NOTE: Read-only
     getItem(key: string): Promise<string>
   }
+  localStorage: {
+    // NOTE: Read-only
+    getItem(key: string): Promise<string>
+  }
+  concludeTest(): Promise<void>
 }
 
 export interface SampleSchema {

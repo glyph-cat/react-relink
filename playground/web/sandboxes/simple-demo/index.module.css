@@ -1,8 +1,3 @@
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
 .counterValue {
   font-size: 200pt;
   margin: 0;
