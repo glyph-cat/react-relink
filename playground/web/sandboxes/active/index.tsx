@@ -1,5 +1,8 @@
-import { useCallback, useState } from 'react'
+/* eslint-disable import/no-unresolved, @typescript-eslint/ban-ts-comment */
+// @ts-ignore
 import { RelinkSource as $RelinkSource } from '../../../../lib/types'
+/* eslint-enable import/no-unresolved, @typescript-eslint/ban-ts-comment */
+import { useCallback, useState } from 'react'
 import { DebugFrame } from '../../components/debug-frame'
 import { useRelinkPackage } from '../../utils'
 import styles from './index.module.css'
