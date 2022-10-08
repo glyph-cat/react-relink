@@ -1,33 +1,39 @@
 import { useCallback } from 'react'
+import { RelinkSource as $RelinkSource } from '../../../../lib/types'
 import { DebugFrame } from '../../components/debug-frame'
-import { useRef, useRelinkPackage } from '../../utils'
+import { useRelinkPackage } from '../../utils'
 import styles from './index.module.css'
+
+let CounterSource: $RelinkSource<number>
 
 function Sandbox(): JSX.Element {
 
   const { RelinkSource, useRelinkState } = useRelinkPackage()
 
   const SOURCE_KEY = 'counter'
-  const { current: CounterSource } = useRef(() => new RelinkSource({
-    key: SOURCE_KEY,
-    default: 0,
-    lifecycle: {
-      init({ commit, skip }) {
-        const rawData = sessionStorage.getItem(SOURCE_KEY)
-        if (rawData) {
-          commit(JSON.parse(rawData))
-          return // Early exit
-        }
-        skip()
+  if (!CounterSource) {
+    CounterSource = new RelinkSource({
+      key: SOURCE_KEY,
+      default: 0,
+      lifecycle: {
+        init({ commit, skip }) {
+          const rawData = sessionStorage.getItem(SOURCE_KEY)
+          if (rawData) {
+            commit(JSON.parse(rawData))
+            return // Early exit
+          }
+          skip()
+        },
+        didSet({ state }) {
+          sessionStorage.setItem(SOURCE_KEY, JSON.stringify(state))
+        },
+        didReset() {
+          sessionStorage.removeItem(SOURCE_KEY)
+        },
       },
-      didSet({ state }) {
-        sessionStorage.setItem(SOURCE_KEY, JSON.stringify(state))
-      },
-      didReset() {
-        sessionStorage.removeItem(SOURCE_KEY)
-      },
-    },
-  }))
+    })
+  }
+
   const [counter, setCounter, resetCounter] = useRelinkState(CounterSource)
 
   const increaseCounter = useCallback(async () => {

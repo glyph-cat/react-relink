@@ -110,6 +110,7 @@ export function wrapper(
           url: `${LOCAL_HOST}/${sandboxName}`,
           query: buildConfig,
         }))
+        await page.waitForSelector('div[data-test-id="debug-frame"]')
 
         return {
           async getRenderCount(): Promise<number> {

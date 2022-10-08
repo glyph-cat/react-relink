@@ -1,35 +1,78 @@
-import { useState } from 'react'
-import { DebugFrame, useRelinkPackage, useRef } from '../../utils'
+import { useCallback, useState } from 'react'
+import { RelinkSource as $RelinkSource } from '../../../../lib/types'
+import { DebugFrame } from '../../components/debug-frame'
+import { useRelinkPackage } from '../../utils'
+import styles from './index.module.css'
+
+let CounterSource: $RelinkSource<number>
 
 function Sandbox(): JSX.Element {
 
-  const { RelinkSource, useRelinkValue, BUILD_TYPE } = useRelinkPackage()
+  const { RelinkSource, useRelinkValue } = useRelinkPackage()
 
-  const CounterSource = useRef(() => new RelinkSource({
-    key: 'counter',
-    default: 0,
-  }))
+  if (!CounterSource) {
+    CounterSource = new RelinkSource({
+      key: 'counter',
+      default: 0,
+    })
+  }
 
   const [isActive, setActiveState] = useState(true)
-  const stateValue = useRelinkValue(CounterSource.current, null, isActive)
+  const counterValue = useRelinkValue(CounterSource, null, isActive)
+
+  const increaseCounter = useCallback(async () => {
+    await CounterSource.set((c) => c + 1)
+  }, [])
+
+  const stopListening = useCallback(() => {
+    setActiveState(false)
+  }, [])
+
+  const startListening = useCallback(() => {
+    setActiveState(true)
+  }, [])
 
   return (
     <DebugFrame>
-      <button onClick={() => {
-        CounterSource.current.set((c) => c + 1)
-      }}>Increase counter</button>
-      <button onClick={() => {
-        setActiveState(false)
-      }}>Stop listening</button>
-      <button onClick={() => {
-        setActiveState(true)
-      }}>Start listening</button>
-      <h1>{String(BUILD_TYPE)}</h1>
-      <pre>
-        <code>
-          {JSON.stringify(stateValue, null, 2)}
-        </code>
-      </pre>
+      <h1
+        className={styles.counterValue}
+        data-test-id='counter-value'
+      >
+        {counterValue}
+      </h1>
+      <div style={{ display: 'grid', justifyContent: 'center' }}>
+        <div style={{
+          display: 'grid',
+          gap: 10,
+          width: 600,
+        }}>
+          <button
+            data-test-id='button-increase-counter'
+            onClick={increaseCounter}
+          >
+            {'Increase counter'}
+          </button>
+          <div style={{
+            display: 'grid',
+            gap: 10,
+            gridAutoFlow: 'column',
+          }}>
+            <button
+              data-test-id='button-stop-listening'
+              onClick={stopListening}
+            >
+              {'Stop listening'}
+            </button>
+            <button
+              data-test-id='button-start-listening'
+              onClick={startListening}
+            >
+              {'Start listening'}
+            </button>
+          </div>
+        </div>
+      </div>
+
     </DebugFrame>
   )
 }

@@ -2,7 +2,7 @@
   align-items: center;
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(2, auto) 1fr auto;
+  grid-template-columns: repeat(3, auto) 1fr auto;
   padding-left: 10px;
   padding-right: 10px;
   position: sticky;

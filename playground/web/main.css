@@ -9,6 +9,26 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+a,
+.a {
+  color: #2b80ff;
+}
+
+a:visited,
+.a:visited {
+  color: #2b80ff;
+}
+
+a:hover,
+.a:hover {
+  color: #69a5ff;
+}
+
+a:active,
+.a:active {
+  opacity: 0.5;
+}
+
 code,
 .code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

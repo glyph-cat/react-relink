@@ -39,6 +39,7 @@ export function StatusBar({ renderCount }: StatusBarProps): JSX.Element {
           height: STATUS_BAR_HEIGHT,
         }}
       >
+        <a data-test-id='anchor-home' href='/'><b>HOME</b></a>
         <code onClick={showListMenu} style={{ cursor: 'pointer' }}>
           <span>Relink v</span>
           <span data-test-id={StatusBarTestId.RELINK_VERSION}>

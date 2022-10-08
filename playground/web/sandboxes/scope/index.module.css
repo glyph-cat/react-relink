@@ -1,0 +1,12 @@
+.colorTile {
+  border-radius: 5px;
+  min-height: 54px;
+  min-width: 54px;
+}
+
+.frame {
+  border: solid 1px #80808080;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+}

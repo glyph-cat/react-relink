@@ -46,12 +46,29 @@ export function useRelinkValue<State, SelectedState>(
  * @param source - A {@link RelinkSource}.
  * @param selector - A {@link RelinkSelector}.
  * @param active - Controls whether the hook should listen for state changes and
- * trigger re-renders. Default value is `true`.
+ * trigger re-renders. The default value is `true`.
  * @example
  * const isActive = true
  * const filteredState = useRelinkValue(Source, null, isActive)
  * // If you wish to pass a selector, just replace `null` with the selector that
  * // you need.
+ * @public
+ */
+export function useRelinkValue<State>(
+  source: RelinkSource<State>,
+  selector: null,
+  active: boolean
+): State
+
+/**
+ * @param source - A {@link RelinkSource}.
+ * @param selector - A {@link RelinkSelector}.
+ * @param active - Controls whether the hook should listen for state changes and
+ * trigger re-renders. The default value is `true`.
+ * @example
+ * const isActive = true
+ * const selector = (s) => s.someProperty
+ * const filteredState = useRelinkValue(Source, selector, isActive)
  * @public
  */
 export function useRelinkValue<State, SelectedState>(
