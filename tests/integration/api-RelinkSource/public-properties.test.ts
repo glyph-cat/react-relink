@@ -1,8 +1,8 @@
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { UnitTestConfig } from '../../helpers'
+import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink, buildEnv, buildType }: UnitTestConfig): void => {
+wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
 
   const { RelinkSource } = Relink
   const IS_MINIFIED_UMD_BUILD = buildType === 'umd' && buildEnv === 'prod'

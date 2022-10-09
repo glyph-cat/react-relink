@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { ElementHandle, NodeFor, WaitForSelectorOptions } from 'puppeteer'
 import { MutableRefObject } from 'react'
 import { stringifyUrl } from 'query-string'
-import { IntegrationTestConfig, ISandbox, WrapperObject } from '../helpers'
+import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
 import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
 
 const BASE_TEST_DIR = './tests/e2e'
@@ -10,7 +10,7 @@ const LOCAL_HOST = 'http://localhost:3000'
 const SCREENSHOTS_DIR_NAME = 'screenshots'
 
 const SCOPE = process.env.scope
-const testConfigStack: Array<IntegrationTestConfig> = []
+const testConfigStack: Array<E2ETestConfig> = []
 if (!SCOPE || SCOPE === 'debug') {
   testConfigStack.push({
     buildEnv: 'debug',
@@ -59,7 +59,7 @@ if (!SCOPE || SCOPE === 'bundled') {
 }
 
 export function wrapper(
-  executor: ((obj: WrapperObject) => void)
+  executor: ((obj: E2EWrapperObject) => void)
 ): void {
 
   for (const testConfig of testConfigStack) {

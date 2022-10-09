@@ -1,21 +1,21 @@
 import { ElementHandle, NodeFor, WaitForSelectorOptions } from 'puppeteer'
 import * as __relink__ from '../src/bundle'
 
-export interface UnitTestConfig {
+export interface IntegrationTestConfig {
   buildType: 'cjs' | 'es' | 'rn' | 'umd'
   buildEnv: 'debug' | 'dev' | 'prod'
   description: string
   Relink: typeof __relink__
 }
 
-export interface IntegrationTestConfig {
-  buildType: UnitTestConfig['buildType']
-  buildEnv: UnitTestConfig['buildEnv']
-  description: UnitTestConfig['description']
+export interface E2ETestConfig {
+  buildType: IntegrationTestConfig['buildType']
+  buildEnv: IntegrationTestConfig['buildEnv']
+  description: IntegrationTestConfig['description']
   sandboxConfig: SandboxConfig
 }
 
-export interface WrapperObject extends IntegrationTestConfig {
+export interface E2EWrapperObject extends E2ETestConfig {
   loadSandbox(sandboxName: string): Promise<ISandbox>
 }
 
@@ -23,7 +23,7 @@ export interface SandboxConfig {
   /**
    * Build type.
    */
-  t?: IntegrationTestConfig['buildType']
+  t?: E2ETestConfig['buildType']
   /**
    * Is production build?
    */

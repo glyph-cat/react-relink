@@ -6,10 +6,10 @@ import { delay } from '@glyph-cat/swiss-army-knife'
 import { act } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
 import { createEventPromise, TIME_GAP } from '../../../../src/debugging'
-import { UnitTestConfig } from '../../../helpers'
+import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
-wrapper(({ Relink }: UnitTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, RelinkEventType, useRelinkValue } = Relink
 

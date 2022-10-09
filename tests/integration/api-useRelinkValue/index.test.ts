@@ -5,12 +5,12 @@ import {
 import { useState } from 'react'
 import { act } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { UnitTestConfig, SampleSchema } from '../../helpers'
+import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objective: Check if state values are returned as expected
 
-wrapper(({ Relink }: UnitTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, useRelinkValue } = Relink
 

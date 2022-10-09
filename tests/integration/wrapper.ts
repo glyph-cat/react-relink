@@ -1,7 +1,7 @@
-import { UnitTestConfig } from '../helpers'
+import { IntegrationTestConfig } from '../helpers'
 
 const SCOPE = process.env.scope
-const DEBUG_BUILDS: Array<UnitTestConfig> = [
+const DEBUG_BUILDS: Array<IntegrationTestConfig> = [
   {
     buildEnv: 'debug',
     buildType: 'es',
@@ -9,7 +9,7 @@ const DEBUG_BUILDS: Array<UnitTestConfig> = [
     Relink: require('../../src/bundle.ts'),
   },
 ]
-const BUNDLED_BUILDS: Array<UnitTestConfig> = [
+const BUNDLED_BUILDS: Array<IntegrationTestConfig> = [
   {
     buildEnv: 'dev',
     buildType: 'cjs',
@@ -27,13 +27,15 @@ const BUNDLED_BUILDS: Array<UnitTestConfig> = [
   //   buildType: 'es',
   //   description: 'EcmaScript (Minified)',
   //   Relink: require('../../lib/es/index.mjs'),
+  //           ^
+  //   SyntaxError: Cannot use import statement outside a module
   // },
-  // {
-  //   buildEnv: 'debug',
-  //   buildType: 'rn',
-  //   description: 'React Native',
-  //   Relink: require('../../lib/native/index.js'),
-  // },
+  {
+    buildEnv: 'dev',
+    buildType: 'rn',
+    description: 'React Native',
+    Relink: require('../../lib/native/index.js'),
+  },
   {
     buildEnv: 'dev',
     buildType: 'umd',
@@ -48,10 +50,7 @@ const BUNDLED_BUILDS: Array<UnitTestConfig> = [
   },
 ]
 
-// NOTE: RN and ES minified builds will fail to run with the error
-// > unexpected token "import"
-
-const testConfigStack: Array<UnitTestConfig> = []
+const testConfigStack: Array<IntegrationTestConfig> = []
 if (!SCOPE || SCOPE === 'debug') {
   testConfigStack.push(...DEBUG_BUILDS)
 }
@@ -60,7 +59,7 @@ if (!SCOPE || SCOPE === 'bundled') {
 }
 
 export function wrapper(
-  executor: ((cfg: UnitTestConfig) => void)
+  executor: ((cfg: IntegrationTestConfig) => void)
 ): void {
   // These tests usually don't take very long to complete because they do not
   // depend on Puppeteer, so a shorter timeout is set.

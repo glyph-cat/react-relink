@@ -7,10 +7,10 @@ import {
   RelinkSource as $RelinkSource,
   RELINK_COMPARE_FN_PRESET,
 } from '../../../../src/bundle'
-import { UnitTestConfig, SampleSchema } from '../../../helpers'
+import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
-wrapper(({ Relink }: UnitTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, useRelinkValue, RelinkAdvancedSelector } = Relink
 

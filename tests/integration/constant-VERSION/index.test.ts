@@ -1,8 +1,8 @@
 import pkg from '../../../package.json'
-import { UnitTestConfig } from '../../helpers'
+import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink, buildEnv }: UnitTestConfig): void => {
+wrapper(({ Relink, buildEnv }: IntegrationTestConfig): void => {
   test('main', (): void => {
     if (buildEnv === 'debug') {
       expect(Relink.VERSION).toBe(undefined)

@@ -1,9 +1,9 @@
 import { delay } from '@glyph-cat/swiss-army-knife'
 import { TIME_GAP } from '../../../src/debugging'
-import { UnitTestConfig } from '../../helpers'
+import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: UnitTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, waitForAll } = Relink
   const testName = 'waitForAll'
