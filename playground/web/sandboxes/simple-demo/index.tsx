@@ -1,43 +1,36 @@
-/* eslint-disable import/no-unresolved, @typescript-eslint/ban-ts-comment */
-// @ts-ignore
-import { RelinkSource as $RelinkSource } from '../../../../lib/types'
-/* eslint-enable import/no-unresolved, @typescript-eslint/ban-ts-comment */
 import { useCallback } from 'react'
+import { HorizontalButtonStack, MainButtonStack } from '../../components/button-stack'
+import { CounterValue } from '../../components/counter-value'
 import { DebugFrame } from '../../components/debug-frame'
-import { useRelinkPackage } from '../../utils'
-import styles from './index.module.css'
-
-let CounterSource: $RelinkSource<number>
+import { useRef, useRelinkPackage } from '../../utils'
 
 function Sandbox(): JSX.Element {
 
   const { RelinkSource, useRelinkState } = useRelinkPackage()
 
   const SOURCE_KEY = 'counter'
-  if (!CounterSource) {
-    CounterSource = new RelinkSource({
-      key: SOURCE_KEY,
-      default: 0,
-      lifecycle: {
-        init({ commit, skip }) {
-          const rawData = sessionStorage.getItem(SOURCE_KEY)
-          if (rawData) {
-            commit(JSON.parse(rawData))
-            return // Early exit
-          }
-          skip()
-        },
-        didSet({ state }) {
-          sessionStorage.setItem(SOURCE_KEY, JSON.stringify(state))
-        },
-        didReset() {
-          sessionStorage.removeItem(SOURCE_KEY)
-        },
+  const CounterSource = useRef(() => new RelinkSource({
+    key: SOURCE_KEY,
+    default: 0,
+    lifecycle: {
+      init({ commit, skip }) {
+        const rawData = sessionStorage.getItem(SOURCE_KEY)
+        if (rawData) {
+          commit(JSON.parse(rawData))
+          return // Early exit
+        }
+        skip()
       },
-    })
-  }
+      didSet({ state }) {
+        sessionStorage.setItem(SOURCE_KEY, JSON.stringify(state))
+      },
+      didReset() {
+        sessionStorage.removeItem(SOURCE_KEY)
+      },
+    },
+  }))
 
-  const [counter, setCounter, resetCounter] = useRelinkState(CounterSource)
+  const [counter, setCounter, resetCounter] = useRelinkState(CounterSource.current)
 
   const increaseCounter = useCallback(async () => {
     await setCounter(c => c + 1)
@@ -48,44 +41,28 @@ function Sandbox(): JSX.Element {
   }, [setCounter])
 
   const hydrateCounter = useCallback(async () => {
-    await CounterSource.hydrate(({ commit }) => { commit(36) })
+    await CounterSource.current.hydrate(({ commit }) => { commit(36) })
   }, [CounterSource])
 
   return (
     <DebugFrame>
-      <h1
-        data-test-id='counter-value'
-        className={styles.counterValue}
-      >
-        {counter}
-      </h1>
-      <div style={{ display: 'grid', justifyContent: 'center' }}>
-        <div style={{
-          display: 'grid',
-          gap: 10,
-          width: 600,
-        }}>
-          <div style={{
-            display: 'grid',
-            gap: 10,
-            gridAutoFlow: 'column',
-          }}>
-            <button data-test-id='button-increase-counter' onClick={increaseCounter}>
-              {'+1'}
-            </button>
-            <button data-test-id='button-set-counter-42' onClick={setCounter42}>
-              {'Set value to 42'}
-            </button>
-          </div>
-          <button data-test-id='button-reset-counter' onClick={resetCounter}>
-            {'Reset'}
+      <CounterValue value={counter} />
+      <MainButtonStack>
+        <HorizontalButtonStack>
+          <button data-test-id='button-increase-counter' onClick={increaseCounter}>
+            {'+1'}
           </button>
-          <button data-test-id='button-hydrate-counter' onClick={hydrateCounter}>
-            {'Hydrate to 36'}
+          <button data-test-id='button-set-counter-42' onClick={setCounter42}>
+            {'Set value to 42'}
           </button>
-        </div>
-      </div>
-
+        </HorizontalButtonStack>
+        <button data-test-id='button-reset-counter' onClick={resetCounter}>
+          {'Reset'}
+        </button>
+        <button data-test-id='button-hydrate-counter' onClick={hydrateCounter}>
+          {'Hydrate to 36'}
+        </button>
+      </MainButtonStack>
     </DebugFrame>
   )
 }

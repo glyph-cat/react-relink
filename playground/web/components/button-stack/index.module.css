@@ -1,0 +1,16 @@
+.buttonStackContainer {
+  display: grid;
+  justify-content: center;
+}
+
+.verticalButtonStack {
+  display: grid;
+  gap: 10px;
+  width: 600px;
+}
+
+.horizontalButtonStack {
+  display: grid;
+  gap: 10px;
+  grid-auto-flow: column;
+}

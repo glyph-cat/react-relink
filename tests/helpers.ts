@@ -1,3 +1,4 @@
+import { ElementHandle, NodeFor, WaitForSelectorOptions } from 'puppeteer'
 import * as __relink__ from '../src/bundle'
 
 export interface UnitTestConfig {
@@ -39,7 +40,7 @@ export interface ISandbox {
     checkpoint(): Promise<void>
     snap(screenshotName: string): Promise<void>
   }
-  getRenderCount(): Promise<number>
+  getRenderCount(customTestId?: string): Promise<number>
   sessionStorage: {
     // NOTE: Read-only
     getItem(key: string): Promise<string>
@@ -49,6 +50,10 @@ export interface ISandbox {
     getItem(key: string): Promise<string>
   }
   concludeTest(): Promise<void>
+  waitForSelector<Selector extends string>(
+    selector: Selector,
+    options?: WaitForSelectorOptions
+  ): Promise<ElementHandle<NodeFor<Selector>> | null>
 }
 
 export interface SampleSchema {

@@ -1,4 +1,5 @@
-import { CSSProperties, ReactNode, useRef } from 'react'
+import { CSSProperties, ReactNode } from 'react'
+import { useRenderCounter } from '../../utils/use-render-counter'
 import { CONTAINER_PADDING, STATUS_BAR_HEIGHT } from './constants'
 import { StatusBar } from './status-bar'
 import { StorageViewer } from './storage-viewer'
@@ -25,11 +26,10 @@ export function DebugFrame({
   style,
   className,
 }: DebugFrameProps): JSX.Element {
-  const renderCount = useRef(0)
-  renderCount.current += 1
+  const renderCount = useRenderCounter()
   return (
     <>
-      <StatusBar renderCount={renderCount.current} />
+      <StatusBar renderCount={renderCount} />
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',

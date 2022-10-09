@@ -1,8 +1,9 @@
 import * as fs from 'fs'
+import { ElementHandle, NodeFor, WaitForSelectorOptions } from 'puppeteer'
+import { MutableRefObject } from 'react'
 import { stringifyUrl } from 'query-string'
 import { IntegrationTestConfig, ISandbox, WrapperObject } from '../helpers'
 import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
-import { MutableRefObject } from 'react'
 
 const BASE_TEST_DIR = './tests/e2e'
 const LOCAL_HOST = 'http://localhost:3000'
@@ -99,6 +100,17 @@ export function wrapper(
         }
       })
 
+      async function $$waitForSelector<Selector extends string>(
+        selector: Selector,
+        options?: WaitForSelectorOptions
+      ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+        return await page.waitForSelector(selector, {
+          timeout: 1000,
+          visible: true,
+          ...options,
+        })
+      }
+
       const loadSandbox = async (sandboxName: string): Promise<ISandbox> => {
 
         const {
@@ -110,15 +122,16 @@ export function wrapper(
           url: `${LOCAL_HOST}/${sandboxName}`,
           query: buildConfig,
         }))
-        await page.waitForSelector('div[data-test-id="debug-frame"]')
+        await $$waitForSelector('div[data-test-id="debug-frame"]')
 
         return {
-          async getRenderCount(): Promise<number> {
-            await page.waitForSelector(`span[data-test-id="${StatusBarTestId.RENDER_COUNT}"]`)
-            const evaluation = await page.evaluateHandle(($dataTestId) => {
-              const element = document.querySelector(`span[data-test-id="${$dataTestId}"]`)
+          async getRenderCount(customTestId?: string): Promise<number> {
+            const targetTestId = customTestId || StatusBarTestId.RENDER_COUNT
+            await $$waitForSelector(`span[data-test-id="${targetTestId}"]`)
+            const evaluation = await page.evaluateHandle(($targetTestId) => {
+              const element = document.querySelector(`span[data-test-id="${$targetTestId}"]`)
               return Number(element.textContent)
-            }, StatusBarTestId.RENDER_COUNT)
+            }, targetTestId)
             return evaluation.jsonValue()
           },
           screenshot: {
@@ -154,6 +167,7 @@ export function wrapper(
           async concludeTest() {
             testPassedRef.current = true
           },
+          waitForSelector: $$waitForSelector,
         }
       }
 

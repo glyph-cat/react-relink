@@ -14,6 +14,7 @@ import { name as PACKAGE_NAME } from '../../package.json'
 
 const REPLACEMENTS = {
   'PACKAGE_NAME': PACKAGE_NAME,
+  'PACKAGE_NAME_SHORT': 'Relink',
 }
 
 const FILES_TO_PROCESS = [

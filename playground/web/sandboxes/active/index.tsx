@@ -1,30 +1,23 @@
-/* eslint-disable import/no-unresolved, @typescript-eslint/ban-ts-comment */
-// @ts-ignore
-import { RelinkSource as $RelinkSource } from '../../../../lib/types'
-/* eslint-enable import/no-unresolved, @typescript-eslint/ban-ts-comment */
 import { useCallback, useState } from 'react'
+import { HorizontalButtonStack, MainButtonStack } from '../../components/button-stack'
+import { CounterValue } from '../../components/counter-value'
 import { DebugFrame } from '../../components/debug-frame'
-import { useRelinkPackage } from '../../utils'
-import styles from './index.module.css'
-
-let CounterSource: $RelinkSource<number>
+import { useRef, useRelinkPackage } from '../../utils'
 
 function Sandbox(): JSX.Element {
 
   const { RelinkSource, useRelinkValue } = useRelinkPackage()
 
-  if (!CounterSource) {
-    CounterSource = new RelinkSource({
-      key: 'counter',
-      default: 0,
-    })
-  }
+  const CounterSource = useRef(() => new RelinkSource({
+    key: 'counter',
+    default: 0,
+  }))
 
   const [isActive, setActiveState] = useState(true)
-  const counterValue = useRelinkValue(CounterSource, null, isActive)
+  const counterValue = useRelinkValue(CounterSource.current, null, isActive)
 
   const increaseCounter = useCallback(async () => {
-    await CounterSource.set((c) => c + 1)
+    await CounterSource.current.set((c) => c + 1)
   }, [])
 
   const stopListening = useCallback(() => {
@@ -37,45 +30,29 @@ function Sandbox(): JSX.Element {
 
   return (
     <DebugFrame>
-      <h1
-        className={styles.counterValue}
-        data-test-id='counter-value'
-      >
-        {counterValue}
-      </h1>
-      <div style={{ display: 'grid', justifyContent: 'center' }}>
-        <div style={{
-          display: 'grid',
-          gap: 10,
-          width: 600,
-        }}>
+      <CounterValue value={counterValue} />
+      <MainButtonStack>
+        <button
+          data-test-id='button-increase-counter'
+          onClick={increaseCounter}
+        >
+          {'Increase counter'}
+        </button>
+        <HorizontalButtonStack>
           <button
-            data-test-id='button-increase-counter'
-            onClick={increaseCounter}
+            data-test-id='button-stop-listening'
+            onClick={stopListening}
           >
-            {'Increase counter'}
+            {'Stop listening'}
           </button>
-          <div style={{
-            display: 'grid',
-            gap: 10,
-            gridAutoFlow: 'column',
-          }}>
-            <button
-              data-test-id='button-stop-listening'
-              onClick={stopListening}
-            >
-              {'Stop listening'}
-            </button>
-            <button
-              data-test-id='button-start-listening'
-              onClick={startListening}
-            >
-              {'Start listening'}
-            </button>
-          </div>
-        </div>
-      </div>
-
+          <button
+            data-test-id='button-start-listening'
+            onClick={startListening}
+          >
+            {'Start listening'}
+          </button>
+        </HorizontalButtonStack>
+      </MainButtonStack>
     </DebugFrame>
   )
 }

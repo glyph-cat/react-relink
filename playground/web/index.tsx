@@ -16,6 +16,10 @@ const routeStack = [
     path: '/simple-demo',
     RouteComponent: lazy(() => import('./sandboxes/simple-demo')),
   },
+  {
+    path: '/suspense',
+    RouteComponent: lazy(() => import('./sandboxes/suspense')),
+  },
 ]
 
 function startRender() {
