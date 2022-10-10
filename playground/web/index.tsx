@@ -66,8 +66,11 @@ function HomePage(): JSX.Element {
   for (const { path } of routeStack) {
     renderStack.push(
       <li key={path}>
-        <a data-test-id={`anchor-${path.replace(/^\//, '')}`} href={path}>
-          {path}
+        <a
+          data-test-id={`anchor-${path.replace(/^\//, '')}`}
+          href={path}
+        >
+          <code>{path}</code>
         </a>
       </li>
     )

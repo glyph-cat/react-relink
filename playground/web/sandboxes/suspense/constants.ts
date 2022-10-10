@@ -1,4 +1,4 @@
-export const DELAY_TIMEOUT = 500 // ms
+export const DELAY_TIMEOUT = 200 // ms
 
 export const TestId = {
   button: {

@@ -105,7 +105,7 @@ export function wrapper(
         options?: WaitForSelectorOptions
       ): Promise<ElementHandle<NodeFor<Selector>> | null> {
         return await page.waitForSelector(selector, {
-          timeout: 1000,
+          timeout: 500,
           visible: true,
           ...options,
         })

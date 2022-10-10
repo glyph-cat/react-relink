@@ -7,6 +7,10 @@ import {
   COUNTER_VALUE_TEST_ID,
 } from '../../../playground/web/components/counter-value/constants'
 
+// TOFIX:
+// Not sure why when tested separately it works, but when tested along with
+// integration test, it fails.
+
 wrapper(({ loadSandbox }) => {
   test('Suspense', async () => {
 
