@@ -8,8 +8,10 @@ import { delay, useRelinkPackage } from '../../utils'
 import { CounterValue } from '../../components/counter-value'
 import styles from '../../components/counter-value/index.module.css'
 import { MainButtonStack } from '../../components/button-stack'
+import { Divider } from '../../components/divider'
 import { useRenderCounter } from '../../utils/use-render-counter'
-import { CounterValues, DataTestId, DELAY_TIMEOUT } from './constants'
+import { CounterValues, TestId, DELAY_TIMEOUT } from './constants'
+import { ExplanationText } from '../../components/explanation-text'
 
 let CounterSource: $RelinkSource<number>
 
@@ -70,36 +72,36 @@ function Sandbox(): JSX.Element {
       <MainButtonStack>
         <button
           onClick={hydrateByCommit}
-          data-test-id={DataTestId.button.HYDRATE_BY_COMMIT}
+          data-test-id={TestId.button.HYDRATE_BY_COMMIT}
         >
           {'Hydrate by commit'}
         </button>
         <button
           onClick={hydrateBySkip}
-          data-test-id={DataTestId.button.HYDRATE_BY_SKIP}
+          data-test-id={TestId.button.HYDRATE_BY_SKIP}
         >
           {'Hydrate by skip (Deprecated)'}
         </button>
         <button
           onClick={hydrateByCommitDefault}
-          data-test-id={DataTestId.button.HYDRATE_BY_COMMIT_DEFAULT}
+          data-test-id={TestId.button.HYDRATE_BY_COMMIT_DEFAULT}
         >
           {'Hydrate by commit default'}
         </button>
         <button
           onClick={hydrateByCommitNoop}
-          data-test-id={DataTestId.button.HYDRATE_BY_COMMIT_NOOP}
+          data-test-id={TestId.button.HYDRATE_BY_COMMIT_NOOP}
         >
           {'Hydrate by commit noop'}
         </button>
-        <hr style={{ width: '100%' }} />
+        <Divider />
         <button
           onClick={setTo64}
-          data-test-id={DataTestId.button.SET_ARBITARY_VALUE}
+          data-test-id={TestId.button.SET_ARBITARY_VALUE}
         >
           {'Set arbitary value'}
         </button>
-        <span>This allows us to change the counter to another value so that the outcome of each of the hydration methods become more distinct.</span>
+        <ExplanationText>This allows us to change the counter to another value so that the outcome of each of the hydration methods become more distinct.</ExplanationText>
       </MainButtonStack>
     </DebugFrame>
   )
@@ -113,7 +115,7 @@ function SuspenseFallback(): JSX.Element {
       <span><br /></span>
       <h1
         className={styles.counterValue}
-        data-test-id={DataTestId.SUSPENSE_FALLBACK_COMPONENT}
+        data-test-id={TestId.SUSPENSE_FALLBACK_COMPONENT}
       >
         {'--'}
       </h1>
@@ -129,7 +131,7 @@ function SubComponent(): JSX.Element {
     <div>
       <span>
         {'Sub-render count: '}
-        <span data-test-id={DataTestId.SUB_RENDER_COUNT}>
+        <span data-test-id={TestId.SUB_RENDER_COUNT}>
           {renderCount}
         </span>
       </span>

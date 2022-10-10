@@ -3,6 +3,7 @@ import { HorizontalButtonStack, MainButtonStack } from '../../components/button-
 import { CounterValue } from '../../components/counter-value'
 import { DebugFrame } from '../../components/debug-frame'
 import { useRef, useRelinkPackage } from '../../utils'
+import { TestId } from './constants'
 
 function Sandbox(): JSX.Element {
 
@@ -33,20 +34,20 @@ function Sandbox(): JSX.Element {
       <CounterValue value={counterValue} />
       <MainButtonStack>
         <button
-          data-test-id='button-increase-counter'
+          data-test-id={TestId.button.INCREASE_COUNTER}
           onClick={increaseCounter}
         >
           {'Increase counter'}
         </button>
         <HorizontalButtonStack>
           <button
-            data-test-id='button-stop-listening'
+            data-test-id={TestId.button.STOP_LISTENING}
             onClick={stopListening}
           >
             {'Stop listening'}
           </button>
           <button
-            data-test-id='button-start-listening'
+            data-test-id={TestId.button.START_LISTENING}
             onClick={startListening}
           >
             {'Start listening'}

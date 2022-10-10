@@ -1,0 +1,9 @@
+.container {
+  display: grid;
+  place-items: center;
+}
+
+.text {
+  opacity: 0.85;
+  font-style: italic;
+}

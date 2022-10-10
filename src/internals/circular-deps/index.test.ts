@@ -12,8 +12,6 @@ describe(checkForCircularDeps.name, (): void => {
     if (SourceC instanceof RelinkSource) { await SourceC.dispose({ force: true }) }
   })
 
-  // KIV: There used to be a problem where `allDepsAreReady` will be called
-  // infinitely.
   test('with circular deps', (): void => {
     const callback = (): void => {
       const sourceADeps = []

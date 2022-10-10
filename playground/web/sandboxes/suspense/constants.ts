@@ -1,6 +1,6 @@
 export const DELAY_TIMEOUT = 500 // ms
 
-export const DataTestId = {
+export const TestId = {
   button: {
     HYDRATE_BY_COMMIT: 'hydrate-by-commit',
     HYDRATE_BY_SKIP: 'hydrate-by-skip',

@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react'
-import { TileColor } from '../../../playground/web/sandboxes/scope/constants'
+import { TestId, TileColor } from '../../../playground/web/sandboxes/scope/constants'
 import { wrapper } from '../wrapper'
 
 wrapper(({ loadSandbox }) => {
@@ -43,7 +43,7 @@ wrapper(({ loadSandbox }) => {
     SubThemeSourceAColor = TileColor.blue
     SubThemeSourceBColor = TileColor.green
     SubThemeSourceCColor = TileColor.yellow
-    await page.click('button[data-test-id="button-change-main-theme-color-pink"]')
+    await page.click(`button[data-test-id='${TestId.button.CHANGE_MAIN_THEME_PINK}']`)
     await sandbox.screenshot.checkpoint()
     await expect(getTileColor('color-tile-01')).resolves.toBe(MainThemeSourceColor)
     await expect(getTileColor('color-tile-02')).resolves.toBe(SubThemeSourceAColor)

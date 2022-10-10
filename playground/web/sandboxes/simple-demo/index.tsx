@@ -3,6 +3,7 @@ import { HorizontalButtonStack, MainButtonStack } from '../../components/button-
 import { CounterValue } from '../../components/counter-value'
 import { DebugFrame } from '../../components/debug-frame'
 import { useRef, useRelinkPackage } from '../../utils'
+import { TestId } from './constants'
 
 function Sandbox(): JSX.Element {
 
@@ -49,17 +50,29 @@ function Sandbox(): JSX.Element {
       <CounterValue value={counter} />
       <MainButtonStack>
         <HorizontalButtonStack>
-          <button data-test-id='button-increase-counter' onClick={increaseCounter}>
+          <button
+            data-test-id={TestId.button.INCREASE_COUNTER}
+            onClick={increaseCounter}
+          >
             {'+1'}
           </button>
-          <button data-test-id='button-set-counter-42' onClick={setCounter42}>
+          <button
+            data-test-id={TestId.button.SET_COUNTER_42}
+            onClick={setCounter42}
+          >
             {'Set value to 42'}
           </button>
         </HorizontalButtonStack>
-        <button data-test-id='button-reset-counter' onClick={resetCounter}>
+        <button
+          data-test-id={TestId.button.RESET_COUNTER}
+          onClick={resetCounter}
+        >
           {'Reset'}
         </button>
-        <button data-test-id='button-hydrate-counter' onClick={hydrateCounter}>
+        <button
+          data-test-id={TestId.button.HYDRATE_COUNTER}
+          onClick={hydrateCounter}
+        >
           {'Hydrate to 36'}
         </button>
       </MainButtonStack>

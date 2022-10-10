@@ -1,0 +1,9 @@
+.divider {
+  background-color: #80808080;
+  height: 1px;
+  margin: 10px 0px;
+}
+
+.dividerFullWidth {
+  width: 100%;
+}

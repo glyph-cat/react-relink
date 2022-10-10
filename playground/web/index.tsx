@@ -9,6 +9,10 @@ const routeStack = [
     RouteComponent: lazy(() => import('./sandboxes/active')),
   },
   {
+    path: '/batched-updates',
+    RouteComponent: lazy(() => import('./sandboxes/batched-updates')),
+  },
+  {
     path: '/scope',
     RouteComponent: lazy(() => import('./sandboxes/scope')),
   },

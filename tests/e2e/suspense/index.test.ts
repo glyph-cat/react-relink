@@ -1,7 +1,7 @@
 import { wrapper } from '../wrapper'
 import {
   CounterValues,
-  DataTestId as SandboxTestId,
+  TestId as SandboxTestId,
 } from '../../../playground/web/sandboxes/suspense/constants'
 import {
   COUNTER_VALUE_TEST_ID,
