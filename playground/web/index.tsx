@@ -13,6 +13,10 @@ const routeStack = [
     RouteComponent: lazy(() => import('./sandboxes/batched-updates')),
   },
   {
+    path: '/dynamic-create-dispose',
+    RouteComponent: lazy(() => import('./sandboxes/dynamic-create-dispose')),
+  },
+  {
     path: '/scope',
     RouteComponent: lazy(() => import('./sandboxes/scope')),
   },
@@ -39,6 +43,9 @@ function startRender() {
   }
   const container = document.getElementById('root') as HTMLElement
   const root = createRoot(container)
+
+  // Note: StrictMode is not used here because it makes tracking the render count
+  // extremely hard.
   root.render(
     <Router>
       <Suspense fallback={<LoadingFallback />}>
