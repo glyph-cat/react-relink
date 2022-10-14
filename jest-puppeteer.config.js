@@ -12,7 +12,7 @@ module.exports = {
   },
   server: {
     command: 'yarn playground:web',
-    debug: true,
+    // debug: true,
     launchTimeout: 5000,
     port: 3000,
   },

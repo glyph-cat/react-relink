@@ -27,7 +27,7 @@ wrapper(({ loadSandbox }) => {
     const isComponentSuspended = async (): Promise<boolean> => {
       const evaluation = await page.evaluateHandle(($testId) => {
         const element = document.querySelector(`h1[data-test-id='${$testId}']`)
-        return !!element
+        return !Object.is(element, null)
       }, SandboxTestId.SUSPENSE_FALLBACK_COMPONENT)
       return evaluation.jsonValue()
     }

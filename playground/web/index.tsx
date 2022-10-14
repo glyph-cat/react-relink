@@ -65,10 +65,11 @@ function HomePage(): JSX.Element {
   const renderStack = []
   for (const { path } of routeStack) {
     renderStack.push(
-      <li key={path}>
+      <li key={path} style={{ margin: '10px 0px' }}>
         <a
           data-test-id={`anchor-${path.replace(/^\//, '')}`}
           href={path}
+          style={{ textDecoration: 'none' }}
         >
           <code>{path}</code>
         </a>
@@ -81,7 +82,7 @@ function HomePage(): JSX.Element {
       padding: 50,
       minHeight: '100vh',
     }}>
-      <ul style={{ fontSize: '24pt' }}>
+      <ul style={{ fontSize: '18pt' }}>
         {renderStack}
       </ul>
     </div>
