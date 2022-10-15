@@ -64,7 +64,7 @@ export function wrapper(
 
   for (const testConfig of testConfigStack) {
 
-    describe.skip(testConfig.description, (): void => {
+    describe(testConfig.description, (): void => {
 
       const screenshotSuffix = testConfig.sandboxConfig.screenshotSuffix || testConfig.sandboxConfig.t
       const sandboxNameRef: MutableRefObject<string> = { current: null }

@@ -2,11 +2,14 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
-  // TODO: [Mid] Run this in node environment
+  if (buildEnv === 'debug' || buildType === 'rn' || buildType === 'umd') {
+    test('Not required', () => { expect(null).toBe(null) })
+    return // Early exit
+  }
 
   test('Main', async () => {
 
