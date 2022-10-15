@@ -2,6 +2,8 @@ import { Config } from '@jest/types'
 
 const config: Config.InitialOptions = {
   preset: 'jest-puppeteer',
+  globalSetup: 'jest-environment-puppeteer/setup',
+  globalTeardown: 'jest-environment-puppeteer/teardown',
   setupFilesAfterEnv: [
     '<rootDir>/jest.setup.ts',
     '@testing-library/jest-dom/extend-expect',

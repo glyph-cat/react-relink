@@ -6,10 +6,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
+  // TODO: [Mid] Run this in node environment
+
   test('Main', async () => {
 
     const Source = new RelinkSource<number>({
-      key: 'test/special-serverside-snapshot',
+      key: 'test/special-ssr',
       default: 42,
     })
 
