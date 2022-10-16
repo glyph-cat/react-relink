@@ -8,6 +8,10 @@ import {
 import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
 import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
 
+// TOFIX:
+// Tests fail inconsistently due to Error Code 5 (Out of memory?)
+// Normally happens when more than one e2e test is being run in the same shot.
+
 const BASE_TEST_DIR = './tests/e2e'
 const LOCAL_HOST = 'http://localhost:3000'
 const SCREENSHOTS_DIR_NAME = 'screenshots'
@@ -126,6 +130,8 @@ export function wrapper(
           url: `${LOCAL_HOST}/${sandboxName}`,
           query: buildConfig,
         }))
+        // KIV: Not sure if we need this
+        // await page.waitForNavigation()
         await $$waitForSelector('div[data-test-id="debug-frame"]')
 
         return {

@@ -2414,6 +2414,14 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
+"@types/jest-dev-server@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@types/jest-dev-server/-/jest-dev-server-5.0.0.tgz#1c89fb8b2c6ceae75b73d7bb9bab6207c07ac101"
+  integrity sha512-2o5mY2c/WTXO0j+FrtWMxDt0NBi0o6R6aNx4xaym/OfVP8owAeZa582eFxQEqZ7KzHDqvkEEJ9YZ9O3Zw/MpPw==
+  dependencies:
+    "@types/node" "*"
+    "@types/wait-on" "*"
+
 "@types/jest-environment-puppeteer@^5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@types/jest-environment-puppeteer/-/jest-environment-puppeteer-5.0.2.tgz#604370c20b3c62e40d155b19eb544d1580dbc69e"
@@ -2545,6 +2553,13 @@
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@types/use-sync-external-store/-/use-sync-external-store-0.0.3.tgz#b6725d5f4af24ace33b36fafd295136e75509f43"
   integrity sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==
+
+"@types/wait-on@*":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@types/wait-on/-/wait-on-5.3.1.tgz#bc5520d1d8b90b9caab1bef23315685ded73320d"
+  integrity sha512-2FFOKCF/YydrMUaqg+fkk49qf0e5rDgwt6aQsMzFQzbS419h2gNOXyiwp/o2yYy27bi/C1z+HgfncryjGzlvgQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/yargs-parser@*":
   version "21.0.0"
