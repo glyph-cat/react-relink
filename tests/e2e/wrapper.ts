@@ -2,8 +2,11 @@ import * as fs from 'fs'
 import { ElementHandle, NodeFor, WaitForSelectorOptions } from 'puppeteer'
 import { MutableRefObject } from 'react'
 import { stringifyUrl } from 'query-string'
-import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
+import {
+  COUNTER_VALUE_TEST_ID,
+} from '../../playground/web/components/counter-value/constants'
 import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
+import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
 
 const BASE_TEST_DIR = './tests/e2e'
 const LOCAL_HOST = 'http://localhost:3000'
@@ -169,6 +172,15 @@ export function wrapper(
             testPassedRef.current = true
           },
           waitForSelector: $$waitForSelector,
+          commonMethods: {
+            async getCounterValue(): Promise<number> {
+              const evaluation = await page.evaluateHandle(($testId) => {
+                const element = document.querySelector(`h1[data-test-id='${$testId}']`)
+                return Number(element.innerHTML)
+              }, COUNTER_VALUE_TEST_ID)
+              return evaluation.jsonValue()
+            },
+          }
         }
       }
 

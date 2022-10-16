@@ -7,7 +7,9 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
   const { RelinkSource, useRelinkValue } = Relink
 
   if (buildEnv === 'debug' || buildType === 'rn' || buildType === 'umd') {
-    test('Not required', () => { expect(null).toBe(null) })
+    test('Not applicable', () => { expect(null).toBe(null) })
+    // Since debug env is assumed to be client-side and SSR does not apply to
+    // React Native and UMD.
     return // Early exit
   }
 
