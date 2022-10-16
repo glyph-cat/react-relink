@@ -8,6 +8,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, waitFor } = Relink
 
+  jest.useRealTimers()
+
   let Source: $RelinkSource<number>
   afterEach(async () => {
     await Source.dispose()

@@ -2,6 +2,8 @@ import { delay } from '@glyph-cat/swiss-army-knife'
 import { TIME_GAP } from '../../../debugging'
 import { GatedFlow } from '..'
 
+jest.useRealTimers()
+
 test('Stress test', async () => {
 
   const gateKeeper = new GatedFlow(true, 'test/gated-flow/stress')

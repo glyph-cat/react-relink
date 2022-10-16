@@ -8,8 +8,8 @@ module.exports = {
    * @type import('puppeteer').PuppeteerLaunchOptions
    */
   launch: {
-    headless: false,
-    slowMo: 10,
+    // headless: false,
+    // slowMo: 10,
     defaultViewport: {
       height: 900,
       width: 1200,

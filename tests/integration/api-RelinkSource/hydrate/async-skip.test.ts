@@ -8,6 +8,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, RelinkEventType } = Relink
 
+  jest.useRealTimers()
+
   let Source: $RelinkSource<SampleSchema>
   afterEach(async () => {
     await Source.dispose()

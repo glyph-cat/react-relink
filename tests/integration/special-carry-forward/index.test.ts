@@ -11,6 +11,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource } = Relink
 
+  jest.useRealTimers()
+
   test('Carry forward', async () => {
 
     const Source = new RelinkSource<SampleSchema>({

@@ -13,6 +13,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, RelinkEventType, useRelinkValue } = Relink
 
+  jest.useRealTimers()
+
   let Source: $RelinkSource<number>
   const cleanupRef = createCleanupRef()
   afterEach(async () => {

@@ -4,6 +4,9 @@ import { GatedFlow } from '..'
 
 // Elaboration: Gate only closes when all currently queued callbacks have been
 // flushed, but callbacks placed after a lock is requested remains queued.
+
+jest.useRealTimers()
+
 test('Gate closes at appropriate timing', async () => {
   const gateKeeper = new GatedFlow(true, 'test/gated-flow/close-timing')
   const array: Array<string> = []

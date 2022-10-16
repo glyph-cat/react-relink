@@ -3,6 +3,8 @@ import { createSuspenseWaiter } from '../../internals/suspense-waiter'
 
 describe(createSuspenseWaiter.name, (): void => {
 
+  jest.useRealTimers()
+
   test('Error', () => {
     const promise = new Promise<void>((_resolve, reject): void => {
       reject('match-key')

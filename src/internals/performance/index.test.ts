@@ -11,8 +11,6 @@ import {
 
 describe(formatReducerSlowWarning.name, (): void => {
 
-  jest.useFakeTimers()
-
   test('Synchronous', (): void => {
     const output = formatReducerSlowWarning('foo', 4896, false)
     expect(output).toBe(

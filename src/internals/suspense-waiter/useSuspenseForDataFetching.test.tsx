@@ -10,6 +10,8 @@ import { TIME_GAP } from '../../debugging'
 
 describe(useSuspenseForDataFetching.name, (): void => {
 
+  jest.useRealTimers()
+
   let root: ReactTestRenderer
   let Source: RelinkSource<number>
   afterEach(async () => {

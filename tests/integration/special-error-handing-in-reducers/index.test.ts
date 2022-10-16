@@ -12,8 +12,6 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   describe('Error handling in reducers', (): void => {
 
-    jest.setTimeout(10100)
-
     let Source: $RelinkSource<number>
     beforeEach((): void => {
       Source = new RelinkSource({

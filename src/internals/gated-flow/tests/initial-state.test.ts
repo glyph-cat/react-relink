@@ -5,6 +5,9 @@ import { GatedFlow } from '..'
 // NOTE: Every time `M$exec` is called, so is `M$flush`, but the callbacks
 // are not invoked because the gate is not opened, making the while-loop in
 // `M$flush` unreachable.
+
+jest.useRealTimers()
+
 describe('Initial state', (): void => {
 
   describe('Open (callbacks should run right away)', (): void => {

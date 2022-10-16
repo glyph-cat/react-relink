@@ -70,6 +70,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   describe('options', (): void => {
 
+    jest.useRealTimers()
+
     /**
      * Should wait for all gated executions to complete.
      */

@@ -9,8 +9,14 @@ import {
 import { exec } from 'child_process'
 import { getPackageInstallPaths } from './get-package-install-paths'
 
+const excludedDevPackages = ['chalk']
+
 const depStack = Object.keys(PKG_dependencies)
-const devDepStack = Object.keys(PKG_devDependencies)
+const devDepStack = Object.keys(PKG_devDependencies).filter((value) => {
+  // TOFIX: Not working somehow?
+  return !excludedDevPackages.includes(value)
+})
+
 const allDepStack = [...depStack, ...devDepStack]
 
 const commandStack = [`yarn remove ${allDepStack.join(' ')}`]

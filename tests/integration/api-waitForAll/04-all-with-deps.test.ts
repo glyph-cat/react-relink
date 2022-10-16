@@ -8,6 +8,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   const { RelinkSource, waitForAll } = Relink
   const testName = 'waitForAll'
 
+  jest.useRealTimers()
+
   test('main', async () => {
 
     const SourceA_sub1 = new RelinkSource<number>({
