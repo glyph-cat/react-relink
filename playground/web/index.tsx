@@ -17,6 +17,10 @@ const routeStack = [
     RouteComponent: lazy(() => import('./sandboxes/dynamic-create-dispose')),
   },
   {
+    path: '/premature-dispose',
+    RouteComponent: lazy(() => import('./sandboxes/premature-dispose')),
+  },
+  {
     path: '/scope',
     RouteComponent: lazy(() => import('./sandboxes/scope')),
   },
