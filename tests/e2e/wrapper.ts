@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { ElementHandle, NodeFor, WaitForSelectorOptions } from 'puppeteer'
+import { ElementHandle, NodeFor, Page, WaitForSelectorOptions } from 'puppeteer'
 import { MutableRefObject } from 'react'
 import { stringifyUrl } from 'query-string'
 import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
@@ -108,37 +108,41 @@ export function wrapper(
         }
       })
 
-      async function $$waitForSelector<Selector extends string>(
-        selector: Selector,
-        options?: WaitForSelectorOptions
-      ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-        return await page.waitForSelector(selector, {
-          timeout: 500,
-          visible: true,
-          ...options,
-        })
-      }
-
-      const loadSandbox = async (sandboxName: string): Promise<ISandbox> => {
+      const loadSandbox = async (
+        sandboxName: string,
+        pageInstance: Page
+      ): Promise<ISandbox> => {
 
         const {
           screenshotSuffix: toExclude,
           ...buildConfig
         } = testConfig.sandboxConfig
         sandboxNameRef.current = sandboxName
-        await page.goto(stringifyUrl({
+        await pageInstance.goto(stringifyUrl({
           url: `${LOCAL_HOST}/${sandboxName}`,
           query: buildConfig,
         }))
+
+        async function $$waitForSelector<Selector extends string>(
+          selector: Selector,
+          options?: WaitForSelectorOptions
+        ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+          return await pageInstance.waitForSelector(selector, {
+            timeout: 1000,
+            visible: true,
+            ...options,
+          })
+        }
+
         // KIV: Not sure if we need this
-        // await page.waitForNavigation()
+        // await pageObject.waitForNavigation()
         await $$waitForSelector('div[data-test-id="debug-frame"]')
 
         return {
           async getRenderCount(customTestId?: string): Promise<number> {
             const targetTestId = customTestId || StatusBarTestId.RENDER_COUNT
             await $$waitForSelector(`span[data-test-id="${targetTestId}"]`)
-            const evaluation = await page.evaluateHandle(($targetTestId) => {
+            const evaluation = await pageInstance.evaluateHandle(($targetTestId) => {
               const element = document.querySelector(`span[data-test-id="${$targetTestId}"]`)
               return Number(element.textContent)
             }, targetTestId)
@@ -148,19 +152,21 @@ export function wrapper(
             async snap(name: string): Promise<void> {
               const screenshotDirPath = getScreenshotDirPath()
               if (!fs.existsSync(screenshotDirPath)) { fs.mkdirSync(screenshotDirPath) }
-              await page.screenshot({
+              await pageInstance.screenshot({
                 path: `${screenshotDirPath}/${name}.${screenshotSuffix}.png`,
                 fullPage: true,
               })
             },
             async checkpoint(): Promise<void> {
-              const screenshotAsBase64String = await page.screenshot({ fullPage: true })
+              const screenshotAsBase64String = await pageInstance.screenshot({
+                fullPage: true,
+              })
               screenshotStack.push(screenshotAsBase64String)
             },
           },
           sessionStorage: {
             async getItem(key: string): Promise<string> {
-              const evaluation = await page.evaluateHandle(($key) => {
+              const evaluation = await pageInstance.evaluateHandle(($key) => {
                 return sessionStorage.getItem($key)
               }, key)
               return evaluation.jsonValue()
@@ -168,7 +174,7 @@ export function wrapper(
           },
           localStorage: {
             async getItem(key: string): Promise<string> {
-              const evaluation = await page.evaluateHandle(($key) => {
+              const evaluation = await pageInstance.evaluateHandle(($key) => {
                 return localStorage.getItem($key)
               }, key)
               return evaluation.jsonValue()
@@ -180,7 +186,7 @@ export function wrapper(
           waitForSelector: $$waitForSelector,
           // commonMethods: {
           //   async getCounterValue(): Promise<number> {
-          //     const evaluation = await page.evaluateHandle(($testId) => {
+          //     const evaluation = await pageObject.evaluateHandle(($testId) => {
           //       const element = document.querySelector(`h1[data-test-id='${$testId}']`)
           //       return Number(element.innerHTML)
           //     }, COUNTER_VALUE_TEST_ID)

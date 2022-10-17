@@ -1,4 +1,4 @@
-import { ElementHandle, NodeFor, WaitForSelectorOptions } from 'puppeteer'
+import { ElementHandle, NodeFor, Page, WaitForSelectorOptions } from 'puppeteer'
 import * as __relink__ from '../src/bundle'
 
 export interface IntegrationTestConfig {
@@ -16,7 +16,10 @@ export interface E2ETestConfig {
 }
 
 export interface E2EWrapperObject extends E2ETestConfig {
-  loadSandbox(sandboxName: string): Promise<ISandbox>
+  loadSandbox(
+    sandboxName: string,
+    pageInstance: Page
+  ): Promise<ISandbox>
 }
 
 export interface SandboxConfig {

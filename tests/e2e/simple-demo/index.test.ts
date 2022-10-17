@@ -7,7 +7,7 @@ import { wrapper } from '../wrapper'
 wrapper(({ loadSandbox }) => {
   test('Simple Demo', async () => {
 
-    const sandbox = await loadSandbox('simple-demo')
+    const sandbox = await loadSandbox('simple-demo', page)
 
     const getCounterValue = async (): Promise<number> => {
       const evaluation = await page.evaluateHandle(($testId) => {

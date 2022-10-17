@@ -19,7 +19,7 @@ wrapper(({ loadSandbox }) => {
 
   test.skip('Suspense', async () => {
 
-    const sandbox = await loadSandbox('suspense')
+    const sandbox = await loadSandbox('suspense', page)
 
     const getCounterValue = async (): Promise<number> => {
       const evaluation = await page.evaluateHandle(($testId) => {

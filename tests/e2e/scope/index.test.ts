@@ -5,7 +5,7 @@ import { wrapper } from '../wrapper'
 wrapper(({ loadSandbox }) => {
   test('RelinkScope', async () => {
 
-    const sandbox = await loadSandbox('scope')
+    const sandbox = await loadSandbox('scope', page)
 
     const getTileColor = async (testId: string): Promise<string> => {
       const evaluation = await page.evaluateHandle(($testId) => {
