@@ -19,9 +19,9 @@ module.exports = {
    * @type import('jest-dev-server').JestDevServerOptions
    */
   server: {
-    command: 'yarn playground:web',
+    command: 'yarn playground:web:test',
     // debug: true,
     launchTimeout: 5000,
-    port: 3000,
+    port: 3031,
   },
 }

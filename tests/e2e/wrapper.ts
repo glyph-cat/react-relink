@@ -11,7 +11,7 @@ import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-v
 // Normally happens when more than one e2e test is being run in the same shot.
 
 const BASE_TEST_DIR = './tests/e2e'
-const LOCAL_HOST = 'http://localhost:3000'
+const LOCAL_HOST = 'http://localhost:3031'
 const SCREENSHOTS_DIR_NAME = 'screenshots'
 
 const SCOPE = process.env.scope

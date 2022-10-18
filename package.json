@@ -18,6 +18,7 @@
     "lint:fix": "eslint . --fix",
     "lint:path": "eslint",
     "playground:web": "parcel playground/web/index.html --port 3000",
+    "playground:web:test": "parcel playground/web/index.html --port 3031",
     "predebug": "yarn clean:screenshots",
     "debug": "scope=\"debug\" jest -c ./jest.config.ts",
     "rollup": "rollup -c ./config/rollup.config.js",
