@@ -59,7 +59,6 @@ export interface ISandbox {
   ): Promise<ElementHandle<NodeFor<Selector>> | null>
   commonMethods: {
     getCounterValue(): Promise<number>
-    // TODO: Check suspense also?
   }
 }
 
