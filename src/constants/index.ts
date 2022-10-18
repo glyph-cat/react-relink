@@ -1,2 +1,2 @@
-export * from './private'
+export * from './internal'
 export * from './public'
