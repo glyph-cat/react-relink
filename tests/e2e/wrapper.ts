@@ -4,7 +4,7 @@ import { MutableRefObject } from 'react'
 import { stringifyUrl } from 'query-string'
 import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
 import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
-// import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-value/constants'
+import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-value/constants'
 
 // TOFIX:
 // Tests fail inconsistently due to Error Code 5 (Out of memory?)
@@ -184,15 +184,15 @@ export function wrapper(
             testPassedRef.current = true
           },
           waitForSelector: $$waitForSelector,
-          // commonMethods: {
-          //   async getCounterValue(): Promise<number> {
-          //     const evaluation = await pageObject.evaluateHandle(($testId) => {
-          //       const element = document.querySelector(`h1[data-test-id='${$testId}']`)
-          //       return Number(element.innerHTML)
-          //     }, COUNTER_VALUE_TEST_ID)
-          //     return evaluation.jsonValue()
-          //   },
-          // },
+          commonMethods: {
+            async getCounterValue(): Promise<number> {
+              const evaluation = await pageInstance.evaluateHandle(($testId) => {
+                const element = document.querySelector(`h1[data-test-id='${$testId}']`)
+                return Number(element.innerHTML)
+              }, COUNTER_VALUE_TEST_ID)
+              return evaluation.jsonValue()
+            },
+          },
         }
       }
 

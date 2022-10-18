@@ -57,10 +57,10 @@ export interface ISandbox {
     selector: Selector,
     options?: WaitForSelectorOptions
   ): Promise<ElementHandle<NodeFor<Selector>> | null>
-  // commonMethods: {
-  //   getCounterValue(): Promise<number>
-  //   // TODO: Check suspense?
-  // }
+  commonMethods: {
+    getCounterValue(): Promise<number>
+    // TODO: Check suspense also?
+  }
 }
 
 export interface SampleSchema {
