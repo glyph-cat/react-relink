@@ -11,6 +11,7 @@ import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-v
 // Normally happens when more than one e2e test is being run in the same shot.
 // Happens when test is triggered by running `yarn all`, but works with `yarn test`
 // Tests pass in GitHub Actions tho.
+// Current approach is to set `maxWorkers: 1` in `jest.config.ts`.
 
 const BASE_TEST_DIR = './tests/e2e'
 const LOCAL_HOST = 'http://localhost:3031'
@@ -136,8 +137,6 @@ export function wrapper(
           })
         }
 
-        // KIV: Not sure if we need this
-        // await pageObject.waitForNavigation()
         await $$waitForSelector('div[data-test-id="debug-frame"]')
 
         return {

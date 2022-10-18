@@ -9,24 +9,10 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ loadSandbox }) => {
 
-  // if (buildEnv === 'debug' || buildType === 'cjs' || buildType === 'es') {
-  //   test('N/A', async () => {
-  //     await loadSandbox('suspense')
-  //     expect(null).toBe(null)
-  //   })
-  //   return // Early exit
-  // }
-
-  test.skip('Suspense', async () => {
+  test('Suspense', async () => {
 
     const sandbox = await loadSandbox('suspense', page)
 
-    // TOFIX: Not sure why element is null for DEBUG, CJS and ES builds
-    // (Used to be DEBUG and CJS builds only)
-    // (if these builds are skipped, then other builds will fail instead, WTF)
-    // (if this entire test is skipped, some other test would fail, but inconsistently, WTF WTF)
-    // This only happens when multiple build types are run together
-    // (Eg: with `yarn test`), but when running `yarn debug`, it works just fine.
     const isComponentSuspended = async (): Promise<boolean> => {
       const evaluation = await page.evaluateHandle(($testId) => {
         const element = document.querySelector(`h1[data-test-id='${$testId}']`)

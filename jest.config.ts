@@ -12,8 +12,7 @@ const config: Config.InitialOptions = {
     '.draft',
     '.old',
   ],
-  // maxWorkers: 1,
-  // maxConcurrency: 1,
+  maxWorkers: 1,
   /**
    * Prefer fake timers by default because it saves time.
    */
