@@ -5,6 +5,7 @@ import {
   useRef,
 } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
+import { createRef } from '../../../debugging-utils'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -23,12 +24,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     let counterValueFromOuterSandbox: number
     let counterValueFromInnerSandbox: number
-    const REF_changeValueForOuterSandbox: MutableRefObject<() => Promise<void>> = {
-      current: null
-    }
-    const REF_changeValueForInnerSandbox: MutableRefObject<() => Promise<void>> = {
-      current: null
-    }
+    const REF_changeValueForOuterSandbox: MutableRefObject<() => Promise<void>> = createRef()
+    const REF_changeValueForInnerSandbox: MutableRefObject<() => Promise<void>> = createRef()
 
     function App(): JSX.Element {
       const SubCounterSource = useRef<typeof MainCounterSource>()

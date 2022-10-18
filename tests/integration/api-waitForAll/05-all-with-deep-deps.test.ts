@@ -1,5 +1,4 @@
-import { MutableRefObject } from 'react'
-import { attachRef, delay } from '../../../debugging-utils'
+import { attachRef, createRef, delay } from '../../../debugging-utils'
 import type { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig } from '../../helpers'
@@ -27,12 +26,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     //   ├─── Source C1 ······· (mimics fetch from localStorage)
     //   └─── Source C2 ······· (mimics fetch from server)
 
-    const SourceB1_ref: MutableRefObject<$RelinkSource<number>> = { current: null }
-    const SourceB1a_ref: MutableRefObject<$RelinkSource<number>> = { current: null }
-    const SourceB1b_ref: MutableRefObject<$RelinkSource<number>> = { current: null }
-    const SourceB2_ref: MutableRefObject<$RelinkSource<number>> = { current: null }
-    const SourceC1_ref: MutableRefObject<$RelinkSource<number>> = { current: null }
-    const SourceC2_ref: MutableRefObject<$RelinkSource<number>> = { current: null }
+    const SourceB1_ref = createRef<$RelinkSource<number>>()
+    const SourceB1a_ref = createRef<$RelinkSource<number>>()
+    const SourceB1b_ref = createRef<$RelinkSource<number>>()
+    const SourceB2_ref = createRef<$RelinkSource<number>>()
+    const SourceC1_ref = createRef<$RelinkSource<number>>()
+    const SourceC2_ref = createRef<$RelinkSource<number>>()
 
     const SourceA = new RelinkSource({
       key: `test/${sharedTestKeyFragment}/A`,

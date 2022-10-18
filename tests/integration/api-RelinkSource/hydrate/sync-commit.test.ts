@@ -1,3 +1,4 @@
+import { createRef } from '../../../../debugging-utils'
 import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
 import { createEventStackPromise } from '../../../../src/debugging'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
@@ -22,7 +23,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
-    const conclusionRef = { current: null }
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const conclusionRef = createRef<Function>()
     const eventStackPromise = createEventStackPromise(Source, 2)
     const hydrationPromise = Source.hydrate(({ commit }): void => {
       conclusionRef.current = commit

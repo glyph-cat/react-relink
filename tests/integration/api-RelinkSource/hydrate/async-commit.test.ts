@@ -1,4 +1,4 @@
-import { delay } from '../../../../debugging-utils'
+import { createRef, delay } from '../../../../debugging-utils'
 import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
 import { createEventStackPromise, TIME_GAP } from '../../../../src/debugging'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
@@ -25,7 +25,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
-    const conclusionRef = { current: null }
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const conclusionRef = createRef<Function>()
     const eventStackPromise = createEventStackPromise(Source, 2)
     const hydrationPromise = Source.hydrate(async ({ commit }) => {
       conclusionRef.current = commit

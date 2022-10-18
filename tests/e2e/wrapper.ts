@@ -2,8 +2,9 @@ import * as fs from 'fs'
 import { ElementHandle, NodeFor, Page, WaitForSelectorOptions } from 'puppeteer'
 import { MutableRefObject } from 'react'
 import { stringifyUrl } from 'query-string'
-import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
+import { createRef } from '../../debugging-utils'
 import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
+import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
 import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-value/constants'
 
 // KIV:
@@ -77,7 +78,7 @@ export function wrapper(
     describe(testConfig.description, (): void => {
 
       const screenshotSuffix = testConfig.sandboxConfig.screenshotSuffix || testConfig.sandboxConfig.t
-      const sandboxNameRef: MutableRefObject<string> = { current: null }
+      const sandboxNameRef: MutableRefObject<string> = createRef()
       const getScreenshotDirPath = (): string => {
         if (!sandboxNameRef.current) { throw new Error('sandboxName is not set!') }
         return `${BASE_TEST_DIR}/${sandboxNameRef.current}/${SCREENSHOTS_DIR_NAME}`
@@ -87,7 +88,7 @@ export function wrapper(
        * Array of screenshots as a base64 string.
        */
       let screenshotStack: Array<string | Buffer> = []
-      const testPassedRef: MutableRefObject<boolean> = { current: false }
+      const testPassedRef: MutableRefObject<boolean> = createRef(false)
       beforeEach(() => {
         testPassedRef.current = false
         screenshotStack = []
