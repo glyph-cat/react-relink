@@ -6,9 +6,11 @@ import { StatusBarTestId } from '../../playground/web/components/debug-frame/sta
 import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
 import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-value/constants'
 
-// TOFIX:
+// KIV:
 // Tests fail inconsistently due to Error Code 5 (Out of memory?)
 // Normally happens when more than one e2e test is being run in the same shot.
+// Happens when test is triggered by running `yarn all`, but works with `yarn test`
+// Tests pass in GitHub Actions tho.
 
 const BASE_TEST_DIR = './tests/e2e'
 const LOCAL_HOST = 'http://localhost:3031'
