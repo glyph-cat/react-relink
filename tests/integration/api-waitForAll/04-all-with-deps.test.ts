@@ -1,4 +1,4 @@
-import { delay } from '@glyph-cat/swiss-army-knife'
+import { delay } from '../../../debugging-utils'
 import { TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
@@ -6,14 +6,14 @@ import { wrapper } from '../wrapper'
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, waitForAll } = Relink
-  const testName = 'waitForAll'
+  const testName = 'waitForAll/all-with-deps'
 
   jest.useRealTimers()
 
   test('main', async () => {
 
     const SourceA_sub1 = new RelinkSource<number>({
-      key: `test/${testName}/all-with-deps/a/sub-1`,
+      key: `test/${testName}/a/sub-1`,
       default: 0,
       lifecycle: {
         init: ({ commit }): void => {
@@ -23,7 +23,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     const SourceB_sub1 = new RelinkSource<number>({
-      key: `test/${testName}/all-with-deps/b/sub-1`,
+      key: `test/${testName}/b/sub-1`,
       default: 0,
       lifecycle: {
         init: async ({ commit }) => {
@@ -34,13 +34,13 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     const SourceA = new RelinkSource({
-      key: `test/${testName}/all-with-deps/a`,
+      key: `test/${testName}/a`,
       default: null,
       deps: [SourceA_sub1],
     })
 
     const SourceB = new RelinkSource({
-      key: `test/${testName}/all-with-deps/b`,
+      key: `test/${testName}/b`,
       default: null,
       deps: [SourceB_sub1],
     })

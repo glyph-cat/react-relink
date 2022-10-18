@@ -4,7 +4,7 @@ import { RelinkSource as $RelinkSource } from '../../../../lib/types'
 /* eslint-enable import/no-unresolved, @typescript-eslint/ban-ts-comment */
 import { useCallback } from 'react'
 import { DebugFrame } from '../../components/debug-frame'
-import { useRef, useRelinkPackage } from '../../utils'
+import { useRef, useRelinkPackage } from '../../shared-hooks'
 import { MainButtonStack } from '../../components/button-stack'
 import { TestId } from './constants'
 

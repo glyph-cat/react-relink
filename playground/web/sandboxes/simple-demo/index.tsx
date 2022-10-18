@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { HorizontalButtonStack, MainButtonStack } from '../../components/button-stack'
 import { CounterValue } from '../../components/counter-value'
 import { DebugFrame } from '../../components/debug-frame'
-import { useRef, useRelinkPackage } from '../../utils'
+import { useRef, useRelinkPackage } from '../../shared-hooks'
 import { TestId } from './constants'
 
 function Sandbox(): JSX.Element {

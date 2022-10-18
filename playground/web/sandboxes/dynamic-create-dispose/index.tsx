@@ -5,7 +5,7 @@ import { RelinkSource as $RelinkSource } from '../../../../lib/types'
 import { StrictMode, useCallback, useLayoutEffect } from 'react'
 import { CounterValue } from '../../components/counter-value'
 import { DebugFrame } from '../../components/debug-frame'
-import { useRef, useRelinkPackage } from '../../utils'
+import { useRef, useRelinkPackage } from '../../shared-hooks'
 import { MainButtonStack } from '../../components/button-stack'
 import { TestId } from './constants'
 

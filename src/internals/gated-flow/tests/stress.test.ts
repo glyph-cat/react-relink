@@ -1,4 +1,4 @@
-import { delay } from '@glyph-cat/swiss-army-knife'
+import { delay } from '../../../../debugging-utils'
 import { TIME_GAP } from '../../../debugging'
 import { GatedFlow } from '..'
 

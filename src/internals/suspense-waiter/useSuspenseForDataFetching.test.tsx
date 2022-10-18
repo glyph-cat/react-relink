@@ -1,9 +1,9 @@
-import { delay } from '@glyph-cat/swiss-army-knife'
 import {
   Suspense,
   useLayoutEffect, // eslint-disable-line no-restricted-imports
 } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
+import { delay } from '../../../debugging-utils'
 import { RelinkSource } from '../../api/source'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { TIME_GAP } from '../../debugging'

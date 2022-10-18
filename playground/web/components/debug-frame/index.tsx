@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode } from 'react'
-import { useRenderCounter } from '../../utils/use-render-counter'
+import { useRenderCounter } from '../../shared-hooks'
 import { CONTAINER_PADDING, STATUS_BAR_HEIGHT } from './constants'
 import { StatusBar } from './status-bar'
 import { StorageViewer } from './storage-viewer'

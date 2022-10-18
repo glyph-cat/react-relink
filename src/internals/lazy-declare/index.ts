@@ -1,5 +1,3 @@
-import { EMPTY_OBJECT } from '../../constants'
-
 /**
  * Allows the declaration of a variable lazily. Constructor or functions that
  * initializes the data will not be run until is is needed (when `.get()` is
@@ -10,6 +8,7 @@ export class LazyVariable<T> {
 
   private M$value: T
   private M$factory: () => T
+  private M$isInitialized = false
 
   /**
    * @param factory - The function that returns the initialized data.
@@ -21,7 +20,6 @@ export class LazyVariable<T> {
    * const foo = new LazyVariable(createFoo)
    */
   constructor(factory: () => T) {
-    this.M$value = EMPTY_OBJECT as T
     this.M$factory = factory
   }
 
@@ -35,8 +33,9 @@ export class LazyVariable<T> {
    * animationRef.get()
    */
   get(): T {
-    if (Object.is(this.M$value, EMPTY_OBJECT)) {
+    if (!this.M$isInitialized) {
       this.M$value = this.M$factory()
+      this.M$isInitialized = true
     }
     return this.M$value
   }

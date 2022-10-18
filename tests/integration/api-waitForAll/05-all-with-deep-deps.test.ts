@@ -1,6 +1,5 @@
-import { delay } from '@glyph-cat/swiss-army-knife'
 import { MutableRefObject } from 'react'
-import { attachRef } from '../../../playground/web/utils'
+import { attachRef, delay } from '../../../debugging-utils'
 import type { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig } from '../../helpers'

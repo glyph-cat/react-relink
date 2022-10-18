@@ -1,5 +1,5 @@
-import { delay } from '@glyph-cat/swiss-army-knife'
 import * as chalk from 'chalk'
+import { delay } from '../../../debugging-utils'
 import { TIME_GAP } from '../../../src/debugging'
 import { RelinkEvent } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'

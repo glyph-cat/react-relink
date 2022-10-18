@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { stringifyUrl } from 'query-string'
-import { useRelinkPackage } from '../../../../utils'
+import { useRelinkPackage } from '../../../../shared-hooks'
 import { STATUS_BAR_HEIGHT } from '../../constants'
 import styles from './index.module.css'
 

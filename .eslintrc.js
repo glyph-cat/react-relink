@@ -14,6 +14,10 @@ module.exports = {
         ...[...NRIconfig.paths].filter((value) => {
           return value.name !== 'react'
         }),
+        {
+          name: '@glyph-cat/swiss-army-knife',
+          message: '\'@glyph-cat/swiss-army-knife\' depends on this package to work. We are not supposed to import from it. It is only available because other package require it to function.',
+        }
       ],
     }],
   },

@@ -5,6 +5,16 @@ import { ObjectMarker } from '../helper-types'
 /**
  * @internal
  */
+export enum HydrationMarker {
+  OMIT = 1,
+  SKIP,
+  NOOP,
+  DEFAULT,
+}
+
+/**
+ * @internal
+ */
 const OMISSION_MARKER: ObjectMarker = {} as const
 
 /**

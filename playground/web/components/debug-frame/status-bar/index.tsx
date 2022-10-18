@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { useRelinkPackage } from '../../../utils'
+import { useRelinkPackage } from '../../../shared-hooks'
 import { STATUS_BAR_HEIGHT } from '../constants'
 import { ListMenu } from './list-menu'
 import styles from './index.module.css'

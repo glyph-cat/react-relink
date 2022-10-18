@@ -4,7 +4,7 @@ import { CounterValue } from '../../components/counter-value'
 import { DebugFrame } from '../../components/debug-frame'
 import { Divider } from '../../components/divider'
 import { ExplanationText } from '../../components/explanation-text'
-import { useRef, useRelinkPackage } from '../../utils'
+import { useRef, useRelinkPackage } from '../../shared-hooks'
 import { TestId } from './constants'
 
 function Sandbox(): JSX.Element {

@@ -4,7 +4,7 @@ import { RelinkSource as $RelinkSource } from '../../../../lib/types'
 /* eslint-enable import/no-unresolved, @typescript-eslint/ban-ts-comment */
 import { CSSProperties, useCallback } from 'react'
 import { DebugFrame } from '../../components/debug-frame'
-import { useRelinkPackage } from '../../utils'
+import { useRelinkPackage } from '../../shared-hooks'
 import { TileColor } from './constants'
 import styles from './index.module.css'
 

@@ -3,13 +3,13 @@
 import { RelinkSource as $RelinkSource } from '../../../../lib/types'
 /* eslint-enable import/no-unresolved, @typescript-eslint/ban-ts-comment */
 import { Suspense, useCallback } from 'react'
+import { delay } from '../../../../debugging-utils'
 import { DebugFrame } from '../../components/debug-frame'
-import { delay, useRelinkPackage } from '../../utils'
+import { useRelinkPackage, useRenderCounter } from '../../shared-hooks'
 import { CounterValue } from '../../components/counter-value'
 import styles from '../../components/counter-value/index.module.css'
 import { MainButtonStack } from '../../components/button-stack'
 import { Divider } from '../../components/divider'
-import { useRenderCounter } from '../../utils/use-render-counter'
 import { CounterValues, TestId, DELAY_TIMEOUT } from './constants'
 import { ExplanationText } from '../../components/explanation-text'
 

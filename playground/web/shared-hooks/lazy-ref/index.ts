@@ -1,9 +1,4 @@
-import {
-  MutableRefObject,
-  useRef as useRef_REACT,
-} from 'react'
-
-const EMPTY_OBJECT = {} as const
+import { MutableRefObject, useRef as useRef_REACT } from 'react'
 
 /**
  * A drop-in replacement for React's built-in `useRef` hook but with additional
@@ -29,12 +24,14 @@ const EMPTY_OBJECT = {} as const
 export function useRef<E>(
   valueOrFactory: E | (() => E) = null
 ): MutableRefObject<E> {
-  const mutableRefObj = useRef_REACT(EMPTY_OBJECT as unknown as E)
-  if (Object.is(mutableRefObj.current, EMPTY_OBJECT)) {
+  const isInitialized = useRef_REACT(false)
+  const mutableRefObj = useRef_REACT<E>()
+  if (!isInitialized.current) {
     const initialValue = typeof valueOrFactory === 'function'
       ? (valueOrFactory as (() => E))()
       : valueOrFactory
     mutableRefObj.current = initialValue
+    isInitialized.current = true
   }
   return mutableRefObj
 }
