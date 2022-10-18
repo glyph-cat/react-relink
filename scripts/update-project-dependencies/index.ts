@@ -10,7 +10,13 @@ import { exec } from 'child_process'
 import { getPackageInstallPaths } from './get-package-install-paths'
 
 const dependenciesToExclude = []
-const devDependenciesToExclude = ['chalk']
+const devDependenciesToExclude = [
+  /**
+   * Because the latest version (v5 and above) uses ES, which would break any
+   * scripts that attempt to import it.
+   */
+  'chalk',
+]
 
 const depStack = Object.keys(PKG_dependencies)
 const devDepStack = Object.keys(PKG_devDependencies).filter((value) => {
