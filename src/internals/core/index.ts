@@ -65,24 +65,20 @@ export class RelinkCore<State> {
     }
   }
 
-  /**
-   * Perform 'set' or 'reset' actions.
-   */
-  M$dynamicSet(
-    // incomingState?: S | typeof OMISSION_MARKER
-    // Refer to Local Note [A] near end of file
-    incomingState: State | typeof OMISSION_MARKER = OMISSION_MARKER
-  ): void {
-    const isReset = isIncomingStateOmitted(incomingState)
-    if (isReset) {
-      this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
-      this.M$currentState = this.M$defaultState
-    } else {
-      this.M$bumpMutationCount(this.M$currentState, incomingState)
-      this.M$currentState = incomingState
-    }
+  M$set(incomingState: State): void {
+    this.M$bumpMutationCount(this.M$currentState, incomingState)
+    this.M$currentState = incomingState
     this.M$watcher.M$refresh({
-      type: isReset ? RelinkEventType.reset : RelinkEventType.set,
+      type: RelinkEventType.set,
+      state: this.M$currentState,
+    })
+  }
+
+  M$reset(): void {
+    this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
+    this.M$currentState = this.M$defaultState
+    this.M$watcher.M$refresh({
+      type: RelinkEventType.reset,
       state: this.M$currentState,
     })
   }

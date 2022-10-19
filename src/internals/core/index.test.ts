@@ -28,7 +28,7 @@ describe(RelinkCore.name, (): void => {
 
       // Trigger a state change
       const newState = { value: 2 }
-      core.M$dynamicSet(newState)
+      core.M$set(newState)
       expect(core.M$currentState).toStrictEqual({ value: 2 })
       expect(Object.is(core.M$currentState, newState)).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
@@ -55,8 +55,8 @@ describe(RelinkCore.name, (): void => {
       })
 
       // Trigger a state change followed by a state reset
-      core.M$dynamicSet({ value: 2 })
-      core.M$dynamicSet(/* Empty means reset */)
+      core.M$set({ value: 2 })
+      core.M$reset()
       expect(core.M$currentState).toStrictEqual({ value: 1 })
       expect(Object.is(core.M$currentState, defaultState)).toBe(true)
       expect(capturedEventStack).toStrictEqual([{
@@ -82,14 +82,14 @@ describe(RelinkCore.name, (): void => {
       const core = new RelinkCore(defaultState)
       expect(core.M$mutationCount).toBe(0)
 
-      core.M$dynamicSet(nextState)
+      core.M$set(nextState)
       expect(core.M$mutationCount).toBe(1)
-      core.M$dynamicSet(nextState)
+      core.M$set(nextState)
       expect(core.M$mutationCount).toBe(1)
 
-      core.M$dynamicSet(/* Empty means reset */)
+      core.M$reset()
       expect(core.M$mutationCount).toBe(2)
-      core.M$dynamicSet(/* Empty means reset */)
+      core.M$reset()
       expect(core.M$mutationCount).toBe(2)
     })
 

@@ -437,7 +437,7 @@ export class RelinkSource<State> {
           perfMeasurer.isAsync.current = true
           return new Promise((resolve, reject) => {
             executedReducer.then((fulfilledPartialState) => {
-              this.M$core.M$dynamicSet(fulfilledPartialState) // Is async reducer
+              this.M$core.M$set(fulfilledPartialState) // Is async reducer
               resolve()
             }).catch((e) => {
               reject(e)
@@ -446,11 +446,11 @@ export class RelinkSource<State> {
             })
           })
         } else {
-          this.M$core.M$dynamicSet(executedReducer) // Is reducer
+          this.M$core.M$set(executedReducer) // Is reducer
           perfMeasurer.stop()
         }
       } else {
-        this.M$core.M$dynamicSet(stateOrReducer) // Is direct set
+        this.M$core.M$set(stateOrReducer) // Is direct set
       }
     })
   }
@@ -463,7 +463,7 @@ export class RelinkSource<State> {
    */
   reset(): Promise<void> {
     return this.M$gatedFlow.M$exec((): void => {
-      this.M$core.M$dynamicSet(/* Empty means reset */)
+      this.M$core.M$reset()
     })
   }
 

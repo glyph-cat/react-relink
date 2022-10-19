@@ -1,7 +1,7 @@
 import { RelinkCore } from '.'
 
 /**
- * A control set to make sure `Object.is` can be relied upon for mutability
+ * A proof of concept to make sure `Object.is` can be relied upon for mutability
  * testing.
  */
 describe('Object.is', (): void => {
