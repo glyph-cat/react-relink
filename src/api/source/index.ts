@@ -1,11 +1,6 @@
 import { IS_DEV_ENV } from '../../constants'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
-import {
-  RelinkCore,
-  HYDRATION_SKIP_MARKER,
-  HYDRATION_COMMIT_DEFAULT_MARKER,
-  HYDRATION_COMMIT_NOOP_MARKER,
-} from '../../internals/core'
+import { RelinkCore, EndHydrationMarker } from '../../internals/core'
 import { checkForCircularDeps } from '../../internals/circular-deps'
 import { devError, devWarn } from '../../internals/dev'
 import {
@@ -230,7 +225,7 @@ export class RelinkSource<State> {
           // Lock gate to prevent further state changes.
           // gatedFlow.M$lock()
           // Let it be known that this source is (pending) hydrating
-          this.M$core.M$hydrate(/* Empty means hydration is starting */)
+          this.M$core.M$beginHydration()
         } else {
           // Open gate to resume queued state changes.
           // gatedFlow.M$open()
@@ -313,11 +308,7 @@ export class RelinkSource<State> {
    * })
    */
   hydrate(callback: RelinkHydrateCallback<State>): Promise<void> {
-    // NOTE: `core.M$hydrate` was previously not wrapped in 'M$exec'. Firing
-    // multiple `.hydrate()` calls will most likely cause bugs because of this.
-    this.M$gatedFlow.M$exec((): void => {
-      this.M$core.M$hydrate(/* Empty means hydration is starting */)
-    })
+    this.M$gatedFlow.M$exec(this.M$core.M$beginHydration)
     return this.M$gatedFlow.M$exec((): void | Promise<void> => {
       const concludeHydration = createNoUselessHydrationWarner(this.M$key)
 
@@ -325,25 +316,25 @@ export class RelinkSource<State> {
         commit: (hydratedState: State): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
           if (isFirstHydration) {
-            this.M$core.M$hydrate(hydratedState)
+            this.M$core.M$endHydration(EndHydrationMarker.C, hydratedState)
           }
         },
         skip: (): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
           if (isFirstHydration) {
-            this.M$core.M$hydrate(HYDRATION_SKIP_MARKER)
+            this.M$core.M$endHydration(EndHydrationMarker.S)
           }
         },
         commitDefault: (): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
           if (isFirstHydration) {
-            this.M$core.M$hydrate(HYDRATION_COMMIT_DEFAULT_MARKER)
+            this.M$core.M$endHydration(EndHydrationMarker.D)
           }
         },
         commitNoop: (): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
           if (isFirstHydration) {
-            this.M$core.M$hydrate(HYDRATION_COMMIT_NOOP_MARKER)
+            this.M$core.M$endHydration(EndHydrationMarker.N)
           }
         },
       })

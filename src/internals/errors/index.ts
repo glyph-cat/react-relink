@@ -47,6 +47,17 @@ export function ERROR_CIRCULAR_DEPENDENCY(
 /**
  * @internal
  */
+export function INTERNAL_ERROR_MALFORMDED_HYDRATION_MARKER(marker: unknown): Error {
+  return new Error(
+    IS_DEV_ENV
+      ? `Internal error: malformed hydration marker: '${String(marker)}'`
+      : formatErrorCode(3, String(marker))
+  )
+}
+
+/**
+ * @internal
+ */
 export function getWarningForForwardedHydrationCallbackValue(
   typeofPayload: string
 ): string {

@@ -1,45 +1,27 @@
 import { RelinkEvent, RelinkEventType } from '../../schema'
 import { Watcher } from '../../internals/watcher'
-import { ObjectMarker } from '../helper-types'
-
-// /**
-//  * @internal
-//  */
-// export enum HydrationMarker {
-//   // KIV: Check if names are being mangled (we want that to happen)
-//   OMIT = 1,
-//   SKIP,
-//   NOOP,
-//   DEFAULT
-// }
+import { INTERNAL_ERROR_MALFORMDED_HYDRATION_MARKER } from '../errors'
 
 /**
  * @internal
  */
-const OMISSION_MARKER: ObjectMarker = {} as const
+export enum EndHydrationMarker {
+  /** `commit`        */ C = 1,
+  /** `commitDefault` */ D,
+  /** `commitNoop`    */ N,
+  /** `skip`          */ S,
+}
 
-/**
- * @internal
- */
-export const HYDRATION_SKIP_MARKER: ObjectMarker = {} as const
-
-/**
- * @internal
- */
-export const HYDRATION_COMMIT_NOOP_MARKER: ObjectMarker = {} as const
-
-/**
- * @internal
- */
-export const HYDRATION_COMMIT_DEFAULT_MARKER: ObjectMarker = {} as const
-
-/**
- * @internal
- */
-function isIncomingStateOmitted(
-  incomingState: unknown
-): incomingState is typeof OMISSION_MARKER {
-  return Object.is(incomingState, OMISSION_MARKER)
+// Because TypeScript throws error when declaring overrides but implementing it
+// using arrow functions...Zzz
+interface MethodImplementatinoEndHydration<State> {
+  (marker: EndHydrationMarker.C, incomingState: State): void
+  (
+    marker: EndHydrationMarker.D |
+      EndHydrationMarker.N |
+      EndHydrationMarker.S,
+    incomingState?: never
+  ): void
 }
 
 /**
@@ -65,7 +47,7 @@ export class RelinkCore<State> {
     }
   }
 
-  M$set(incomingState: State): void {
+  M$set = (incomingState: State): void => {
     this.M$bumpMutationCount(this.M$currentState, incomingState)
     this.M$currentState = incomingState
     this.M$watcher.M$refresh({
@@ -74,7 +56,7 @@ export class RelinkCore<State> {
     })
   }
 
-  M$reset(): void {
+  M$reset = (): void => {
     this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
     this.M$currentState = this.M$defaultState
     this.M$watcher.M$refresh({
@@ -83,50 +65,42 @@ export class RelinkCore<State> {
     })
   }
 
-  /**
-   * 'Start' or 'End' a hydration.
-   */
-  M$hydrate(
-    // Refer to Local Note [A] near end of file
-    incomingState: State | typeof OMISSION_MARKER = OMISSION_MARKER
-  ): void {
-    const isHydrationStart = isIncomingStateOmitted(incomingState)
-    const hydrationStateDidChange = this.M$isHydrating !== isHydrationStart
-    this.M$isHydrating = isHydrationStart
+  M$beginHydration = (): void => {
+    this.M$isHydrating = true
+    this.M$watcher.M$refresh({
+      isHydrating: this.M$isHydrating,
+      type: RelinkEventType.hydrate,
+      state: this.M$currentState,
+    })
+  }
 
-    if (!isHydrationStart) {
-      if (Object.is(incomingState, HYDRATION_SKIP_MARKER)) {
-        this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
-        this.M$currentState = this.M$defaultState
-        // ^ Assume using the initial state
-      } else if (Object.is(incomingState, HYDRATION_COMMIT_DEFAULT_MARKER)) {
-        this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
-        this.M$currentState = this.M$defaultState
-      } else if (Object.is(incomingState, HYDRATION_COMMIT_NOOP_MARKER)) {
-        // Do nothing here
-      } else {
-        // Just an ordinary `commit`
-        this.M$bumpMutationCount(this.M$currentState, incomingState)
-        this.M$currentState = incomingState
-      }
+  M$endHydration: MethodImplementatinoEndHydration<State> = (
+    marker: EndHydrationMarker,
+    incomingState?: State
+  ): void => {
+    if (marker === EndHydrationMarker.C) {
+      // Otherwise, assume that it is just an ordinary `commit`.
+      this.M$bumpMutationCount(this.M$currentState, incomingState)
+      this.M$currentState = incomingState
+    } else if (marker === EndHydrationMarker.N) {
+      // Nothing needs to be done here.
+    } else if (
+      marker === EndHydrationMarker.D ||
+      marker === EndHydrationMarker.S
+    ) {
+      // Use the initial state.
+      this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
+      this.M$currentState = this.M$defaultState
+    } else {
+      // It should be theoretically impossible to reach here.
+      throw INTERNAL_ERROR_MALFORMDED_HYDRATION_MARKER(marker)
     }
-
-    // NOTES:
-    // * An event will be fired if hydration ended.
-    // * An event will also be fired if hydration started, but only if it hasn't
-    // already started, if that makes sense.
-    if (!this.M$isHydrating || this.M$isHydrating && hydrationStateDidChange) {
-      this.M$watcher.M$refresh({
-        isHydrating: this.M$isHydrating,
-        type: RelinkEventType.hydrate,
-        state: this.M$currentState,
-      })
-    }
+    this.M$isHydrating = false
+    this.M$watcher.M$refresh({
+      isHydrating: this.M$isHydrating,
+      type: RelinkEventType.hydrate,
+      state: this.M$currentState,
+    })
   }
 
 }
-
-// === Local Notes ===
-// [A] If incoming state is not provided, it defaults to the omission marker in
-//     `M$dynamicSet` and `M$hydrate`. This way, we won't mix up with falsey
-//     values because the object reference is clearly different.

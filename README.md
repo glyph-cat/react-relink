@@ -135,7 +135,7 @@ rehydrateCounter(({ commit, skip }) => {
 In production builds, error codes are thrown instead of the lengthy messages to save data.
 * `Relink_E1-typeofRawKey` — Expected `key` to be a string or number but got `${typeofRawKey}`
 * `Relink_E2-depStack` — Circular dependencies are not allowed: `${depStack}`
-
+* `Relink_E3-marker` - Internal error: malformed hydration marker '`${marker}`'
 <br/>
 
 # List of Breaking Changes
