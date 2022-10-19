@@ -2,15 +2,16 @@ import { RelinkEvent, RelinkEventType } from '../../schema'
 import { Watcher } from '../../internals/watcher'
 import { ObjectMarker } from '../helper-types'
 
-/**
- * @internal
- */
-export enum HydrationMarker {
-  OMIT = 1,
-  SKIP,
-  NOOP,
-  DEFAULT,
-}
+// /**
+//  * @internal
+//  */
+// export enum HydrationMarker {
+//   // KIV: Check if names are being mangled (we want that to happen)
+//   OMIT = 1,
+//   SKIP,
+//   NOOP,
+//   DEFAULT
+// }
 
 /**
  * @internal
@@ -108,6 +109,7 @@ export class RelinkCore<State> {
       } else if (Object.is(incomingState, HYDRATION_COMMIT_NOOP_MARKER)) {
         // Do nothing here
       } else {
+        // Just an ordinary `commit`
         this.M$bumpMutationCount(this.M$currentState, incomingState)
         this.M$currentState = incomingState
       }

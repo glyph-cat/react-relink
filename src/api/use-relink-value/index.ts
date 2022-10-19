@@ -18,6 +18,10 @@ import { RelinkSource } from '../source'
 import { RelinkAdvancedSelector } from '../selector'
 import { LazyVariable } from '../../internals/lazy-declare'
 
+// TODO: Stop relying on EMPTY_OBJECT
+// May be we can have a 3rd value in the tuple to determine whether the hook is
+// storing this initial/idle state.
+
 /**
  * @param source - A {@link RelinkSource}.
  * @example

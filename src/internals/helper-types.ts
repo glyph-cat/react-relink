@@ -15,4 +15,7 @@
  * - https://github.com/vercel/next.js/discussions/34441
  * - https://github.com/glyph-cat/nextjs-dynamic-require-inconsistency
  */
-export type ObjectMarker = Record<never, never> // TODO
+export type ObjectMarker = Record<never, never>
+// TODO: Document this in changelog
+
+export type Nullable<T> = T | null

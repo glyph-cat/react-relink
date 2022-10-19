@@ -1,8 +1,9 @@
 import { createRef, delay } from '../../../../debugging-utils'
-import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
 import { createEventStackPromise, TIME_GAP } from '../../../../src/debugging'
-import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
+import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
+
+// TODO: Also test after setting a value (refer to 'suspense' sandbox in playground)
 
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
@@ -10,15 +11,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   jest.useRealTimers()
 
-  let Source: $RelinkSource<SampleSchema>
-  afterEach(async () => {
-    await Source.dispose()
-  })
-
   test('main', async () => {
 
-    Source = new RelinkSource({
-      key: 'test/Source.hydrate()',
+    const Source = new RelinkSource({
+      key: 'test/Source.hydrate()/skip-async',
       default: {
         foo: 1,
         bar: 1,
@@ -50,6 +46,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     // Try trigger commit again (nothing should happen)
     conclusionRef.current()
     expect((await eventStackPromise).length).toBe(2)
+
+    await Source.dispose()
 
   })
 

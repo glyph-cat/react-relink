@@ -78,6 +78,6 @@ export function getErrorMessageOnFailToRemoveSelfKeyFromParentDep(
     '', // empty line
     'Next steps:',
     `1. You can check if similar reports have been made at ${urlToSearchBug}`,
-    `2. If no such reports have been, you can file an issue at ${linkToReportBug}`,
+    `2. If no such reports have been made, you can file an issue at ${linkToReportBug}`,
   ].join('\n')
 }

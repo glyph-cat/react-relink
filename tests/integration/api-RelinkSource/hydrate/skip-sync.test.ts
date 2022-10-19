@@ -4,6 +4,8 @@ import { createEventStackPromise } from '../../../../src/debugging'
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
+// TODO: Also test after setting a value (refer to 'suspense' sandbox in playground)
+
 wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, RelinkEventType } = Relink
@@ -16,7 +18,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   test('main', async () => {
 
     Source = new RelinkSource({
-      key: 'test/Source.hydrate()',
+      key: 'test/Source.hydrate()/skip-sync',
       default: {
         foo: 1,
         bar: 1,

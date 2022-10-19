@@ -10,6 +10,7 @@ export function createEventPromise<State>(
 ): Promise<RelinkEvent<State>> {
   return new Promise((resolve) => {
     const unwatch = Source.watch((event) => {
+      // TODO: Move unwatch above resolve
       resolve(event)
       unwatch()
     })
@@ -29,6 +30,7 @@ export function createEventStackPromise<State>(
     const unwatch = Source.watch((event) => {
       eventStack.push(event)
       if (eventStack.length === eventsToCollect) {
+        // TODO: Move unwatch above resolve
         resolve(eventStack)
         unwatch()
       }
