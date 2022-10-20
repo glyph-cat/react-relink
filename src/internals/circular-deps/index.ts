@@ -1,6 +1,6 @@
 import type { RelinkSource } from '../../api/source'
 import { RelinkSourceKey } from '../../schema'
-import { ERROR_CIRCULAR_DEPENDENCY } from '../errors'
+import { THROW_ERROR_CIRCULAR_DEPENDENCY } from '../errors'
 
 /**
  * @internal
@@ -17,7 +17,7 @@ export function checkForCircularDeps(
     // Check with previous stack to make sure current one is not compared
     // against itself.
     if (keyPathStack.includes(currentDepKey)) {
-      throw ERROR_CIRCULAR_DEPENDENCY(currentKeyPathStack)
+      THROW_ERROR_CIRCULAR_DEPENDENCY(currentKeyPathStack)
     }
     checkForCircularDeps(
       deps[i].M$parentDeps,

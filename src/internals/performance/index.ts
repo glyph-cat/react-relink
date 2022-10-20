@@ -2,7 +2,6 @@ import { MutableRefObject } from 'react'
 import { RELINK_CONFIG } from '../../api/config'
 import { IS_DEV_ENV, IS_INTERNAL_DEBUG_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
-import { devWarn } from '../dev'
 
 // NOTE: The code in this file should not be included in minified builds because
 // the code is conditionally with `IS_INTERNAL_DEBUG_ENV`. A check was made on 5 Oct 2021
@@ -70,13 +69,16 @@ export function startMeasuringReducerPerformance(
   let isNotResponding = false
   const isAsync: MutableRefObject<boolean> = { current: false }
 
+  // Only perform check in developer environment AND when config is set to
+  // request for it to happen.
   const shouldRunPerformanceCheck = IS_DEV_ENV && !RELINK_CONFIG.hidePerformanceWarnings
 
   if (shouldRunPerformanceCheck) {
     timeStart = performanceNow()
     timeoutRef = setTimeout((): void => {
       isNotResponding = true
-      devWarn(formatReducerNotRespondingWarning(sourceKey, isAsync.current))
+      // eslint-disable-next-line no-console
+      console.warn(formatReducerNotRespondingWarning(sourceKey, isAsync.current))
     }, PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS)
   }
 
@@ -93,7 +95,8 @@ export function startMeasuringReducerPerformance(
       const isSlow = timeDiff >= PERFORMANCE_SLOW_THRESHOLD_MS
       // console.log({ timeDiff, isAsync: isAsync.current, slowThreshold, isSlow })
       if (isSlow) {
-        devWarn(formatReducerSlowWarning(sourceKey, timeDiff, isAsync.current))
+        // eslint-disable-next-line no-console
+        console.warn(formatReducerSlowWarning(sourceKey, timeDiff, isAsync.current))
       }
       if (IS_INTERNAL_DEBUG_ENV) {
         return [isSlow, isNotResponding]

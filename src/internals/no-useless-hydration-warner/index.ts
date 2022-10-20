@@ -1,6 +1,5 @@
 import { IS_DEV_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
-import { devError } from '../dev'
 import { formatFunctionNotationArray } from '../string-formatting'
 
 /**
@@ -36,7 +35,9 @@ export function createNoUselessHydrationWarner_DEV(
   const concludeTypeHistoryStack: Array<HydrationConcludeType> = []
   const M$conclude = (concludeType: HydrationConcludeType): boolean => {
     if (concludeTypeHistoryStack.length > 0) {
-      devError(formatWarningMessageForNoUselessHydration(
+      // TODO: Refactor to `HANDLE_ERROR_NO_USELESS_HYDRATION`?
+      // eslint-disable-next-line no-console
+      console.error(formatWarningMessageForNoUselessHydration(
         sourceKey,
         concludeType,
         concludeTypeHistoryStack

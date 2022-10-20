@@ -1,6 +1,5 @@
 import { RELINK_CONFIG } from '../../api/config'
 import { RelinkSourceKey } from '../../schema'
-import { devWarn } from '../dev'
 import { formatSourceKeyArray } from '../string-formatting'
 
 /**
@@ -25,7 +24,8 @@ export function warnDuplicateKey(key: RelinkSourceKey): void {
       const dynamicMessageFragment = tempKeyStack.length === 1
         ? `key '${String(tempKeyStack[0])}'`
         : `keys: ${formatSourceKeyArray(tempKeyStack)}`
-      devWarn([
+      // eslint-disable-next-line no-console
+      console.warn([
         `Duplicate source ${dynamicMessageFragment}. This is a FATAL ERROR in`,
         'production. But it is safe to ignore this warning if it occurred',
         'because of hot module replacement.',

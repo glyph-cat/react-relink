@@ -1,6 +1,9 @@
-import { IS_DEV_ENV, REPORT_ISSUE_URL } from '../../constants'
+/* eslint-disable no-console */
+import { IS_DEV_ENV, IS_INTERNAL_DEBUG_ENV, REPORT_ISSUE_URL } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
 import { safeStringJoin, SafeStringJoinTypes } from '../string-formatting'
+
+// #region Utils
 
 /**
  * @param code - The error code in number.
@@ -22,75 +25,134 @@ export function formatErrorCode(
 /**
  * @internal
  */
-export function TYPE_ERROR_SOURCE_KEY(typeofRawKey: string): TypeError {
-  return new TypeError(
-    IS_DEV_ENV
-      ? `Expected \`key\` to be a string, number, or symbol but got ${typeofRawKey}`
-      : formatErrorCode(1, typeofRawKey)
-  )
+export function showInternalErrorNextSteps(bugReportTitle: string): string {
+  if (IS_DEV_ENV) {
+    bugReportTitle = bugReportTitle.replace(/\s/g, '+') // Make URL-friendly
+    const urlToSearchBug = `${REPORT_ISSUE_URL}?q=${bugReportTitle}`
+    const linkToReportBug = `${REPORT_ISSUE_URL}/new?labels=bug&template=bug-report.md&title=${bugReportTitle}`
+    const message = [
+      'Next steps:',
+      `1. You can check if similar reports have been made at ${urlToSearchBug}`,
+      `2. If no such reports have been made, you can file an issue at ${linkToReportBug}`,
+    ].join('\n')
+    console.error(message)
+    if (IS_INTERNAL_DEBUG_ENV) {
+      return message
+    }
+  }
+}
+
+// #endregion
+
+// NOTES:
+// - `HANDLE_WARNING_...` only show warning message with `console.warn`.
+// - `HANDLE_ERROR_...` only show error message with `console.error`.
+// - `THROW_ERROR_...` an error will be thrown, additional error messages may be
+//    shown with `console.error`.
+// - `HANDLE_...` functions should always return the message that was logged so
+//    so that it can be checked in tests.
+
+// #region Warnings
+
+/**
+ * @internal
+ */
+export function HANDLE_WARNING_NO_EMPTY_KEYS_ALLOWED(): string {
+  if (IS_DEV_ENV) {
+    const message = 'Did you just pass an empty string as a source key? Be careful, it can lead to problems that are hard to diagnose and debug later on.'
+    console.warn(message)
+    if (IS_INTERNAL_DEBUG_ENV) {
+      return message
+    }
+  }
 }
 
 /**
  * @internal
  */
-export function ERROR_CIRCULAR_DEPENDENCY(
-  keyPathStack: Array<RelinkSourceKey>
-): Error {
-  const joinedKeyPathStack = safeStringJoin(keyPathStack, ' -> ')
-  return new Error(
-    IS_DEV_ENV
-      ? `Circular dependencies are not allowed: ${joinedKeyPathStack}`
-      : formatErrorCode(2, joinedKeyPathStack)
-  )
-}
-
-/**
- * @internal
- */
-export function INTERNAL_ERROR_MALFORMDED_HYDRATION_MARKER(marker: unknown): Error {
-  // TODO: Refactor message from `getErrorMessageOnFailToRemoveSelfKeyFromParentDep`
-  // to show GitHub link
-  return new Error(
-    IS_DEV_ENV
-      ? `Internal error: malformed hydration marker '${String(marker)}'`
-      : formatErrorCode(3, String(marker))
-  )
-}
-
-/**
- * @internal
- */
-export function getWarningForForwardedHydrationCallbackValue(
+export function HANDLE_WARNING_NO_FORWARDED_HYDRATION_CALLBACK_VALUE_ALLOWED(
   typeofPayload: string
 ): string {
-  return `Expected the callback passed to \`Source.hydrate()\` or declared for \`lifecycle.init\` to return undefined but got ${typeofPayload}. You should not rely on hydration callbacks to return any value as this just happens to be an unintended feature. This behaviour might change as Relink's internal implementation changes in the future.`
+  if (IS_DEV_ENV) {
+    const message = `Expected the callback passed to \`Source.hydrate()\` or declared for \`lifecycle.init\` to return undefined but got ${typeofPayload}. You should not rely on hydration callbacks to return any value as this just happens to be an unintended feature. This behaviour might change as Relink's internal implementation changes in the future.`
+    console.warn(message)
+    if (IS_INTERNAL_DEBUG_ENV) {
+      return message
+    }
+  }
 }
 
 /**
  * @internal
  */
-export function getWarningForSourceDisposalWithActiveDeps(
+export function HANDLE_WARNING_SOURCE_DISPOSAL_WITH_ACTIVE_DEPS(
   key: RelinkSourceKey,
   childDepStack: Array<RelinkSourceKey>
 ): string {
-  return `Disposing/Cleaning up '${String(key)}' while there are still other sources that depend on it: '${safeStringJoin(childDepStack, '\', \'')}'. The source will stop emitting events upon state change, but this means components that rely on the children of this source might have unintended behaviours.`
+  if (IS_DEV_ENV) {
+    const message = `Disposing/Cleaning up '${String(key)}' while there are still other sources that depend on it: '${safeStringJoin(childDepStack, '\', \'')}'. The source will stop emitting events upon state change, but this means components that rely on the children of this source might have unintended behaviours.`
+    console.warn(message)
+    if (IS_INTERNAL_DEBUG_ENV) {
+      return message
+    }
+  }
+}
+
+// #endregion
+
+// #region Errors
+
+/**
+ * @internal
+ */
+export function THROW_TYPE_ERROR_SOURCE_KEY(typeofRawKey: string): void {
+  throw new TypeError(IS_DEV_ENV
+    ? `Expected \`key\` to be a string, number, or symbol but got ${typeofRawKey}`
+    : formatErrorCode(1, typeofRawKey)
+  )
 }
 
 /**
  * @internal
  */
-export function getErrorMessageOnFailToRemoveSelfKeyFromParentDep(
+export function THROW_ERROR_CIRCULAR_DEPENDENCY(
+  keyPathStack: Array<RelinkSourceKey>
+): void {
+  const joinedKeyPathStack = safeStringJoin(keyPathStack, ' -> ')
+  throw new Error(IS_DEV_ENV
+    ? `Circular dependencies are not allowed: ${joinedKeyPathStack}`
+    : formatErrorCode(2, joinedKeyPathStack)
+  )
+}
+
+/**
+ * @internal
+ */
+export function THROW_INTERNAL_ERROR_MALFORMED_HYDRATION_MARKER(
+  marker: unknown
+): void {
+  showInternalErrorNextSteps('Malformed hydration marker')
+  throw new Error(IS_DEV_ENV
+    ? `Internal error: malformed hydration marker '${String(marker)}'`
+    : formatErrorCode(3, String(marker))
+  )
+}
+
+/**
+ * @internal
+ */
+export function HANDLE_INTERNAL_ERROR_FAIL_TO_REMOVE_SELF_KEY_FROM_PARENT(
   currentKey: RelinkSourceKey,
   parentKey: RelinkSourceKey
 ): string {
-  const bugReportTitle = 'Failed to unregister source key from parent source'.replace(/\s/g, '+')
-  const urlToSearchBug = `${REPORT_ISSUE_URL}?q=${bugReportTitle}`
-  const linkToReportBug = `${REPORT_ISSUE_URL}/new?labels=bug&template=bug-report.md&title=${bugReportTitle}`
-  return [
-    `Internal error: Failed to unregister source key '${String(currentKey)}' from parent source '${String(parentKey)}'. While this is not immediately fatal, it could indicate a memory leak.`,
-    '', // empty line
-    'Next steps:',
-    `1. You can check if similar reports have been made at ${urlToSearchBug}`,
-    `2. If no such reports have been made, you can file an issue at ${linkToReportBug}`,
-  ].join('\n')
+  if (!IS_DEV_ENV) {
+    const message = `Internal error: Failed to unregister source key '${String(currentKey)}' from parent source '${String(parentKey)}'. While this is not immediately fatal, it could indicate a memory leak.`
+    console.error(message)
+    showInternalErrorNextSteps('Failed to unregister source key from parent source')
+    if (IS_INTERNAL_DEBUG_ENV) {
+      return message
+    }
+  }
 }
+
+// #endregion

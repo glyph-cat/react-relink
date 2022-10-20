@@ -1,6 +1,6 @@
 import { RelinkEvent, RelinkEventType } from '../../schema'
 import { Watcher } from '../../internals/watcher'
-import { INTERNAL_ERROR_MALFORMDED_HYDRATION_MARKER } from '../errors'
+import { THROW_INTERNAL_ERROR_MALFORMED_HYDRATION_MARKER } from '../errors'
 
 /**
  * @internal
@@ -93,7 +93,7 @@ export class RelinkCore<State> {
       this.M$currentState = this.M$defaultState
     } else {
       // It should be theoretically impossible to reach here.
-      throw INTERNAL_ERROR_MALFORMDED_HYDRATION_MARKER(marker)
+      throw THROW_INTERNAL_ERROR_MALFORMED_HYDRATION_MARKER(marker)
     }
     this.M$isHydrating = false
     this.M$watcher.M$refresh({

@@ -2,12 +2,12 @@ import { IS_DEV_ENV } from '../../constants'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
 import { RelinkCore, EndHydrationMarker } from '../../internals/core'
 import { checkForCircularDeps } from '../../internals/circular-deps'
-import { devError, devWarn } from '../../internals/dev'
 import {
-  getErrorMessageOnFailToRemoveSelfKeyFromParentDep,
-  getWarningForForwardedHydrationCallbackValue,
-  getWarningForSourceDisposalWithActiveDeps,
-  TYPE_ERROR_SOURCE_KEY,
+  HANDLE_INTERNAL_ERROR_FAIL_TO_REMOVE_SELF_KEY_FROM_PARENT,
+  HANDLE_WARNING_NO_EMPTY_KEYS_ALLOWED,
+  HANDLE_WARNING_NO_FORWARDED_HYDRATION_CALLBACK_VALUE_ALLOWED,
+  HANDLE_WARNING_SOURCE_DISPOSAL_WITH_ACTIVE_DEPS,
+  THROW_TYPE_ERROR_SOURCE_KEY,
 } from '../../internals/errors'
 import { GatedFlow } from '../../internals/gated-flow'
 import { registerKey, unregisterKey } from '../../internals/key-registry'
@@ -166,10 +166,10 @@ export class RelinkSource<State> {
     ) {
       this.M$key = rawKey
       if (rawKey === '') {
-        devWarn('Did you just pass an empty string as a source key? Be careful, it can lead to problems that are hard to diagnose and debug later on.')
+        HANDLE_WARNING_NO_EMPTY_KEYS_ALLOWED()
       }
     } else {
-      throw TYPE_ERROR_SOURCE_KEY(typeofRawKey)
+      THROW_TYPE_ERROR_SOURCE_KEY(typeofRawKey)
     }
 
     // === Bind methods ===
@@ -352,14 +352,18 @@ export class RelinkSource<State> {
           executedCallback.then((executedCallbackPayload) => {
             const typeofExecutedCallbackPayload = typeof executedCallbackPayload
             if (typeofExecutedCallbackPayload !== 'undefined') {
-              devWarn(getWarningForForwardedHydrationCallbackValue(typeofExecutedCallbackPayload))
+              HANDLE_WARNING_NO_FORWARDED_HYDRATION_CALLBACK_VALUE_ALLOWED(
+                typeofExecutedCallbackPayload
+              )
             }
 
           })
         } else {
           const typeofExecutedCallback = typeof executedCallback
           if (typeofExecutedCallback !== 'undefined') {
-            devWarn(getWarningForForwardedHydrationCallbackValue(typeofExecutedCallback))
+            HANDLE_WARNING_NO_FORWARDED_HYDRATION_CALLBACK_VALUE_ALLOWED(
+              typeofExecutedCallback
+            )
           }
         }
       }
@@ -501,7 +505,7 @@ export class RelinkSource<State> {
     // be aware that there might be unintended behaviours.
     if (IS_DEV_ENV) {
       if (this.M$childDeps.length !== 0) {
-        devWarn(getWarningForSourceDisposalWithActiveDeps(this.M$key, this.M$childDeps))
+        HANDLE_WARNING_SOURCE_DISPOSAL_WITH_ACTIVE_DEPS(this.M$key, this.M$childDeps)
       }
     }
 
@@ -515,9 +519,7 @@ export class RelinkSource<State> {
       if (indexOfSelfKeyInParentSource >= 0) {
         parentDep.M$childDeps.splice(indexOfSelfKeyInParentSource, 1)
       } else {
-        if (IS_DEV_ENV) {
-          devError(getErrorMessageOnFailToRemoveSelfKeyFromParentDep(this.M$key, parentDep.M$key))
-        }
+        HANDLE_INTERNAL_ERROR_FAIL_TO_REMOVE_SELF_KEY_FROM_PARENT(this.M$key, parentDep.M$key)
       }
     }
 
