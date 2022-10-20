@@ -51,7 +51,7 @@ function StorageViewerBase({
           {`  "${key}": `}
           {JSON.stringify(JSON.parse(value), null, 4).replace(/}$/, '  }')}
         </span>
-        {i < (storage.length - 1) ? ',' : ''}
+        {i < (storage.length - 1) ? <>{','}<br /></> : ''}
       </Fragment>
     )
   }
