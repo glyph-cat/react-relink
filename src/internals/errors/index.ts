@@ -145,7 +145,7 @@ export function HANDLE_INTERNAL_ERROR_FAIL_TO_REMOVE_SELF_KEY_FROM_PARENT(
   currentKey: RelinkSourceKey,
   parentKey: RelinkSourceKey
 ): string {
-  if (!IS_DEV_ENV) {
+  if (IS_DEV_ENV) {
     const message = `Internal error: Failed to unregister source key '${String(currentKey)}' from parent source '${String(parentKey)}'. While this is not immediately fatal, it could indicate a memory leak.`
     console.error(message)
     showInternalErrorNextSteps('Failed to unregister source key from parent source')
