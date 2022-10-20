@@ -66,41 +66,45 @@ export class RelinkCore<State> {
   }
 
   M$beginHydration = (): void => {
-    this.M$isHydrating = true
-    this.M$watcher.M$refresh({
-      isHydrating: this.M$isHydrating,
-      type: RelinkEventType.hydrate,
-      state: this.M$currentState,
-    })
+    if (!this.M$isHydrating) {
+      this.M$isHydrating = true
+      this.M$watcher.M$refresh({
+        isHydrating: this.M$isHydrating,
+        type: RelinkEventType.hydrate,
+        state: this.M$currentState,
+      })
+    }
   }
 
   M$endHydration: MethodImplementatinoEndHydration<State> = (
     marker: EndHydrationMarker,
     incomingState?: State
   ): void => {
-    if (marker === EndHydrationMarker.C) {
-      // Otherwise, assume that it is just an ordinary `commit`.
-      this.M$bumpMutationCount(this.M$currentState, incomingState)
-      this.M$currentState = incomingState
-    } else if (marker === EndHydrationMarker.N) {
-      // Nothing needs to be done here.
-    } else if (
-      marker === EndHydrationMarker.D ||
-      marker === EndHydrationMarker.S
-    ) {
-      // Use the initial state.
-      this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
-      this.M$currentState = this.M$defaultState
-    } else {
-      // It should be theoretically impossible to reach here.
-      throw THROW_INTERNAL_ERROR_MALFORMED_HYDRATION_MARKER(marker)
+    if (this.M$isHydrating) {
+      if (marker === EndHydrationMarker.C) {
+        // Otherwise, assume that it is just an ordinary `commit`.
+        this.M$bumpMutationCount(this.M$currentState, incomingState)
+        this.M$currentState = incomingState
+      } else if (marker === EndHydrationMarker.N) {
+        // Nothing needs to be done here.
+      } else if (
+        marker === EndHydrationMarker.D ||
+        marker === EndHydrationMarker.S
+      ) {
+        // Use the initial state.
+        this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
+        this.M$currentState = this.M$defaultState
+      } else {
+        // It should be theoretically impossible to reach here.
+        throw THROW_INTERNAL_ERROR_MALFORMED_HYDRATION_MARKER(marker)
+      }
+      this.M$isHydrating = false
+      this.M$watcher.M$refresh({
+        isHydrating: this.M$isHydrating,
+        type: RelinkEventType.hydrate,
+        state: this.M$currentState,
+      })
     }
-    this.M$isHydrating = false
-    this.M$watcher.M$refresh({
-      isHydrating: this.M$isHydrating,
-      type: RelinkEventType.hydrate,
-      state: this.M$currentState,
-    })
   }
 
 }
