@@ -8,7 +8,6 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim'
 import {
   $$INTERNALS,
   DEFAULT_HOOK_ACTIVE_STATE,
-  EMPTY_OBJECT,
   IS_DEV_ENV,
 } from '../../constants'
 import { RelinkSelector } from '../../schema'
@@ -17,10 +16,6 @@ import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
 import { RelinkAdvancedSelector } from '../selector'
 import { LazyVariable } from '../../internals/lazy-declare'
-
-// TODO: Stop relying on EMPTY_OBJECT
-// May be we can have a 3rd value in the tuple to determine whether the hook is
-// storing this initial/idle state.
 
 /**
  * @param source - A {@link RelinkSource}.
@@ -127,7 +122,7 @@ interface SyncValue<T> {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const INITIAL_STATE_SYNC_VALUE: SyncValue<[mutationCount: number, stateValue: any]> = {
-  [$$INTERNALS]: [-1, EMPTY_OBJECT]
+  [$$INTERNALS]: [-1, null]
 }
 
 /**
@@ -166,6 +161,7 @@ export function useRelinkValue_BASE<State, SelectedState>(
 
   type CachedValueSchema = [mutationCount: number, stateValue: State | SelectedState]
   const cachedSyncValue = useRef<SyncValue<CachedValueSchema>>(INITIAL_STATE_SYNC_VALUE)
+  const isLoaded = useRef(false)
 
   return useSyncExternalStore(
     source.watch,
@@ -184,9 +180,8 @@ export function useRelinkValue_BASE<State, SelectedState>(
         if (currentMutationCount === nextMutationCount) {
           return true // Early exit
         }
-        if (Object.is(currentSelectedState, EMPTY_OBJECT)) {
-          // If the cached value is `null`, there's no way in hell we're
-          // returning that value.
+        if (!isLoaded.current) {
+          // If not loaded, then there is no cached value to begin with
           return false // Early exit
         }
 
@@ -209,6 +204,7 @@ export function useRelinkValue_BASE<State, SelectedState>(
           [$$INTERNALS]: [nextMutationCount, nextSelectedState.get()],
         }
         cachedSyncValue.current = nextSyncValue
+        isLoaded.current = true
         return nextSyncValue
       }
     }, [active, isEqual, selectValue, source]),

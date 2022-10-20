@@ -1,15 +1,9 @@
-import type { ObjectMarker } from '../internals/helper-types'
 import { BUILD_TYPE } from './public'
 
 /**
  * @internal
  */
 export const $$INTERNALS = Symbol()
-
-/**
- * @internal
- */
-export const EMPTY_OBJECT: ObjectMarker = {} as const
 
 /**
  * Refers to the non-production environment where Relink is used by developers.
