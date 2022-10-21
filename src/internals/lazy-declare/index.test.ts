@@ -1,6 +1,6 @@
 import { LazyVariable } from '.'
 
-test(LazyVariable.name, (): void => {
+test(LazyVariable.name, () => {
 
   const factory = jest.fn(() => 'obj')
 

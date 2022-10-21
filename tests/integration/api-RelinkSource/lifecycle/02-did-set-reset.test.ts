@@ -14,7 +14,7 @@ afterEach(async () => {
   await Source.dispose()
 })
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, RelinkEventType } = Relink
 

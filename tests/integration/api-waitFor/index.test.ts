@@ -1,10 +1,9 @@
-import { delay } from '../../../debugging-utils'
+import { delay, TIME_GAP } from '../../../debugging-utils'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, waitFor } = Relink
 

@@ -1,11 +1,15 @@
-import { createRef, delay } from '../../../../debugging-utils'
-import { createEventStackPromise, TIME_GAP } from '../../../../src/debugging'
+import {
+  createEventLogStackPromise,
+  createRef,
+  delay,
+  TIME_GAP,
+} from '../../../../debugging-utils'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 // TODO: Also test after setting a value (refer to 'suspense' sandbox in playground)
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, RelinkEventType } = Relink
 
@@ -23,7 +27,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const conclusionRef = createRef<Function>()
-    const eventStackPromise = createEventStackPromise(Source, 2)
+    const eventStackPromise = createEventLogStackPromise(Source, 2)
     const hydrationPromise = Source.hydrate(async ({ skip }) => {
       conclusionRef.current = skip
       await delay(TIME_GAP(1))

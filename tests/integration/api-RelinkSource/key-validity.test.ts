@@ -1,12 +1,12 @@
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
 
-  test('Number key', (): void => {
-    const callback = (): void => {
+  test('Number key', () => {
+    const callback = () => {
       new RelinkSource({
         key: 1, // 'RelinkSource/number-key'
         default: null,
@@ -15,8 +15,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(callback).not.toThrow()
   })
 
-  test('String key', (): void => {
-    const callback = (): void => {
+  test('String key', () => {
+    const callback = () => {
       new RelinkSource({
         key: 'RelinkSource/string-key',
         default: null,
@@ -25,8 +25,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(callback).not.toThrow()
   })
 
-  test('Symbol key', (): void => {
-    const callback = (): void => {
+  test('Symbol key', () => {
+    const callback = () => {
       new RelinkSource({
         key: Symbol('RelinkSource/number-key'),
         default: null,
@@ -35,8 +35,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(callback).not.toThrow()
   })
 
-  test('No key', (): void => {
-    const callback = (): void => {
+  test('No key', () => {
+    const callback = () => {
       // @ts-expect-error: Done on purpose to test the error.
       new RelinkSource({
         default: null,
@@ -45,8 +45,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(callback).toThrow(TypeError)
   })
 
-  test('Invalid key', (): void => {
-    const callback = (): void => {
+  test('Invalid key', () => {
+    const callback = () => {
       new RelinkSource({
         // @ts-expect-error: Done on purpose to test the error.
         key: false,
@@ -56,8 +56,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(callback).toThrowError(TypeError)
   })
 
-  test('Duplicate keys', (): void => {
-    const callback = (): void => {
+  test('Duplicate keys', () => {
+    const callback = () => {
       new RelinkSource({
         key: 'test/duplicate-keys',
         default: null,

@@ -1,72 +1,72 @@
 import { isFunction, isObject, isThenable } from '.'
 
-describe(isFunction.name, (): void => {
+describe(isFunction.name, () => {
 
-  test('With a function', (): void => {
-    const output = isFunction((): void => { /* */ })
+  test('With a function', () => {
+    const output = isFunction(() => { /* */ })
     expect(output).toBe(true)
   })
 
-  test('With a non-function', (): void => {
+  test('With a non-function', () => {
     const output = isFunction(42)
     expect(output).toBe(false)
   })
 
-  test('With a falsy value', (): void => {
+  test('With a falsy value', () => {
     const output = isFunction(undefined)
     expect(output).toBe(false)
   })
 
 })
 
-describe(isObject.name, (): void => {
+describe(isObject.name, () => {
 
-  test('Plain object', (): void => {
+  test('Plain object', () => {
     const output = isObject({ hello: 'world' })
     expect(output).toBe(true)
   })
 
-  test('Class instance', (): void => {
+  test('Class instance', () => {
     const output = isObject(new Date())
     expect(output).toBe(true)
   })
 
-  test('Something else', (): void => {
+  test('Something else', () => {
     const output = isObject(42)
     expect(output).toBe(false)
   })
 
 })
 
-describe(isThenable.name, (): void => {
+describe(isThenable.name, () => {
 
-  test('With a normal promise', (): void => {
+  test('With a normal promise', () => {
     // NOTE: Plain promise evaluates to false, it has to be an executed promise.
     const output = isThenable((async () => { /* */ })())
     expect(output).toBe(true)
   })
 
-  test('With an object with the `then` property as a function', (): void => {
-    const output = isThenable({ then: (): void => { /* */ } })
+  test('With an object with the `then` property as a function', () => {
+    const output = isThenable({ then: () => { /* */ } })
     expect(output).toBe(true)
   })
 
-  test('With an object with the `then` property as a non-function', (): void => {
+  test('With an object with the `then` property as a non-function', () => {
     const output = isThenable({ then: 42 })
     expect(output).toBe(false)
   })
 
-  test('With a normal function', (): void => {
-    const output = isThenable((): void => { /* */ })
+  test('With a normal function', () => {
+    const output = isThenable(() => { /* */ })
     expect(output).toBe(false)
   })
 
-  test('With a non-function', (): void => {
+  test('With a non-function', () => {
     const output = isThenable(42)
     expect(output).toBe(false)
   })
 
-  test('With a falsy value', (): void => {
+  test('With a falsy value', () => {
     const output = isThenable(undefined)
     expect(output).toBe(false)
   })

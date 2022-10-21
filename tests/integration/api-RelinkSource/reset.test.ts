@@ -1,9 +1,9 @@
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { createEventPromise } from '../../../src/debugging'
+import { createEventLogPromise } from '../../../debugging-utils'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, RelinkEventType } = Relink
 
@@ -24,7 +24,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   })
 
   test('Without await', async () => {
-    const eventPromise = createEventPromise(Source)
+    const eventPromise = createEventLogPromise(Source)
     const promise = Source.reset()
     expect(Source.get()).toStrictEqual({ foo: 1, bar: 1 })
     expect((await Source.getAsync())).toStrictEqual({ foo: 1, bar: 1 })
@@ -36,7 +36,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
   })
 
   test('With await', async () => {
-    const eventPromise = createEventPromise(Source)
+    const eventPromise = createEventLogPromise(Source)
     const awaitedPromise = await Source.reset()
     expect(Source.get()).toStrictEqual({ foo: 1, bar: 1 })
     expect((await Source.getAsync())).toStrictEqual({ foo: 1, bar: 1 })

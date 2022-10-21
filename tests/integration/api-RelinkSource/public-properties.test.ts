@@ -2,12 +2,12 @@ import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
+wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
   const IS_MINIFIED_UMD_BUILD = buildType === 'umd' && buildEnv === 'prod'
 
-  describe('.key', (): void => {
+  describe('.key', () => {
 
     const SOURCE_KEY = 'test/public-properties/key'
     let Source: $RelinkSource<number>
@@ -21,11 +21,11 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
       await Source.dispose()
     })
 
-    test('Returned value is correct', (): void => {
+    test('Returned value is correct', () => {
       expect(Source.key).toBe(SOURCE_KEY)
     })
 
-    test('Value cannot be modified', (): void => {
+    test('Value cannot be modified', () => {
       const callback = () => {
         // @ts-expect-error: Done on purpose to test the error.
         Source.key = 'lorem-ipsum'
@@ -39,7 +39,7 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
 
   })
 
-  describe('.default', (): void => {
+  describe('.default', () => {
 
     let Source: $RelinkSource<number>
     beforeEach(async () => {
@@ -58,7 +58,7 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
       expect(Source.default).toBe(1) // and after set state
     })
 
-    test('Value cannot be modified', (): void => {
+    test('Value cannot be modified', () => {
       const callback = () => {
         // @ts-expect-error: Done on purpose to test the error.
         Source.default = 2

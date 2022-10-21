@@ -10,7 +10,7 @@ import { wrapper } from '../wrapper'
 
 // Test objective: Check if state values are returned as expected
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue } = Relink
 

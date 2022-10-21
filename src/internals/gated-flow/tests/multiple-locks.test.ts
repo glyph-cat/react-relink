@@ -4,13 +4,13 @@ test('Multiple locks', () => {
   const gateKeeper = new GatedFlow(true, 'test/gated-flow/multiple-locks')
 
   const array: Array<number> = []
-  gateKeeper.M$exec((): void => {
+  gateKeeper.M$exec(() => {
     array.push(-1)
   })
 
   for (let i = 0; i < 10; i++) {
     gateKeeper.M$lock()
-    gateKeeper.M$exec((): void => {
+    gateKeeper.M$exec(() => {
       array.push(i)
     })
   }

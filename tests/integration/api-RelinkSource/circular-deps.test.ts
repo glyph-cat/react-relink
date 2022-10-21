@@ -2,7 +2,7 @@ import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
 
@@ -15,8 +15,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     if (SourceC instanceof RelinkSource) { await SourceC.dispose({ force: true }) }
   })
 
-  test('main', (): void => {
-    const callback = (): void => {
+  test('main', () => {
+    const callback = () => {
       const sourceADeps = []
       SourceA = new RelinkSource({
         key: 'test/RelinkSource/circular-deps/a',

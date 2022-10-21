@@ -1,3 +1,5 @@
 export * from './attach-ref'
 export * from './create-ref'
 export * from './delay'
+export * from './time-gap'
+export * from './event-logger'

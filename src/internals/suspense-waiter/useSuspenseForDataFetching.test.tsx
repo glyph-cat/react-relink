@@ -3,10 +3,9 @@ import {
   useLayoutEffect, // eslint-disable-line no-restricted-imports
 } from 'react'
 import { act, create, ReactTestRenderer } from 'react-test-renderer'
-import { delay } from '../../../debugging-utils'
+import { delay, TIME_GAP } from '../../../debugging-utils'
 import { RelinkSource } from '../../api/source'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
-import { TIME_GAP } from '../../debugging'
 
 describe(useSuspenseForDataFetching.name, (): void => {
 

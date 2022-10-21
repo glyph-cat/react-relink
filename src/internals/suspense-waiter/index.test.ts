@@ -1,41 +1,41 @@
-import { TIME_GAP } from '../../debugging'
+import { TIME_GAP } from '../../../debugging-utils'
 import { createSuspenseWaiter } from '../../internals/suspense-waiter'
 
-describe(createSuspenseWaiter.name, (): void => {
+describe(createSuspenseWaiter.name, () => {
 
   jest.useRealTimers()
 
   test('Error', () => {
-    const promise = new Promise<void>((_resolve, reject): void => {
+    const promise = new Promise<void>((_resolve, reject) => {
       reject('match-key')
     })
     const wait = createSuspenseWaiter(promise)
-    const callback = (): void => { wait() }
+    const callback = () => { wait() }
     return new Promise<void>((resolve) => {
-      setTimeout((): void => {
+      setTimeout(() => {
         expect(callback).toThrowError('match-key')
         resolve()
       }, TIME_GAP(1))
     })
   })
 
-  test('Pending', (): void => {
-    const promise = new Promise<void>((resolve): void => {
-      setTimeout((): void => { resolve() }, TIME_GAP(1))
+  test('Pending', () => {
+    const promise = new Promise<void>((resolve) => {
+      setTimeout(() => { resolve() }, TIME_GAP(1))
     })
     const wait = createSuspenseWaiter(promise)
-    const callback = (): void => { wait() }
+    const callback = () => { wait() }
     expect(callback).toThrow()
   })
 
   test('Completed', async () => {
-    const promise = new Promise<void>((resolve): void => {
+    const promise = new Promise<void>((resolve) => {
       resolve()
     })
     const wait = createSuspenseWaiter(promise)
     const callback = () => { wait() }
     return new Promise<void>((resolve) => {
-      setTimeout((): void => {
+      setTimeout(() => {
         expect(callback).not.toThrow()
         resolve()
       }, TIME_GAP(1))
@@ -54,17 +54,17 @@ describe(createSuspenseWaiter.name, (): void => {
 //   }
 // }
 
-// describe(performSuspension.name, (): void => {
+// describe(performSuspension.name, () => {
 
 //   test('Error', () => {
-//     const callback = (): void => {
+//     const callback = () => {
 //       const promise = new Promise((_resolve, reject) => {
 //         reject('match-key')
 //       })
 //       performSuspension(promise)
 //     }
 //     return new Promise<void>((resolve) => {
-//       setTimeout((): void => {
+//       setTimeout(() => {
 //         expect(callback).toThrow('match-key')
 //         resolve()
 //       }, TIME_GAP(1))
@@ -78,7 +78,7 @@ describe(createSuspenseWaiter.name, (): void => {
 //       }, TIME_GAP(1))
 //     })
 //     // console.log(promise) // Promise { <pending> }
-//     const callback = (): void => { performSuspension(promise) }
+//     const callback = () => { performSuspension(promise) }
 //     expect(Object.is(caughtItemFrom(callback), promise)).toBe(true)
 //   })
 
@@ -86,7 +86,7 @@ describe(createSuspenseWaiter.name, (): void => {
 //     const promise = new Promise<void>((resolve) => {
 //       resolve()
 //     })
-//     const callback = (): void => { performSuspension(promise) }
+//     const callback = () => { performSuspension(promise) }
 //     expect(callback).not.toThrow()
 //   })
 

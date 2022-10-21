@@ -5,4 +5,4 @@
 // * Test if components will suspense while deps of deps of deps... are hydrating
 // * Test if components will suspense only if `options.suspense: true`
 
-test.skip('Not ready', (): void => { expect('').toBe('') })
+test.skip('Not ready', () => { expect('').toBe('') })

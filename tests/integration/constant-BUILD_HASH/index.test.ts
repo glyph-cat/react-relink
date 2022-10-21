@@ -1,8 +1,8 @@
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink, buildEnv }: IntegrationTestConfig): void => {
-  test('main', (): void => {
+wrapper(({ Relink, buildEnv }: IntegrationTestConfig) => {
+  test('main', () => {
     if (buildEnv === 'debug') {
       expect(Relink.BUILD_HASH).toBe(undefined)
     } else {

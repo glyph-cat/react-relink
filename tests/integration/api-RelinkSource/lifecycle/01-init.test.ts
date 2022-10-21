@@ -2,14 +2,17 @@ import {
   createHookInterface,
   createCleanupRef,
 } from '@glyph-cat/react-test-utils'
-import { delay } from '../../../../debugging-utils'
+import {
+  createEventLogPromise,
+  delay,
+  TIME_GAP,
+} from '../../../../debugging-utils'
 import { act } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
-import { createEventPromise, TIME_GAP } from '../../../../src/debugging'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, RelinkEventType, useRelinkValue } = Relink
 
@@ -28,8 +31,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       key: 'test/Source/lifecycle.init/sync/commit',
       default: null,
       lifecycle: {
-        init({ commit }): void {
-          act((): void => {
+        init({ commit }) {
+          act(() => {
             commit(1)
           })
         },
@@ -60,8 +63,8 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       key: 'test/RelinkSource/lifecycle.init/sync/skip',
       default: null,
       lifecycle: {
-        init({ skip }): void {
-          act((): void => {
+        init({ skip }) {
+          act(() => {
             skip()
           })
         },
@@ -101,7 +104,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
-    const eventPromise = createEventPromise(Source)
+    const eventPromise = createEventLogPromise(Source)
     const hookInterface = createHookInterface({
       useHook: () => useRelinkValue(Source),
       values: {
@@ -139,7 +142,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
       },
     })
 
-    const eventPromise = createEventPromise(Source)
+    const eventPromise = createEventLogPromise(Source)
     const hookInterface = createHookInterface({
       useHook: () => useRelinkValue(Source),
       values: {

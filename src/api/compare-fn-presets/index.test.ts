@@ -11,46 +11,46 @@ const {
   stringifyCompare
 } = RELINK_COMPARE_FN_PRESET
 
-afterEach((): void => {
+afterEach(() => {
   SHALLOW_COMPARE_INVOCATION_SPY.current = null
 })
 
-describe(shallowCompareArray.name, (): void => {
+describe(shallowCompareArray.name, () => {
 
-  test('Empty array', (): void => {
+  test('Empty array', () => {
     const isEqual = shallowCompareArray([], [])
     expect(isEqual).toBe(true)
   })
 
-  describe('Different types', (): void => {
+  describe('Different types', () => {
 
-    test('undefined, []', (): void => {
+    test('undefined, []', () => {
       const isEqual = shallowCompareArray(undefined, [])
       expect(isEqual).toBe(false)
     })
 
-    test('number, []', (): void => {
+    test('number, []', () => {
       const isEqual = shallowCompareArray(42, [])
       expect(isEqual).toBe(false)
     })
 
   })
 
-  test('Differrent length', (): void => {
+  test('Differrent length', () => {
     const prevState = ['foo', 42]
     const nextState = ['foo', 'bar', 42]
     const isEqual = shallowCompareArray(prevState, nextState)
     expect(isEqual).toBe(false)
   })
 
-  test('Same length, different items', (): void => {
+  test('Same length, different items', () => {
     const prevState = ['foo', {}, 42]
     const nextState = ['foo', {}, 42]
     const isEqual = shallowCompareArray(prevState, nextState)
     expect(isEqual).toBe(false)
   })
 
-  test('Same length, same items', (): void => {
+  test('Same length, same items', () => {
     const OBJ = {}
     const prevState = ['foo', OBJ, 42]
     const nextState = ['foo', OBJ, 42]
@@ -60,9 +60,9 @@ describe(shallowCompareArray.name, (): void => {
 
 })
 
-describe(shallowCompareArrayOrObject.name, (): void => {
+describe(shallowCompareArrayOrObject.name, () => {
 
-  test('[], []', (): void => {
+  test('[], []', () => {
     const isEqual = shallowCompareArrayOrObject([], [])
     expect(isEqual).toBe(true)
     expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(
@@ -70,19 +70,19 @@ describe(shallowCompareArrayOrObject.name, (): void => {
     )
   })
 
-  test('[], {}', (): void => {
+  test('[], {}', () => {
     const isEqual = shallowCompareArrayOrObject([], {})
     expect(isEqual).toBe(false)
     expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(null)
   })
 
-  test('{}, []', (): void => {
+  test('{}, []', () => {
     const isEqual = shallowCompareArrayOrObject({}, [])
     expect(isEqual).toBe(false)
     expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(null)
   })
 
-  test('{}, {}', (): void => {
+  test('{}, {}', () => {
     const isEqual = shallowCompareArrayOrObject({}, {})
     expect(isEqual).toBe(true)
     expect(SHALLOW_COMPARE_INVOCATION_SPY.current).toBe(
@@ -92,49 +92,49 @@ describe(shallowCompareArrayOrObject.name, (): void => {
 
 })
 
-describe(shallowCompareObject.name, (): void => {
+describe(shallowCompareObject.name, () => {
 
-  test('Empty object', (): void => {
+  test('Empty object', () => {
     const isEqual = shallowCompareObject({}, {})
     expect(isEqual).toBe(true)
   })
 
-  describe('Different types', (): void => {
+  describe('Different types', () => {
 
-    test('undefined, []', (): void => {
+    test('undefined, []', () => {
       const isEqual = shallowCompareObject(undefined, {})
       expect(isEqual).toBe(false)
     })
 
-    test('number, []', (): void => {
+    test('number, []', () => {
       const isEqual = shallowCompareObject(42, {})
       expect(isEqual).toBe(false)
     })
 
   })
 
-  test('Different property size', (): void => {
+  test('Different property size', () => {
     const prevState = { a: 'foo', b: 42 }
     const nextState = { a: 'foo', b: 42, c: [] }
     const isEqual = shallowCompareObject(prevState, nextState)
     expect(isEqual).toBe(false)
   })
 
-  test('Same property size, different property names', (): void => {
+  test('Same property size, different property names', () => {
     const prevState = { a: 'foo', b: 42 }
     const nextState = { a: 'foo', c: 42 }
     const isEqual = shallowCompareObject(prevState, nextState)
     expect(isEqual).toBe(false)
   })
 
-  test('Same property size and names, different values', (): void => {
+  test('Same property size and names, different values', () => {
     const prevState = { a: 'foo', b: 42, c: [] }
     const nextState = { a: 'foo', b: 42, c: [] }
     const isEqual = shallowCompareObject(prevState, nextState)
     expect(isEqual).toBe(false)
   })
 
-  test('Same property size and names, same values', (): void => {
+  test('Same property size and names, same values', () => {
     const ARR = []
     const prevState = { a: 'foo', b: 42, c: ARR }
     const nextState = { a: 'foo', b: 42, c: ARR }
@@ -142,7 +142,7 @@ describe(shallowCompareObject.name, (): void => {
     expect(isEqual).toBe(true)
   })
 
-  test('All same, but arrangement different', (): void => {
+  test('All same, but arrangement different', () => {
     const ARR = []
     const prevState = { a: 'foo', b: 42, c: ARR }
     const nextState = { a: 'foo', c: ARR, b: 42 }
@@ -152,35 +152,35 @@ describe(shallowCompareObject.name, (): void => {
 
 })
 
-describe(stringifyCompare.name, (): void => {
+describe(stringifyCompare.name, () => {
 
-  test('Empty object', (): void => {
+  test('Empty object', () => {
     const isEqual = stringifyCompare({}, {})
     expect(isEqual).toBe(true)
   })
 
-  test('Different property size', (): void => {
+  test('Different property size', () => {
     const prevState = { a: 'foo', b: 42 }
     const nextState = { a: 'foo', b: 42, c: [] }
     const isEqual = stringifyCompare(prevState, nextState)
     expect(isEqual).toBe(false)
   })
 
-  test('Same property size, different property names', (): void => {
+  test('Same property size, different property names', () => {
     const prevState = { a: 'foo', b: 42 }
     const nextState = { a: 'foo', c: 42 }
     const isEqual = stringifyCompare(prevState, nextState)
     expect(isEqual).toBe(false)
   })
 
-  test('Same property size and names, different values', (): void => {
+  test('Same property size and names, different values', () => {
     const prevState = { a: 'foo', b: 42, c: [] }
     const nextState = { a: 'foo', b: 42, c: [] }
     const isEqual = stringifyCompare(prevState, nextState)
     expect(isEqual).toBe(true)
   })
 
-  test('Same property size and names, same values', (): void => {
+  test('Same property size and names, same values', () => {
     const ARR = []
     const prevState = { a: 'foo', b: 42, c: ARR }
     const nextState = { a: 'foo', b: 42, c: ARR }

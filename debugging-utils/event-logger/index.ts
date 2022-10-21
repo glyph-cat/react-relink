@@ -1,11 +1,10 @@
-import { RelinkEvent } from '../../schema'
-import { RelinkSource } from '../../api/source'
+import type { RelinkEvent, RelinkSource } from '../../src/bundle'
 
 /**
  * Creates a promise that resolves when a Relink event has been received.
  * @internal
  */
-export function createEventPromise<State>(
+export function createEventLogPromise<State>(
   Source: RelinkSource<State>
 ): Promise<RelinkEvent<State>> {
   return new Promise((resolve) => {
@@ -20,7 +19,7 @@ export function createEventPromise<State>(
  * Creates a promise that resolves when N Relink events have been received.
  * @internal
  */
-export function createEventStackPromise<State>(
+export function createEventLogStackPromise<State>(
   Source: RelinkSource<State>,
   eventsToCollect: number
 ): Promise<Array<RelinkEvent<State>>> {

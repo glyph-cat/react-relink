@@ -11,7 +11,7 @@ import { wrapper } from '../wrapper'
 // * Check if components have unnecessary renders (it should not watch for state
 //   changes)
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useResetRelinkState } = Relink
 

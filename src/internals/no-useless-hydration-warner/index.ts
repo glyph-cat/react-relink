@@ -1,6 +1,6 @@
 import { IS_DEV_ENV } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
-import { formatFunctionNotationArray } from '../string-formatting'
+import { HANDLE_ERROR_NO_USELESS_HYDRATION } from '../errors'
 
 /**
  * @internal
@@ -18,30 +18,17 @@ export enum HydrationConcludeType {
 /**
  * @internal
  */
-export function formatWarningMessageForNoUselessHydration(
-  sourceKey: RelinkSourceKey,
-  currentConcludeType: HydrationConcludeType,
-  concludeTypeHistoryStack: Array<HydrationConcludeType>
-): string {
-  return `Attempted to ${currentConcludeType} a hydration in '${String(sourceKey)}' even though it has previously been concluded with: ${formatFunctionNotationArray(concludeTypeHistoryStack)}. Only the first attempt to conclude a hydration is effective while the rest are ignored. If this was intentional, please make separate calls to \`Source.hydrate()\` instead, otherwise it might indicate a memory leak in your application.`
-}
-
-/**
- * @internal
- */
 export function createNoUselessHydrationWarner_DEV(
   sourceKey: RelinkSourceKey
 ): UselessHydrationWarner {
   const concludeTypeHistoryStack: Array<HydrationConcludeType> = []
   const M$conclude = (concludeType: HydrationConcludeType): boolean => {
     if (concludeTypeHistoryStack.length > 0) {
-      // TODO: Refactor to `HANDLE_ERROR_NO_USELESS_HYDRATION`?
-      // eslint-disable-next-line no-console
-      console.error(formatWarningMessageForNoUselessHydration(
+      HANDLE_ERROR_NO_USELESS_HYDRATION(
         sourceKey,
         concludeType,
         concludeTypeHistoryStack
-      ))
+      )
       return false
     } else {
       concludeTypeHistoryStack.push(concludeType)

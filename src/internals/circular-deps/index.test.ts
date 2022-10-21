@@ -1,7 +1,7 @@
 import { RelinkSource } from '../../api/source'
 import { checkForCircularDeps } from '.'
 
-describe(checkForCircularDeps.name, (): void => {
+describe(checkForCircularDeps.name, () => {
 
   let SourceA: RelinkSource<number>
   let SourceB: RelinkSource<number>
@@ -12,8 +12,8 @@ describe(checkForCircularDeps.name, (): void => {
     if (SourceC instanceof RelinkSource) { await SourceC.dispose({ force: true }) }
   })
 
-  test('with circular deps', (): void => {
-    const callback = (): void => {
+  test('with circular deps', () => {
+    const callback = () => {
       const sourceADeps = []
       SourceA = new RelinkSource({
         key: 'test/source-with-circular-deps/a',
@@ -35,8 +35,8 @@ describe(checkForCircularDeps.name, (): void => {
     )
   })
 
-  test('without circular deps', (): void => {
-    const callback = (): void => {
+  test('without circular deps', () => {
+    const callback = () => {
       SourceA = new RelinkSource({
         key: 'test/source-without-circular-deps/a',
         default: 0,

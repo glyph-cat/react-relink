@@ -6,14 +6,14 @@ import { wrapper } from '../wrapper'
 // * Make sure subsequent reducers are executed even if there are errors or
 //   unhandled promise rejection halfway through.
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
 
-  describe('Error handling in reducers', (): void => {
+  describe('Error handling in reducers', () => {
 
     let Source: $RelinkSource<number>
-    beforeEach((): void => {
+    beforeEach(() => {
       Source = new RelinkSource({
         key: 'test/error-handling-in-reducers',
         default: 0,

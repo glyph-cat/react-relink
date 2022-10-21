@@ -1,11 +1,10 @@
 import * as chalk from 'chalk'
-import { delay } from '../../../debugging-utils'
-import { TIME_GAP } from '../../../src/debugging'
+import { delay, TIME_GAP } from '../../../debugging-utils'
 import { RelinkEvent } from '../../../src/schema'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkEventType, RelinkSource } = Relink
 
@@ -68,7 +67,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     expect(eventStack).toStrictEqual([])
   })
 
-  describe('options', (): void => {
+  describe('options', () => {
 
     jest.useRealTimers()
 

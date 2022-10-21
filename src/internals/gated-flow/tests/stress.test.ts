@@ -1,5 +1,4 @@
-import { delay } from '../../../../debugging-utils'
-import { TIME_GAP } from '../../../debugging'
+import { delay, TIME_GAP } from '../../../../debugging-utils'
 import { GatedFlow } from '..'
 
 jest.useRealTimers()
@@ -10,7 +9,7 @@ test('Stress test', async () => {
   const array: Array<number> = []
 
   // Stage 1
-  gateKeeper.M$exec((): void => { array.push(1) })
+  gateKeeper.M$exec(() => { array.push(1) })
   // Expect number to be pushed right away
   expect(array).toStrictEqual([1])
 
@@ -42,7 +41,7 @@ test('Stress test', async () => {
   expect(array).toStrictEqual([1, 2])
 
   // Stage 5
-  gateKeeper.M$exec((): void => { array.push(5) })
+  gateKeeper.M$exec(() => { array.push(5) })
   expect(array).toStrictEqual([1, 2])
   // Array should still remain the same even though this one is synchronous
   // because there are asynchronous callbacks that are still not complete.
@@ -57,7 +56,7 @@ test('Stress test', async () => {
     array.push(6)
   })
   expect(array).toStrictEqual([1, 2])
-  gateKeeper.M$exec((): void => { array.push(7) })
+  gateKeeper.M$exec(() => { array.push(7) })
   expect(array).toStrictEqual([1, 2])
   gateKeeper.M$exec(async () => {
     await delay(TIME_GAP(2))

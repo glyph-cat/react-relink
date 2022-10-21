@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import { IS_DEV_ENV, IS_INTERNAL_DEBUG_ENV, REPORT_ISSUE_URL } from '../../constants'
 import { RelinkSourceKey } from '../../schema'
-import { safeStringJoin, SafeStringJoinTypes } from '../string-formatting'
+import type { HydrationConcludeType } from '../no-useless-hydration-warner'
+import { formatFunctionNotationArray, safeStringJoin, SafeStringJoinTypes } from '../string-formatting'
 
 // #region Utils
 
@@ -146,12 +147,31 @@ export function HANDLE_INTERNAL_ERROR_FAIL_TO_REMOVE_SELF_KEY_FROM_PARENT(
   parentKey: RelinkSourceKey
 ): string {
   if (IS_DEV_ENV) {
+    // NOTE: It could also mean that two or more sources have circular dependency.
+    // But an error would have been thrown at the time of source creation, the
+    // only exception is when sources are created/disposed during setup/teardown
+    // in tests.
     const message = `Internal error: Failed to unregister source key '${String(currentKey)}' from parent source '${String(parentKey)}'. While this is not immediately fatal, it could indicate a memory leak.`
     console.error(message)
     showInternalErrorNextSteps('Failed to unregister source key from parent source')
     if (IS_INTERNAL_DEBUG_ENV) {
       return message
     }
+  }
+}
+
+/**
+ * @internal
+ */
+export function HANDLE_ERROR_NO_USELESS_HYDRATION(
+  sourceKey: RelinkSourceKey,
+  currentConcludeType: HydrationConcludeType,
+  concludeTypeHistoryStack: Array<HydrationConcludeType>
+): string {
+  const message = `Attempted to ${currentConcludeType} a hydration in '${String(sourceKey)}' even though it has previously been concluded with: ${formatFunctionNotationArray(concludeTypeHistoryStack)}. Only the first attempt to conclude a hydration is effective while the rest are ignored. If this was intentional, please make separate calls to \`Source.hydrate()\` instead, otherwise it might indicate a memory leak in your application.`
+  console.error(message)
+  if (IS_INTERNAL_DEBUG_ENV) {
+    return message
   }
 }
 

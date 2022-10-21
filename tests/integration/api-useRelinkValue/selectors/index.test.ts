@@ -10,13 +10,13 @@ import {
 import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue, RelinkAdvancedSelector } = Relink
 
   let Source: $RelinkSource<SampleSchema>
   const cleanupRef = createCleanupRef()
-  beforeEach((): void => {
+  beforeEach(() => {
     Source = new RelinkSource<SampleSchema>({
       key: 'test/api-useRelinkValue/selector',
       default: {
@@ -59,7 +59,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  describe(RelinkAdvancedSelector.name, (): void => {
+  describe(RelinkAdvancedSelector.name, () => {
 
     test('Simulation of `RelinkBasicSelector`', async () => {
 

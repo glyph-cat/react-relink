@@ -2,16 +2,16 @@ import {
   RelinkEventType,
   RelinkSource as $RelinkSource,
 } from '../../../src/bundle'
-import { createEventPromise } from '../../../src/debugging'
+import { createEventLogPromise } from '../../../debugging-utils'
 import { IntegrationTestConfig, SampleSchema } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
 
   let Source: $RelinkSource<SampleSchema>
-  beforeEach((): void => {
+  beforeEach(() => {
     Source = new RelinkSource({
       key: 'test/Source.set()',
       default: {
@@ -24,10 +24,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     await Source.dispose()
   })
 
-  describe('Without await', (): void => {
+  describe('Without await', () => {
 
     test('Direct set', async () => {
-      const eventPromise = createEventPromise(Source)
+      const eventPromise = createEventLogPromise(Source)
       const setPromise = Source.set({
         foo: 2,
         bar: 2
@@ -44,7 +44,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     test('Reducer', async () => {
-      const eventPromise = createEventPromise(Source)
+      const eventPromise = createEventLogPromise(Source)
       const setPromise = Source.set((state) => ({
         ...state,
         bar: state.bar + 1,
@@ -61,7 +61,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     test('Async reducer', async () => {
-      const eventPromise = createEventPromise(Source)
+      const eventPromise = createEventLogPromise(Source)
       const promise = Source.set(async (state) => ({
         ...state,
         bar: state.bar + 1,
@@ -79,10 +79,10 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   })
 
-  describe('With await', (): void => {
+  describe('With await', () => {
 
     test('Direct set', async () => {
-      const eventPromise = createEventPromise(Source)
+      const eventPromise = createEventLogPromise(Source)
       const awaitedPromise = await Source.set({
         foo: 2,
         bar: 2,
@@ -98,7 +98,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     test('Reducer', async () => {
-      const eventPromise = createEventPromise(Source)
+      const eventPromise = createEventLogPromise(Source)
       const awaitedPromise = await Source.set((state) => ({
         ...state,
         bar: state.bar + 1
@@ -114,7 +114,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     })
 
     test('Async reducer', async () => {
-      const eventPromise = createEventPromise(Source)
+      const eventPromise = createEventLogPromise(Source)
       const awaitedPromise = await Source.set(async (state) => ({
         ...state,
         bar: state.bar + 1

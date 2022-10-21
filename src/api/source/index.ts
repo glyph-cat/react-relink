@@ -40,7 +40,7 @@ export interface DisposeOptions {
    * When `true`, the source will be disposed even if there are pending calls to
    * methods such as `.set(...)`, `.reset()`, `.getAsync()` and `.hydrate(...)`.
    *
-   * ## *WARNING: This is a niche feature that is almost never used except for when handling sources with cyclic dependencies in a test environment.*
+   * ## *WARNING: This is a niche feature that is almost never used except for when handling sources with circular dependencies in a test environment.*
    * @defaultValue `false`
    */
   force?: boolean

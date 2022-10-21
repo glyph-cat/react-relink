@@ -9,7 +9,7 @@ import { wrapper } from '../wrapper'
 // Test objectives:
 // * Make sure the returned hook data is a setter
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkState } = Relink
 
@@ -20,7 +20,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  test('main', (): void => {
+  test('main', () => {
     Source = new RelinkSource({
       key: 'test/use-relink-state',
       default: 1,

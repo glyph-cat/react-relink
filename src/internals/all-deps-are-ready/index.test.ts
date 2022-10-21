@@ -1,10 +1,10 @@
-import { TIME_GAP } from '../../debugging'
+import { TIME_GAP } from '../../../debugging-utils'
 import { RelinkSource } from '../../api/source'
 import { allDepsAreReady } from '.'
 
-describe(allDepsAreReady.name, (): void => {
+describe(allDepsAreReady.name, () => {
 
-  test('No deps', (): void => {
+  test('No deps', () => {
     const MainSource = new RelinkSource({
       key: `test/${allDepsAreReady.name}/no-deps`,
       default: 1,
@@ -13,7 +13,7 @@ describe(allDepsAreReady.name, (): void => {
     expect(output).toBe(true)
   })
 
-  test('All deps don\'t need hydration', (): void => {
+  test('All deps don\'t need hydration', () => {
     const scopeName = 'all-deps-no-need-hydration'
     const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
@@ -32,20 +32,20 @@ describe(allDepsAreReady.name, (): void => {
     expect(output).toBe(true)
   })
 
-  test('All deps are ready', (): void => {
+  test('All deps are ready', () => {
     const scopeName = 'all-deps-are-ready'
     const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
-        init: ({ commit }): void => { commit(1) },
+        init: ({ commit }) => { commit(1) },
       },
     })
     const SourceB = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
-        init: ({ commit }): void => { commit(1) },
+        init: ({ commit }) => { commit(1) },
       },
     })
     const MainSource = new RelinkSource({
@@ -57,21 +57,21 @@ describe(allDepsAreReady.name, (): void => {
     expect(output).toBe(true)
   })
 
-  test('Only some deps are ready', (): void => {
+  test('Only some deps are ready', () => {
     const scopeName = 'some-deps-are-ready'
     const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
-        init: ({ commit }): void => { commit(1) },
+        init: ({ commit }) => { commit(1) },
       },
     })
     const SourceB = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
-        init: ({ commit }): void => {
-          setTimeout((): void => {
+        init: ({ commit }) => {
+          setTimeout(() => {
             commit(1)
           }, TIME_GAP(10))
         },
@@ -86,14 +86,14 @@ describe(allDepsAreReady.name, (): void => {
     expect(output).toBe(false)
   })
 
-  test('No deps are ready', (): void => {
+  test('No deps are ready', () => {
     const scopeName = 'no-deps-are-ready'
     const SourceA = new RelinkSource({
       key: `test/${allDepsAreReady.name}/${scopeName}/a`,
       default: 1,
       lifecycle: {
-        init: ({ commit }): void => {
-          setTimeout((): void => {
+        init: ({ commit }) => {
+          setTimeout(() => {
             commit(1)
           }, TIME_GAP(10))
         },
@@ -103,8 +103,8 @@ describe(allDepsAreReady.name, (): void => {
       key: `test/${allDepsAreReady.name}/${scopeName}/b`,
       default: 1,
       lifecycle: {
-        init: ({ commit }): void => {
-          setTimeout((): void => {
+        init: ({ commit }) => {
+          setTimeout(() => {
             commit(1)
           }, TIME_GAP(10))
         },

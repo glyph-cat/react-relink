@@ -1,4 +1,4 @@
-import { TIME_GAP } from '../../debugging'
+import { TIME_GAP } from '../../../debugging-utils'
 import {
   formatReducerNotRespondingWarning,
   formatReducerSlowWarning,
@@ -9,16 +9,16 @@ import {
 
 // NOTE: Time gaps are added for extra time padding
 
-describe(formatReducerSlowWarning.name, (): void => {
+describe(formatReducerSlowWarning.name, () => {
 
-  test('Synchronous', (): void => {
+  test('Synchronous', () => {
     const output = formatReducerSlowWarning('foo', 4896, false)
     expect(output).toBe(
       'Spent 4896ms to execute a synchronous reducer in \'foo\''
     )
   })
 
-  test('Asynchronous', (): void => {
+  test('Asynchronous', () => {
     const output = formatReducerSlowWarning(Symbol('bar'), 4896, true)
     expect(output).toBe(
       'Spent 4896ms to execute an async reducer in \'Symbol(bar)\''
@@ -27,16 +27,16 @@ describe(formatReducerSlowWarning.name, (): void => {
 
 })
 
-describe(formatReducerNotRespondingWarning.name, (): void => {
+describe(formatReducerNotRespondingWarning.name, () => {
 
-  test('Synchronous', (): void => {
+  test('Synchronous', () => {
     const output = formatReducerNotRespondingWarning('foo', false)
     expect(output).toBe(
       '10000ms and counting: A synchronous reducer is still running for \'foo\'.'
     )
   })
 
-  test('Asynchronous', (): void => {
+  test('Asynchronous', () => {
     const output = formatReducerNotRespondingWarning(Symbol('bar'), true)
     expect(output).toBe(
       '10000ms and counting: An async reducer has not yet been resolved for \'Symbol(bar)\'.'
@@ -45,18 +45,18 @@ describe(formatReducerNotRespondingWarning.name, (): void => {
 
 })
 
-describe(startMeasuringReducerPerformance.name, (): void => {
+describe(startMeasuringReducerPerformance.name, () => {
 
-  describe('Synchronous', (): void => {
+  describe('Synchronous', () => {
 
-    test('Normal', (): void => {
+    test('Normal', () => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
       const [isSlow, isNotResponding] = perfMeasurer.stop()
       expect(isSlow).toBe(false)
       expect(isNotResponding).toBe(false)
     })
 
-    test('Slow', (): void => {
+    test('Slow', () => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
       jest.advanceTimersByTime(PERFORMANCE_SLOW_THRESHOLD_MS + TIME_GAP(1))
       const [isSlow, isNotResponding] = perfMeasurer.stop()
@@ -64,7 +64,7 @@ describe(startMeasuringReducerPerformance.name, (): void => {
       expect(isNotResponding).toBe(false)
     })
 
-    test('Not responding', (): void => {
+    test('Not responding', () => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
       jest.advanceTimersByTime(PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS + TIME_GAP(1))
       const [isSlow, isNotResponding] = perfMeasurer.stop()
@@ -74,9 +74,9 @@ describe(startMeasuringReducerPerformance.name, (): void => {
 
   })
 
-  describe('Asynchronous', (): void => {
+  describe('Asynchronous', () => {
 
-    test('Normal', (): void => {
+    test('Normal', () => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
       perfMeasurer.isAsync.current = true
       const [isSlow, isNotResponding] = perfMeasurer.stop()
@@ -84,7 +84,7 @@ describe(startMeasuringReducerPerformance.name, (): void => {
       expect(isNotResponding).toBe(false)
     })
 
-    test('Slow', (): void => {
+    test('Slow', () => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
       perfMeasurer.isAsync.current = true
       jest.advanceTimersByTime(PERFORMANCE_SLOW_THRESHOLD_MS + TIME_GAP(1))
@@ -93,7 +93,7 @@ describe(startMeasuringReducerPerformance.name, (): void => {
       expect(isNotResponding).toBe(false)
     })
 
-    test('Not responding', (): void => {
+    test('Not responding', () => {
       const perfMeasurer = startMeasuringReducerPerformance('foo')
       perfMeasurer.isAsync.current = true
       jest.advanceTimersByTime(PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS + TIME_GAP(1))

@@ -11,7 +11,7 @@ import { wrapper } from '../wrapper'
 // Test objective: Check if state values reference to the same object if
 // component is re-rendered due to external factors.
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
@@ -22,7 +22,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     cleanupRef.run()
   })
 
-  describe('If no state change, value should be same across renders', (): void => {
+  describe('If no state change, value should be same across renders', () => {
 
     test('Without selector', async () => {
 

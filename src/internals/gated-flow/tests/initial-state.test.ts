@@ -1,5 +1,4 @@
-import { delay } from '../../../../debugging-utils'
-import { TIME_GAP } from '../../../debugging'
+import { delay, TIME_GAP } from '../../../../debugging-utils'
 import { GatedFlow } from '..'
 
 // NOTE: Every time `M$exec` is called, so is `M$flush`, but the callbacks
@@ -8,11 +7,11 @@ import { GatedFlow } from '..'
 
 jest.useRealTimers()
 
-describe('Initial state', (): void => {
+describe('Initial state', () => {
 
-  describe('Open (callbacks should run right away)', (): void => {
+  describe('Open (callbacks should run right away)', () => {
 
-    test('Synchronous callbacks only', (): void => {
+    test('Synchronous callbacks only', () => {
       const gateKeeper = new GatedFlow(true, 'test/gated-flow/initial-state/open/sync-cb-only')
       const callback = jest.fn()
       gateKeeper.M$exec(() => { callback() })
@@ -40,14 +39,14 @@ describe('Initial state', (): void => {
 
   })
 
-  describe('Closed (callbacks should not run right away)', (): void => {
+  describe('Closed (callbacks should not run right away)', () => {
 
-    test('Synchronous callbacks only', (): void => {
+    test('Synchronous callbacks only', () => {
       const gateKeeper = new GatedFlow(false, 'test/gated-flow/initial-state/closed/sync-cb-only')
       const callback = jest.fn()
-      gateKeeper.M$exec((): void => { callback() })
-      gateKeeper.M$exec((): void => { callback() })
-      gateKeeper.M$exec((): void => { callback() })
+      gateKeeper.M$exec(() => { callback() })
+      gateKeeper.M$exec(() => { callback() })
+      gateKeeper.M$exec(() => { callback() })
       expect(callback).not.toHaveBeenCalled()
       gateKeeper.M$open()
       expect(callback).toHaveBeenCalledTimes(3)
@@ -56,7 +55,7 @@ describe('Initial state', (): void => {
     test('Mixed with asynchronous callbacks', async () => {
       const gateKeeper = new GatedFlow(false, 'test/gated-flow/initial-state/closed/mixed-cb')
       const callback = jest.fn()
-      gateKeeper.M$exec((): void => { callback() })
+      gateKeeper.M$exec(() => { callback() })
       gateKeeper.M$exec(async () => { callback() })
       gateKeeper.M$exec(async () => {
         await delay(TIME_GAP(1))

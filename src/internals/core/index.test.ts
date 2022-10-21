@@ -6,21 +6,22 @@ import { EndHydrationMarker, RelinkCore } from '.'
 //   else anymore.
 // * Ensuring that events are fired accordingly.
 
-describe(RelinkCore.name, (): void => {
+describe(RelinkCore.name, () => {
 
-  test('M$get', (): void => {
+  // NOTE: There is not "M$get" method, we read directly from `M$currentState`.
+  test('"M$get"', () => {
     const defaultState = { value: 1 }
     const core = new RelinkCore(defaultState)
     expect(core.M$currentState).toStrictEqual({ value: 1 })
     expect(Object.is(core.M$currentState, defaultState)).toBe(true)
   })
 
-  test('M$set', (): void => {
+  test('M$set', () => {
 
     const defaultState = { value: 1 }
     const core = new RelinkCore(defaultState)
     const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-    const unwatchStateChange = core.M$watcher.M$watch((event): void => {
+    const unwatchStateChange = core.M$watcher.M$watch((event) => {
       capturedEventStack.push(event)
     })
 
@@ -43,12 +44,12 @@ describe(RelinkCore.name, (): void => {
 
   })
 
-  test('M$reset', (): void => {
+  test('M$reset', () => {
 
     const defaultState = { value: 1 }
     const core = new RelinkCore(defaultState)
     const capturedEventStack: Array<RelinkEvent<typeof defaultState>> = []
-    const unwatchStateChange = core.M$watcher.M$watch((event): void => {
+    const unwatchStateChange = core.M$watcher.M$watch((event) => {
       capturedEventStack.push(event)
     })
 
@@ -91,15 +92,15 @@ describe(RelinkCore.name, (): void => {
     expect(core.M$mutationCount).toBe(2)
   })
 
-  describe('M$beginHydration & M$endHydration', (): void => {
+  describe('M$beginHydration & M$endHydration', () => {
 
     interface TestState { value: number }
 
-    test('Strategy: Commit', (): void => {
+    test('Strategy: Commit', () => {
 
       const core = new RelinkCore({ value: 1 })
       const capturedEventStack: Array<RelinkEvent<TestState>> = []
-      const unwatchStateChange = core.M$watcher.M$watch((event): void => {
+      const unwatchStateChange = core.M$watcher.M$watch((event) => {
         capturedEventStack.push(event)
       })
 
@@ -130,11 +131,11 @@ describe(RelinkCore.name, (): void => {
 
     })
 
-    test('Strategy: Skip', (): void => {
+    test('Strategy: Skip', () => {
 
       const core = new RelinkCore({ value: 1 })
       const capturedEventStack: Array<RelinkEvent<TestState>> = []
-      const unwatchStateChange = core.M$watcher.M$watch((event): void => {
+      const unwatchStateChange = core.M$watcher.M$watch((event) => {
         capturedEventStack.push(event)
       })
 
@@ -237,15 +238,15 @@ describe(RelinkCore.name, (): void => {
 
     })
 
-    describe('Special cases', (): void => {
+    describe('Special cases', () => {
 
-      describe('Omit firing events for repeated hydration change', (): void => {
+      describe('Omit firing events for repeated hydration change', () => {
 
-        test('Hydration start', (): void => {
+        test('Hydration start', () => {
 
           const core = new RelinkCore({ value: 1 })
           const capturedEventStack: Array<RelinkEvent<TestState>> = []
-          const unwatchStateChange = core.M$watcher.M$watch((event): void => {
+          const unwatchStateChange = core.M$watcher.M$watch((event) => {
             capturedEventStack.push(event)
           })
 
@@ -266,11 +267,11 @@ describe(RelinkCore.name, (): void => {
 
         })
 
-        test('Hydration end', (): void => {
+        test('Hydration end', () => {
 
           const core = new RelinkCore({ value: 1 })
           const capturedEventStack: Array<RelinkEvent<TestState>> = []
-          const unwatchStateChange = core.M$watcher.M$watch((event): void => {
+          const unwatchStateChange = core.M$watcher.M$watch((event) => {
             capturedEventStack.push(event)
           })
 

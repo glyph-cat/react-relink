@@ -2,8 +2,8 @@ import { version as PKG_VERSION } from '../../../package.json'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink, buildEnv }: IntegrationTestConfig): void => {
-  test('main', (): void => {
+wrapper(({ Relink, buildEnv }: IntegrationTestConfig) => {
+  test('main', () => {
     if (buildEnv === 'debug') {
       expect(Relink.VERSION).toBe(undefined)
     } else {

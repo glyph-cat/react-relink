@@ -1,12 +1,11 @@
-import { attachRef, createRef, delay } from '../../../debugging-utils'
+import { attachRef, createRef, delay, TIME_GAP } from '../../../debugging-utils'
 import type { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { TIME_GAP } from '../../../src/debugging'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // NOTE: Basically a stress test
 
-wrapper(({ Relink }: IntegrationTestConfig): void => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, waitForAll } = Relink
   const sharedTestKeyFragment = 'waitForAll/all-with-deep-deps'

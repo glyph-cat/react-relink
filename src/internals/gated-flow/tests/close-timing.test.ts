@@ -1,5 +1,4 @@
-import { delay } from '../../../../debugging-utils'
-import { TIME_GAP } from '../../../debugging'
+import { delay, TIME_GAP } from '../../../../debugging-utils'
 import { GatedFlow } from '..'
 
 // Elaboration: Gate only closes when all currently queued callbacks have been
@@ -12,7 +11,7 @@ test('Gate closes at appropriate timing', async () => {
   const array: Array<string> = []
 
   // Execute first group of callbacks
-  gateKeeper.M$exec((): void => {
+  gateKeeper.M$exec(() => {
     array.push('group-1,item-1')
   })
   gateKeeper.M$exec(async () => {
@@ -22,7 +21,7 @@ test('Gate closes at appropriate timing', async () => {
   gateKeeper.M$exec(async () => {
     array.push('group-1,item-3')
   })
-  gateKeeper.M$exec((): void => {
+  gateKeeper.M$exec(() => {
     array.push('group-1,item-4')
   })
   gateKeeper.M$exec(async () => {
@@ -30,7 +29,7 @@ test('Gate closes at appropriate timing', async () => {
     array.push('group-1,item-5')
   })
 
-  const group1CallbacksToComplete = gateKeeper.M$exec((): void => {
+  const group1CallbacksToComplete = gateKeeper.M$exec(() => {
     // Just waiting for group-1 callbacks to complete...
   })
 
@@ -40,7 +39,7 @@ test('Gate closes at appropriate timing', async () => {
   gateKeeper.M$lock()
 
   // Then, execute the second group of callbacks
-  gateKeeper.M$exec((): void => {
+  gateKeeper.M$exec(() => {
     array.push('group-2,item-1')
   })
   gateKeeper.M$exec(async () => {
