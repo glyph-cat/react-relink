@@ -7,11 +7,11 @@ import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
 import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
 import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-value/constants'
 
-// KIV:
-// Tests fail inconsistently due to Error Code 5 (Out of memory?)
+// NOTE:
+// Tests used to fail inconsistently due to Error Code 5 (Out of memory?)
 // Normally happens when more than one e2e test is being run in the same shot.
-// Happens when test is triggered by running `yarn all`, but works with `yarn test`
-// Tests pass in GitHub Actions tho.
+// Happens when test is triggered by running `yarn all`, but works with
+// `yarn test`. The tests pass in GitHub Actions tho even when run in parallel.
 // Current approach is to set `maxWorkers: 1` in `jest.config.ts`.
 
 const BASE_TEST_DIR = './tests/e2e'

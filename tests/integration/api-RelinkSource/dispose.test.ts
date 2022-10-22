@@ -38,7 +38,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
     expect(typeof Source.cleanup).toBe('undefined')
     expect(typeof Source.dispose).toBe('undefined')
     expect(Object.keys(Source).sort()).toStrictEqual([
-      // KIV: These keys are still present probably because their value is `undefined`
+      // NOTE: These keys are still present probably because their value is `undefined`
       'get',
       'getAsync',
       'set',

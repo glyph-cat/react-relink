@@ -6,13 +6,22 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
 
-  let SourceA: $RelinkSource<number>
-  let SourceB: $RelinkSource<number>
-  let SourceC: $RelinkSource<number>
+  let SourceA: $RelinkSource<number> = null
+  let SourceB: $RelinkSource<number> = null
+  let SourceC: $RelinkSource<number> = null
   afterEach(async () => {
-    if (SourceA instanceof RelinkSource) { await SourceA.dispose({ force: true }) }
-    if (SourceB instanceof RelinkSource) { await SourceB.dispose({ force: true }) }
-    if (SourceC instanceof RelinkSource) { await SourceC.dispose({ force: true }) }
+    if (SourceA instanceof RelinkSource) {
+      await SourceA.dispose({ force: true })
+      SourceA = null
+    }
+    if (SourceB instanceof RelinkSource) {
+      await SourceB.dispose({ force: true })
+      SourceB = null
+    }
+    if (SourceC instanceof RelinkSource) {
+      await SourceC.dispose({ force: true })
+      SourceC = null
+    }
   })
 
   test('main', () => {

@@ -1,6 +1,5 @@
 // References:
-// * https://blog.logrocket.com/react-end-to-end-testing-jest-puppeteer/
-
+// * https://blog.logrocket.com/react-end-to-end-testing-jest-puppeteer
 // * https://github.com/smooth-code/jest-puppeteer/blob/master/packages/jest-environment-puppeteer/README.md#jest-puppeteerconfigjs
 
 module.exports = {

@@ -18,10 +18,11 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   jest.useRealTimers()
 
-  let Source: $RelinkSource<number>
+  let Source: $RelinkSource<number> = null
   const cleanupRef = createCleanupRef()
   afterEach(async () => {
     await Source.dispose()
+    Source = null
     cleanupRef.run()
   })
 

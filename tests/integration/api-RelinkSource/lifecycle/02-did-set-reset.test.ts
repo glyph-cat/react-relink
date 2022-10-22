@@ -9,14 +9,15 @@ import { wrapper } from '../../wrapper'
 // * Make sure the `didSet` and `didReset` lifecycle hooks are triggered at
 // appropriate times when `.set()`, `.reset()` and `.hydrate()` are called.
 
-let Source: $RelinkSource<number> = null
-afterEach(async () => {
-  await Source.dispose()
-})
-
 wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, RelinkEventType } = Relink
+
+  let Source: $RelinkSource<number> = null
+  afterEach(async () => {
+    await Source.dispose()
+    Source = null
+  })
 
   test('main', async () => {
 
