@@ -6,6 +6,12 @@ import { RelinkAdvancedSelector } from './api/selector'
  */
 export interface RelinkHydrateArgs<State> {
   /**
+   * A snapshot of the default state. Occasionally, you might want to be able to
+   * partially merge the persisted state with the default state. This may come
+   * in handy.
+   */
+  defaultState: State
+  /**
    * Commit a state that was previously saved.
    * @param hydratedState - The previously saved state.
    */

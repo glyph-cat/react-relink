@@ -312,6 +312,7 @@ export class RelinkSource<State> {
     return this.M$gatedFlow.M$exec((): void | Promise<void> => {
       const concludeHydration = createNoUselessHydrationWarner(this.M$key)
       const executedCallback = callback({
+        defaultState: this.M$defaultState,
         commit: (hydratedState: State): void => {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
           if (isFirstHydration) {

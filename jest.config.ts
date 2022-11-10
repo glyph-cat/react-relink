@@ -12,6 +12,13 @@ const config: Config.InitialOptions = {
     '.draft',
     '.old',
   ],
+  // transform: {
+  //   '\\.(ts|tsx)$': [
+  //     'babel-jest', {
+  //       configFile: './config/jest.babelConfig.js',
+  //     },
+  //   ],
+  // },
   maxWorkers: 1,
   /**
    * Prefer fake timers by default because it saves time.
