@@ -6,7 +6,7 @@ import * as fs from 'fs'
 const licenseFilePath = './LICENSE'
 let licenseText = fs.readFileSync(licenseFilePath, 'utf-8')
 
-const currentYear = new Date().getFullYear() + 1
+const currentYear = new Date().getFullYear()
 licenseText = licenseText.replace(/\d{4} - \d{4}/, `2020 - ${currentYear}`)
 
 fs.writeFileSync(licenseFilePath, licenseText, 'utf-8')
