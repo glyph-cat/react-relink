@@ -208,8 +208,9 @@ export function useRelinkValue_BASE<State, SelectedState>(
         return nextSyncValue
       }
     }, [active, isEqual, selectValue, source]),
-    (): SyncValue<CachedValueSchema> => ({ [$$INTERNALS]: [-1, source.get()] }),
+    (): SyncValue<CachedValueSchema> => ({ [$$INTERNALS]: [-1, selectValue(source.get())] }),
     // KIV: Not sure if this server snapshot implementation is stable in the long run
+    // TOFIX: Selector is not being executed here!!!!
   )[$$INTERNALS][1]
 
 }

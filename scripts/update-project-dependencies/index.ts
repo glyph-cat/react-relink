@@ -12,10 +12,11 @@ import { getPackageInstallPaths } from './get-package-install-paths'
 const dependenciesToExclude = []
 const devDependenciesToExclude = [
   /**
-   * Because the latest version (v5 and above) uses ES, which would break any
-   * scripts that attempt to import it.
+   * Because any newer versions of the packages specified below uses ES, which
+   * would break any scripts that attempt to import it.
    */
-  'chalk',
+  'chalk', // Breaks from v5 onwards
+  'query-string', // Breaks from v8 onwards
 ]
 
 const depStack = Object.keys(PKG_dependencies)

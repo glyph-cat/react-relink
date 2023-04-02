@@ -16,7 +16,7 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
   test('Main', async () => {
 
     const Source = new RelinkSource<number>({
-      key: 'test/special-ssr',
+      key: 'test/special-ssr/main',
       default: 42,
     })
 
@@ -27,6 +27,25 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig): void => {
 
     const output = renderToStaticMarkup(<TestComponent />)
     expect(output).toBe('<span>42</span>')
+
+    await Source.dispose()
+
+  })
+
+  test('With selector', async () => {
+
+    const Source = new RelinkSource<number>({
+      key: 'test/special-ssr/with-selector',
+      default: 42,
+    })
+
+    function TestComponent(): JSX.Element {
+      const value = useRelinkValue(Source, (s) => s.toString(16))
+      return <span>{value}</span>
+    }
+
+    const output = renderToStaticMarkup(<TestComponent />)
+    expect(output).toBe('<span>2a</span>')
 
     await Source.dispose()
 
