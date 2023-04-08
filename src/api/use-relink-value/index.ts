@@ -174,7 +174,7 @@ export function useRelinkValue_BASE<State, SelectedState>(
       const nextSelectedState = new LazyVariable(() => selectValue(source.get()))
 
       const shouldReturnCachedValue = (() => {
-        if (!active) {
+        if (!active && currentMutationCount > INITIAL_STATE_SYNC_VALUE[$$INTERNALS][0]) {
           return true // Early exit
         }
         if (currentMutationCount === nextMutationCount) {
@@ -208,8 +208,10 @@ export function useRelinkValue_BASE<State, SelectedState>(
         return nextSyncValue
       }
     }, [active, isEqual, selectValue, source]),
-    (): SyncValue<CachedValueSchema> => ({ [$$INTERNALS]: [-1, selectValue(source.get())] }),
-    // KIV: Not sure if this server snapshot implementation is stable in the long run
+    // KIV: "The result of getServerSnapshot should be cached to avoid an infinite loop"
+    useCallback((): SyncValue<CachedValueSchema> => {
+      return { [$$INTERNALS]: [-1, selectValue(source.get())] }
+    }, [selectValue, source]),
   )[$$INTERNALS][1]
 
 }

@@ -2,7 +2,14 @@ import { useRef, useState } from 'react'
 import { useLayoutEffect } from '../../internals/custom-hooks'
 import { RelinkSource, RelinkSourceConfig } from '../source'
 
+// TOFIX
+
 /**
+ * ## 🚨 KNOWN ISSUES 🚨
+ * This will break your app in Strict Mode. You can learn more by referring to
+ * the "Known Issues" section of the
+ * [4.1.0 release notes](https://github.com/glyph-cat/react-relink/releases/tag/4.1.0).
+ *
  * ## 🚧 EXPERIMENTAL 🚧
  * This is an experimental feature. Until it is stable, the usage, parameters,
  * and behaviours might change from version to version, potentially causing

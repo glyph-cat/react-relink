@@ -144,4 +144,54 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   })
 
+  test('`active = false` at first', async () => {
+
+    Source = new RelinkSource<SampleSchema>({
+      key: 'test/api-useRelinkValue/active-parameter=false',
+      default: {
+        foo: 1,
+        bar: 1,
+      },
+    })
+
+    const hookInterface = createHookInterface({
+      useHook: () => {
+        const [active, setActive] = useState(false)
+        const state = useRelinkValue(Source, null, active)
+        return { state, setActive }
+      },
+      values: {
+        main({ hookData }) {
+          return hookData.state
+        },
+      },
+      actions: {
+        setActiveToFalse({ hookData }) {
+          hookData.setActive(false)
+        },
+        setActiveToTrue({ hookData }) {
+          hookData.setActive(true)
+        },
+      },
+    }, cleanupRef)
+
+    expect(hookInterface.getRenderCount()).toBe(1)
+    expect(hookInterface.get('main')).toStrictEqual({
+      foo: 1,
+      bar: 1,
+    })
+
+    // `active=true` Make sure hook updates when state changes.
+    await act(async () => {
+      await Source.set((s) => ({ ...s, foo: s.foo + 1 }))
+    })
+    hookInterface.actions('setActiveToTrue')
+    expect(hookInterface.getRenderCount()).toBe(2)
+    expect(hookInterface.get('main')).toStrictEqual({
+      foo: 2,
+      bar: 1,
+    })
+
+  })
+
 })
