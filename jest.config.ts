@@ -20,10 +20,10 @@ const config: Config.InitialOptions = {
   //   ],
   // },
   maxWorkers: 1,
+  testTimeout: 1000,
   /**
    * Prefer fake timers by default because it saves time.
    */
-  testTimeout: 1000,
   fakeTimers: {
     enableGlobally: true,
   },
