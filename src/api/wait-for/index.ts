@@ -25,8 +25,9 @@ export function waitFor(
         // Ignore if event is not caused by hydration
         if (event.type !== RelinkEventType.hydrate) { return }
         if (!event.isHydrating) {
-          // KIV: There's a gotcha - There is no way to unwatch unless the
-          // appropriate event is received or unless the source is cleaned up.
+          // NOTE: There is no way to unwatch unless the appropriate event is
+          // received or unless the source is cleaned up... but then this is
+          // what the function is about after all — to wait a source to be ready.
           unwatch()
           resolve()
         }

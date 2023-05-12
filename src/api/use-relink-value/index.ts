@@ -208,7 +208,8 @@ export function useRelinkValue_BASE<State, SelectedState>(
         return nextSyncValue
       }
     }, [active, isEqual, selectValue, source]),
-    // KIV: "The result of getServerSnapshot should be cached to avoid an infinite loop"
+    // TOFIX: "The result of getServerSnapshot should be cached to avoid an infinite loop"
+    // This message is still present
     useCallback((): SyncValue<CachedValueSchema> => {
       return { [$$INTERNALS]: [-1, selectValue(source.get())] }
     }, [selectValue, source]),

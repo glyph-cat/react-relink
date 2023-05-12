@@ -83,6 +83,16 @@ export interface RelinkSourceConfig<State> {
 }
 
 /**
+ * A data store managed by Relink, that is meant to be used in conjunction with
+ * the rest of the APIs provided by this package.
+ * @example
+ * const PreferencesSource = new RelinkSource({
+ *   key: 'preferences',
+ *   default: {
+ *     volume: 1.0,
+ *     brightness: 1.0,
+ *   },
+ * })
  * @public
  */
 export class RelinkSource<State> {
@@ -233,7 +243,7 @@ export class RelinkSource<State> {
           // finishes hydrating. Gate will really be open when all locks are
           // cancelled out by the 'M$open' calls.
 
-          // KIV
+          // NOTE:
           // Gate is not locked so that pending state changes can complete and we
           // don't waste time waiting for them to hydrate the current source.
           // Although it might seem meaningless to execute queued state changes
@@ -574,7 +584,7 @@ export class RelinkSource<State> {
     for (const propertyOrMethod in this) {
       delete this[propertyOrMethod]
     }
-    // KIV
+    // NOTE:
     // Binded methods seem to remain intact without explicitly changing setting
     // their values to undefined. The other class properties that are used by
     // these methods, however, have already become undefined.
