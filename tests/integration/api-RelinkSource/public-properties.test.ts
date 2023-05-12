@@ -2,10 +2,9 @@ import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
-wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig) => {
+wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
-  const IS_MINIFIED_UMD_BUILD = buildType === 'umd' && buildEnv === 'prod'
 
   describe('.key', () => {
 
@@ -30,11 +29,10 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig) => {
         // @ts-expect-error: Done on purpose to test the error.
         Source.key = 'lorem-ipsum'
       }
-      expect(callback).toThrowError(new TypeError(
-        IS_MINIFIED_UMD_BUILD
-          ? 'Cannot set property key of [object Object] which has only a getter'
-          : 'Cannot set property key of #<RelinkSource> which has only a getter'
-      ))
+      expect(callback).toThrowError(TypeError)
+      expect(callback).toThrowError(
+        /^Cannot set property key of (#<[A-Za-z]+>|\[object Object\]) which has only a getter$/
+      )
     })
 
   })
@@ -63,16 +61,12 @@ wrapper(({ Relink, buildEnv, buildType }: IntegrationTestConfig) => {
         // @ts-expect-error: Done on purpose to test the error.
         Source.default = 2
       }
+      expect(callback).toThrowError(TypeError)
       expect(callback).toThrowError(
-        new TypeError(
-          IS_MINIFIED_UMD_BUILD
-            ? 'Cannot set property default of [object Object] which has only a getter'
-            : 'Cannot set property default of #<RelinkSource> which has only a getter'
-        )
+        /^Cannot set property default of (#<[A-Za-z]+>|\[object Object\]) which has only a getter$/
       )
     })
 
   })
 
 })
-

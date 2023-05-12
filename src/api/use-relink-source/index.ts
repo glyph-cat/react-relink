@@ -14,7 +14,7 @@ import { RelinkSource, RelinkSourceConfig } from '../source'
  * versions!
  * @example
  * function App(): JSX.Element {
- *   const MySource = useCreateRelinkSource({
+ *   const MySource = useRelinkSource({
  *     key: 'foo-bar',
  *     default: {
  *       // Default value goes here
@@ -24,7 +24,7 @@ import { RelinkSource, RelinkSourceConfig } from '../source'
  * }
  * @public
  */
-export function useCreateRelinkSource<State>(
+export function useRelinkSource<State>(
   config: RelinkSourceConfig<State>
 ): RelinkSource<State> {
   const [source] = useState<Array<RelinkSource<State>>>([])
