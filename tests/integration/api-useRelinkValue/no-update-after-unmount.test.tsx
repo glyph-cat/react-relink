@@ -8,12 +8,12 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
-  interface Schema {
+  interface IState {
     counter: number
     isInnermostVisible: boolean
   }
 
-  let Source: $RelinkSource<Schema>
+  let Source: $RelinkSource<IState>
   let root: ReactTestRenderer
   afterEach(async () => {
     await Source.dispose()
@@ -23,7 +23,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
 
   test('Main', async () => {
 
-    Source = new RelinkSource<Schema>({
+    Source = new RelinkSource<IState>({
       key: 'test/no-update-after-unmount',
       default: {
         counter: 0,

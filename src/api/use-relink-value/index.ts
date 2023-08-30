@@ -5,17 +5,17 @@ import {
   useRef,
 } from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
+import { RelinkSelector } from '../../abstractions'
 import {
   $$INTERNALS,
   DEFAULT_HOOK_ACTIVE_STATE,
   IS_DEV_ENV,
 } from '../../constants'
-import { RelinkSelector } from '../../schema'
+import { LazyVariable } from '../../internals/lazy-declare'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
 import { useScopedRelinkSource } from '../scope'
-import { RelinkSource } from '../source'
 import { RelinkAdvancedSelector } from '../selector'
-import { LazyVariable } from '../../internals/lazy-declare'
+import { RelinkSource } from '../source'
 
 /**
  * @param source - A {@link RelinkSource}.
@@ -106,8 +106,6 @@ export function useRelinkValue<State, SelectedState>(
   return value
 }
 
-// MARK: Internals
-
 /**
  * State values are nested in a symbol property so that they are not directly
  * available in the React Dev Tools.
@@ -136,36 +134,48 @@ export function useRelinkValue_BASE<State, SelectedState>(
 
   const mutableSelector = useRef(selector)
   mutableSelector.current = selector
+  const allowReactiveValues = selector instanceof RelinkAdvancedSelector &&
+    selector[$$INTERNALS].M$allowReactiveValues
+  const reactiveSelector = allowReactiveValues ? selector : null
+  const getSelector = useCallback(() => {
+    // NOTE: Value of reactive selector will remain `null` and not trigger
+    // component updates if memoizing is not asked for.
+    return allowReactiveValues ? reactiveSelector : mutableSelector.current
+    // NOTE: `reactiveSelector` and `mutableSelector.current` are essentially
+    // the same, but one is specified as a dependency and the other is not.
+  }, [reactiveSelector, allowReactiveValues])
 
   const selectValue = useCallback(($value: State): State | SelectedState => {
+    const $selector = getSelector()
     // NOTE: `isFunction` is not used to check the selector because it can only
     // either be a faulty value or a function. If other types are passed, let
     // the error automatically surface up so that users are aware of the
     // incorrect type.
-    if (mutableSelector.current) {
-      if (mutableSelector.current instanceof RelinkAdvancedSelector) {
-        return mutableSelector.current[$$INTERNALS].M$get($value)
+    if ($selector) {
+      if ($selector instanceof RelinkAdvancedSelector) {
+        return $selector[$$INTERNALS].M$get($value)
       } else {
-        return mutableSelector.current($value)
+        return $selector($value)
       }
     } else {
       return $value
     }
-  }, [])
+  }, [getSelector])
 
   const isEqual = useMemo(() => {
-    return mutableSelector.current instanceof RelinkAdvancedSelector
-      ? mutableSelector.current[$$INTERNALS].M$compareFn
+    const $selector = getSelector()
+    return $selector instanceof RelinkAdvancedSelector
+      ? $selector[$$INTERNALS].M$compareFn
       : Object.is
-  }, [])
+  }, [getSelector])
 
-  type CachedValueSchema = [mutationCount: number, stateValue: State | SelectedState]
-  const cachedSyncValue = useRef<SyncValue<CachedValueSchema>>(INITIAL_STATE_SYNC_VALUE)
+  type ICachedValue = [mutationCount: number, stateValue: State | SelectedState]
+  const cachedSyncValue = useRef<SyncValue<ICachedValue>>(INITIAL_STATE_SYNC_VALUE)
   const isLoaded = useRef(false)
 
   return useSyncExternalStore(
     source.watch,
-    useCallback((): SyncValue<CachedValueSchema> => {
+    useCallback((): SyncValue<ICachedValue> => {
       const [
         currentMutationCount,
         currentSelectedState,
@@ -200,7 +210,7 @@ export function useRelinkValue_BASE<State, SelectedState>(
       if (shouldReturnCachedValue) {
         return cachedSyncValue.current
       } else {
-        const nextSyncValue: SyncValue<CachedValueSchema> = {
+        const nextSyncValue: SyncValue<ICachedValue> = {
           [$$INTERNALS]: [nextMutationCount, nextSelectedState.get()],
         }
         cachedSyncValue.current = nextSyncValue
@@ -208,9 +218,9 @@ export function useRelinkValue_BASE<State, SelectedState>(
         return nextSyncValue
       }
     }, [active, isEqual, selectValue, source]),
-    // TOFIX: "The result of getServerSnapshot should be cached to avoid an infinite loop"
-    // This message is still present
-    useCallback((): SyncValue<CachedValueSchema> => {
+    useCallback((): SyncValue<ICachedValue> => {
+      // TOFIX: "The result of getServerSnapshot should be cached to avoid an infinite loop"
+      // This message is still present
       return { [$$INTERNALS]: [-1, selectValue(source.get())] }
     }, [selectValue, source]),
   )[$$INTERNALS][1]

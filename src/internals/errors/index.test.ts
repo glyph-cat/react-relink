@@ -1,6 +1,4 @@
 import {
-  formatErrorCode,
-  showInternalErrorNextSteps,
   HANDLE_ERROR_NO_USELESS_HYDRATION,
   HANDLE_INTERNAL_ERROR_FAIL_TO_REMOVE_SELF_KEY_FROM_PARENT,
   HANDLE_WARNING_NO_EMPTY_KEYS_ALLOWED,
@@ -9,6 +7,8 @@ import {
   THROW_ERROR_CIRCULAR_DEPENDENCY,
   THROW_INTERNAL_ERROR_MALFORMED_HYDRATION_MARKER,
   THROW_TYPE_ERROR_SOURCE_KEY,
+  formatErrorCode,
+  showInternalErrorNextSteps,
 } from '.'
 
 afterEach(() => { jest.restoreAllMocks() })

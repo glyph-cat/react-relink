@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
+import { RelinkSourceKey } from '../../abstractions'
 import { IS_DEV_ENV, REPORT_ISSUE_URL } from '../../constants'
-import { RelinkSourceKey } from '../../schema'
 import type { HydrationConcludeType } from '../no-useless-hydration-warner'
-import { formatFunctionNotationArray, safeStringJoin, SafeStringJoinTypes } from '../string-formatting'
+import { SafeStringJoinTypes, formatFunctionNotationArray, safeStringJoin } from '../string-formatting'
 
 // #region Utils
 

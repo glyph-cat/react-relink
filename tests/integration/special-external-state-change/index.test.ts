@@ -5,7 +5,7 @@ import {
 import { useCallback, useReducer } from 'react'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { forceUpdateReducer } from '../../../src/internals/custom-hooks'
-import { IntegrationTestConfig, SampleSchema } from '../../helpers'
+import { IntegrationTestConfig, ISampleState } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objective: Check if state values reference to the same object if
@@ -15,7 +15,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
-  let Source: $RelinkSource<SampleSchema>
+  let Source: $RelinkSource<ISampleState>
   const cleanupRef = createCleanupRef()
   afterEach(async () => {
     await Source.dispose()
@@ -26,7 +26,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
     test('Without selector', async () => {
 
-      Source = new RelinkSource<SampleSchema>({
+      Source = new RelinkSource<ISampleState>({
         key: 'test/api-useRelinkValue/external-state-change/without-selector',
         default: {
           foo: 1,
@@ -65,7 +65,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
     test('With selector', async () => {
 
-      Source = new RelinkSource<SampleSchema>({
+      Source = new RelinkSource<ISampleState>({
         key: 'test/api-useRelinkValue/external-state-change/with-selector',
         default: {
           foo: 1,
@@ -76,7 +76,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
       function useCompoundHook() {
         const [, forceUpdate] = useReducer(forceUpdateReducer, 0)
         // NOTE: Selector should be memoized or declared outside of component.
-        const selector = useCallback((s: SampleSchema) => ({ foo: s.foo }), [])
+        const selector = useCallback((s: ISampleState) => ({ foo: s.foo }), [])
         const state = useRelinkValue(Source, selector)
         return [state, forceUpdate] as const
       }

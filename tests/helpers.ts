@@ -1,4 +1,5 @@
-import { ElementHandle, NodeFor, Page, WaitForSelectorOptions } from 'puppeteer'
+import type { ElementHandle, Page } from 'expect-puppeteer/node_modules/@types/puppeteer'
+import { NodeFor, WaitForSelectorOptions } from 'puppeteer'
 import * as __relink__ from '../src/bundle'
 
 export interface IntegrationTestConfig {
@@ -62,12 +63,12 @@ export interface ISandbox {
   }
 }
 
-export interface SampleSchema {
+export interface ISampleState {
   foo: number,
   bar: number,
 }
 
-export interface PlayerSetSchema {
+export interface IPlayerSet {
   player1: {
     nickname: string
     score: number,

@@ -1,8 +1,8 @@
+import { RELINK_COMPARE_FN_PRESET } from '.'
 import {
   SHALLOW_COMPARE_INVOCATION_SPY,
   SHALLOW_COMPARE_INVOCATION_TYPE,
 } from './internals'
-import { RELINK_COMPARE_FN_PRESET } from '.'
 
 const {
   shallowCompareArray,

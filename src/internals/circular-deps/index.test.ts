@@ -1,5 +1,5 @@
-import { RelinkSource } from '../../api/source'
 import { checkForCircularDeps } from '.'
+import { RelinkSource } from '../../api/source'
 
 describe(checkForCircularDeps.name, () => {
 

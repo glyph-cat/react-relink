@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext } from 'react'
-import { RelinkScopeId, RelinkSourceKey } from '../../schema'
+import { RelinkScopeId, RelinkSourceKey } from '../../abstractions'
 import type { RelinkSource } from '../source'
 
 /**
@@ -15,14 +15,14 @@ export const getNewScopeId = (): RelinkScopeId => ++scopeIdCounter
 /**
  * @internal
  */
-interface RelinkContextSchema {
+interface IRelinkContext {
   M$pool: Record<RelinkSourceKey, RelinkSource<unknown>>
 }
 
 /**
  * @internal
  */
-const RelinkContext = createContext<RelinkContextSchema>({
+const RelinkContext = createContext<IRelinkContext>({
   M$pool: {},
 })
 
@@ -134,7 +134,7 @@ export function RelinkScope({
   sources,
 }: RelinkScopeProps): JSX.Element {
   const currentContext = useContext(RelinkContext)
-  const nextContext: RelinkContextSchema = {
+  const nextContext: IRelinkContext = {
     M$pool: {
       ...currentContext.M$pool,
     },

@@ -1,5 +1,5 @@
-import { delay, TIME_GAP } from '../../../../debugging-utils'
 import { GatedFlow } from '..'
+import { delay, TIME_GAP } from '../../../../debugging-utils'
 
 jest.useRealTimers()
 

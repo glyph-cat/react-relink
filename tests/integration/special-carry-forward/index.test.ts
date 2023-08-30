@@ -1,6 +1,6 @@
 import { act } from 'react-test-renderer'
 import { delay, TIME_GAP } from '../../../debugging-utils'
-import { IntegrationTestConfig, SampleSchema } from '../../helpers'
+import { IntegrationTestConfig, ISampleState } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objectives:
@@ -14,7 +14,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   test('Carry forward', async () => {
 
-    const Source = new RelinkSource<SampleSchema>({
+    const Source = new RelinkSource<ISampleState>({
       key: 'test/x-carry-forward',
       default: {
         foo: 1,

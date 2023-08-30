@@ -1,7 +1,7 @@
 import { MutableRefObject, useReducer, useRef } from 'react'
-import { waitFor } from '../../api/wait-for'
+import { RelinkEventType } from '../../abstractions'
 import { RelinkSource } from '../../api/source'
-import { RelinkEventType } from '../../schema'
+import { waitFor } from '../../api/wait-for'
 import { forceUpdateReducer, useLayoutEffect } from '../custom-hooks'
 
 // Modified based from ovieokeh's `wrapPromise` method. Reference:

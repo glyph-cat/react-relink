@@ -1,4 +1,4 @@
-import { RelinkSourceKey } from '../../schema'
+import { RelinkSourceKey } from '../../abstractions'
 
 export type SafeStringJoinTypes = boolean | number | string | null | undefined | symbol
 

@@ -1,7 +1,15 @@
+import {
+  RelinkEvent,
+  RelinkEventType,
+  RelinkHydrateCallback,
+  RelinkLifecycleConfig,
+  RelinkSourceKey,
+  RelinkSourceOptions,
+} from '../../abstractions'
 import { IS_DEV_ENV } from '../../constants'
 import { allDepsAreReady } from '../../internals/all-deps-are-ready'
-import { RelinkCore, EndHydrationMarker } from '../../internals/core'
 import { checkForCircularDeps } from '../../internals/circular-deps'
+import { EndHydrationMarker, RelinkCore } from '../../internals/core'
 import {
   HANDLE_INTERNAL_ERROR_FAIL_TO_REMOVE_SELF_KEY_FROM_PARENT,
   HANDLE_WARNING_NO_EMPTY_KEYS_ALLOWED,
@@ -12,19 +20,11 @@ import {
 import { GatedFlow } from '../../internals/gated-flow'
 import { registerKey, unregisterKey } from '../../internals/key-registry'
 import {
-  createNoUselessHydrationWarner,
   HydrationConcludeType,
+  createNoUselessHydrationWarner,
 } from '../../internals/no-useless-hydration-warner'
 import { startMeasuringReducerPerformance } from '../../internals/performance'
 import { isFunction, isThenable } from '../../internals/type-checker'
-import {
-  RelinkEventType,
-  RelinkLifecycleConfig,
-  RelinkSourceKey,
-  RelinkSourceOptions,
-  RelinkHydrateCallback,
-  RelinkEvent,
-} from '../../schema'
 import { getNewScopeId } from '../scope'
 
 /**
@@ -190,7 +190,6 @@ export class RelinkSource<State> {
     this.set = this.set.bind(this)
     this.reset = this.reset.bind(this)
     this.watch = this.watch.bind(this)
-    this.cleanup = this.cleanup.bind(this)
     this.dispose = this.dispose.bind(this)
 
     registerKey(this.M$key)
@@ -299,7 +298,7 @@ export class RelinkSource<State> {
    * `lifecycle.didSet` will not be called so that the same data doesn't get
    * persisted back to the `localStorage` or server.
    * @example
-   * Source.hydrate(({ commit, skip }) => {
+   * Source.hydrate(({ commit, commitNoop }) => {
    * const rawValue = localStorage.getItem(storageKey)
    *   let parsedValue
    *   try {
@@ -312,7 +311,7 @@ export class RelinkSource<State> {
    *       commit(parsedValue)
    *     } else {
    *       // Conclude the hydration with the default state.
-   *       skip()
+   *       commitNoop()
    *     }
    *   }
    * })
@@ -327,12 +326,6 @@ export class RelinkSource<State> {
           const isFirstHydration = concludeHydration(HydrationConcludeType.M$commit)
           if (isFirstHydration) {
             this.M$core.M$endHydration(EndHydrationMarker.C, hydratedState)
-          }
-        },
-        skip: (): void => {
-          const isFirstHydration = concludeHydration(HydrationConcludeType.M$skip)
-          if (isFirstHydration) {
-            this.M$core.M$endHydration(EndHydrationMarker.S)
           }
         },
         commitDefault: (): void => {
@@ -485,31 +478,7 @@ export class RelinkSource<State> {
     return this.M$core.M$watcher.M$watch(callback)
   }
 
-  /**
-   * ## 🚨 DEPRECATED 🚨
-   * Please refer to the `@deprecated` tag for more information.
-   *
-   * ---------------------------------------------------------------------------
-   *
-   * Dispose the source when it is no longer in use to reduce memory consumption.
-   *
-   * Use cases where this method is useful:
-   * - When dynamically created sources are no longer needed;
-   * - Inside the teardown function of a test.
-   *
-   * @example
-   * function MyComponent() {
-   *   const Source = useRef(null)
-   *   if (!Source.current) { Source = new RelinkSource(...) }
-   *   useEffect(() => {
-   *     return () => { Source.current.cleanup() }
-   *   }, [])
-   *   return '...'
-   * }
-   * @deprecated Please use {@link dispose} instead. This method will be removed
-   * in the next major version.
-   */
-  cleanup(): void {
+  private cleanup = (): void => {
     // Check if there are any child dependants and proceed to cleanup anyway,
     // but show a warning if there are child dependants so that developers will
     // be aware that there might be unintended behaviours.
@@ -557,12 +526,6 @@ export class RelinkSource<State> {
    * - When dynamically created sources are no longer needed;
    * - Inside the teardown function of a test.
    *
-   * There are some differences between this method and {@link cleanup}.
-   * After invoking this method:
-   * - the source will no longer emit events or trigger comopnent re-renders
-   * upon state change; and
-   * - all properties and methods of the source will no longer be accessible.
-   *
    * @example
    * function MyComponent() {
    *   const Source = useRef(null)
@@ -593,7 +556,6 @@ export class RelinkSource<State> {
     this.set = undefined
     this.reset = undefined
     this.hydrate = undefined
-    this.cleanup = undefined
     this.dispose = undefined
     this.watch = undefined
   }

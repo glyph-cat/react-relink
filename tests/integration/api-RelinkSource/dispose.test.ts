@@ -1,6 +1,6 @@
 import * as chalk from 'chalk'
 import { delay, TIME_GAP } from '../../../debugging-utils'
-import { RelinkEvent } from '../../../src/schema'
+import { RelinkEvent } from '../../../src/abstractions'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -35,7 +35,6 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
     expect(typeof Source.default).toBe('undefined')
     expect(typeof Source.key).toBe('undefined')
     expect(typeof Source.watch).toBe('undefined')
-    expect(typeof Source.cleanup).toBe('undefined')
     expect(typeof Source.dispose).toBe('undefined')
     expect(Object.keys(Source).sort()).toStrictEqual([
       // NOTE: These keys are still present probably because their value is `undefined`
@@ -44,7 +43,6 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
       'set',
       'reset',
       'hydrate',
-      'cleanup',
       'dispose',
       'watch',
     ].sort())

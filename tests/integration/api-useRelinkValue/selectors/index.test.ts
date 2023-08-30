@@ -7,17 +7,17 @@ import {
   RelinkSource as $RelinkSource,
   RELINK_COMPARE_FN_PRESET,
 } from '../../../../src/bundle'
-import { IntegrationTestConfig, SampleSchema } from '../../../helpers'
+import { IntegrationTestConfig, ISampleState } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue, RelinkAdvancedSelector } = Relink
 
-  let Source: $RelinkSource<SampleSchema>
+  let Source: $RelinkSource<ISampleState>
   const cleanupRef = createCleanupRef()
   beforeEach(() => {
-    Source = new RelinkSource<SampleSchema>({
+    Source = new RelinkSource<ISampleState>({
       key: 'test/api-useRelinkValue/selector',
       default: {
         foo: 1,
@@ -63,7 +63,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
     test('Simulation of `RelinkBasicSelector`', async () => {
 
-      const selector = new RelinkAdvancedSelector<SampleSchema, SampleSchema['bar']>({
+      const selector = new RelinkAdvancedSelector<ISampleState, ISampleState['bar']>({
         get(state) {
           return state.bar
         }
@@ -98,7 +98,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
     test('Custom equality checker', async () => {
 
-      const selector = new RelinkAdvancedSelector<SampleSchema, SampleSchema>({
+      const selector = new RelinkAdvancedSelector<ISampleState, ISampleState>({
         get(state) {
           return state
         },

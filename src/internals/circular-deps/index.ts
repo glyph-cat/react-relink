@@ -1,5 +1,5 @@
+import { RelinkSourceKey } from '../../abstractions'
 import type { RelinkSource } from '../../api/source'
-import { RelinkSourceKey } from '../../schema'
 import { THROW_ERROR_CIRCULAR_DEPENDENCY } from '../errors'
 
 /**

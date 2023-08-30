@@ -36,7 +36,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
     })
 
     await Source.hydrate(({ commit }) => { commit(3) })
-    await Source.hydrate(({ skip }) => { skip() })
+    await Source.hydrate(({ commitNoop }) => { commitNoop() })
     await Source.set(1)
     await Source.reset()
 

@@ -1,4 +1,4 @@
-import { RelinkSourceKey } from '../../schema'
+import { RelinkSourceKey } from '../../abstractions'
 import { isThenable } from '../type-checker'
 
 /**

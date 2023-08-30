@@ -1,6 +1,6 @@
+import { allDepsAreReady } from '.'
 import { TIME_GAP } from '../../../debugging-utils'
 import { RelinkSource } from '../../api/source'
-import { allDepsAreReady } from '.'
 
 describe(allDepsAreReady.name, () => {
 

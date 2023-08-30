@@ -34,9 +34,9 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
           const hydrate = hookData
           await hydrate(({ commit }) => { commit(2) })
         },
-        async hydrateSkip({ hookData }) {
+        async hydrateCommitNoop({ hookData }) {
           const hydrate = hookData
-          await hydrate(({ skip }) => { skip() })
+          await hydrate(({ commitNoop }) => { commitNoop() })
         },
       },
       values: {
@@ -47,7 +47,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
     }, cleanupRef)
     expect(Object.is(hookInterface.get('main'), Source.hydrate)).toBe(true)
     await hookInterface.actionsAsync('hydrateCommit')
-    await hookInterface.actionsAsync('hydrateSkip')
+    await hookInterface.actionsAsync('hydrateCommitNoop')
     expect(hookInterface.getRenderCount()).toBe(1)
   })
 

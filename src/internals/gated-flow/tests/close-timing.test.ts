@@ -1,5 +1,5 @@
-import { delay, TIME_GAP } from '../../../../debugging-utils'
 import { GatedFlow } from '..'
+import { delay, TIME_GAP } from '../../../../debugging-utils'
 
 // Elaboration: Gate only closes when all currently queued callbacks have been
 // flushed, but callbacks placed after a lock is requested remains queued.

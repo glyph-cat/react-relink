@@ -1,5 +1,5 @@
+import { RelinkSourceKey } from '../../abstractions'
 import { RELINK_CONFIG } from '../../api/config'
-import { RelinkSourceKey } from '../../schema'
 import { formatSourceKeyArray } from '../string-formatting'
 
 /**

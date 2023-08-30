@@ -1,5 +1,5 @@
+import { RelinkSourceKey } from '../../abstractions'
 import { IS_DEV_ENV } from '../../constants'
-import { RelinkSourceKey } from '../../schema'
 import { HANDLE_ERROR_NO_USELESS_HYDRATION } from '../errors'
 
 /**

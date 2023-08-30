@@ -1,10 +1,10 @@
 import {
+  COUNTER_VALUE_TEST_ID,
+} from '../../../playground/web/components/counter-value/constants'
+import {
   CounterValues,
   TestId as SandboxTestId,
 } from '../../../playground/web/sandboxes/suspense/constants'
-import {
-  COUNTER_VALUE_TEST_ID,
-} from '../../../playground/web/components/counter-value/constants'
 import { wrapper } from '../wrapper'
 
 wrapper(({ loadSandbox }) => {
@@ -12,13 +12,14 @@ wrapper(({ loadSandbox }) => {
   test('Suspense', async () => {
 
     const sandbox = await loadSandbox('suspense', page)
+    page.authenticate
 
     const isComponentSuspended = async (): Promise<boolean> => {
       const evaluation = await page.evaluateHandle(($testId) => {
         const element = document.querySelector(`h1[data-test-id='${$testId}']`)
         return !Object.is(element, null)
       }, SandboxTestId.SUSPENSE_FALLBACK_COMPONENT)
-      return evaluation.jsonValue()
+      return (await evaluation.jsonValue()) as boolean
     }
 
     const waitForSuspenseToEnd = async (): Promise<void> => {
@@ -45,22 +46,6 @@ wrapper(({ loadSandbox }) => {
     await sandbox.screenshot.checkpoint()
     await expect(sandbox.commonMethods.getCounterValue()).resolves.toBe(CounterValues.COMMIT_VALUE)
     await expect(sandbox.getRenderCount(SandboxTestId.SUB_RENDER_COUNT)).resolves.toBe(3)
-
-    // Hydrate by skip
-    // - Set arbitary number
-    await page.click(`button[data-test-id='${SandboxTestId.button.SET_ARBITARY_VALUE}']`)
-    await sandbox.screenshot.checkpoint()
-    await expect(sandbox.commonMethods.getCounterValue()).resolves.toBe(CounterValues.ARBITARY_VALUE)
-    await expect(sandbox.getRenderCount(SandboxTestId.SUB_RENDER_COUNT)).resolves.toBe(4)
-    // - Perform hydration
-    await page.click(`button[data-test-id='${SandboxTestId.button.HYDRATE_BY_SKIP}']`)
-    await sandbox.screenshot.checkpoint()
-    await expect(isComponentSuspended()).resolves.toBe(true)
-    // - Wait for suspense to end
-    await waitForSuspenseToEnd()
-    await sandbox.screenshot.checkpoint()
-    await expect(sandbox.commonMethods.getCounterValue()).resolves.toBe(CounterValues.DEFAULT_VALUE)
-    await expect(sandbox.getRenderCount(SandboxTestId.SUB_RENDER_COUNT)).resolves.toBe(5)
 
     // Hydrate by commit default
     // - Set arbitary number

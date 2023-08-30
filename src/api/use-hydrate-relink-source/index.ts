@@ -8,12 +8,12 @@ import { RelinkSource } from '../source'
  * @param source - A {@link RelinkSource}.
  * @example
  * const hydrateSource = useHydrateRelinkSource(Source)
- * hydrateSource(({ commit, skip }) => {
+ * hydrateSource(({ commit, commitNoop }) => {
  *   const persistedState = custom_method_to_fetch_persisted_state()
  *   if (persistedState) {
  *     commit(persistedState)
  *   } else {
- *     skip()
+ *     commitNoop()
  *   }
  * })
  * @public

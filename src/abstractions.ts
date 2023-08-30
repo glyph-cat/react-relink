@@ -19,20 +19,6 @@ export interface RelinkHydrateArgs<State> {
   /**
    * Commit the default state. Will override the current state if it is not
    * already the default.
-   *
-   * @deprecated
-   * There are two new methods for handling situations where `skip` is needed
-   * in a clearer approach:
-   * - {@link commitDefault}: Direct replacement for `skip`.
-   * - {@link commitNoop}: Informs {:PACKAGE_NAME_SHORT:} that the hydration
-   * process has been completed so that other actions like set/reset/getAsync
-   * can continue to work and components that are suspensed because of this can
-   * be rendered once again.
-   */
-  skip(): void
-  /**
-   * Commit the default state. Will override the current state if it is not
-   * already the default.
    */
   commitDefault(): void
   /**
@@ -105,12 +91,12 @@ export type RelinkEvent<State> = RelinkHydrationEvent<State> | RelinkStateChange
  *   key: 'user-source',
  *   default: defaultUserState,
  *   lifecycle: {
- *     init({ commit, skip }) {
+ *     init({ commit, commitNoop }) {
  *       const data = localStorage.getItem('user')
  *       if (data) {
  *         commit(JSON.parse(data))
  *       } else {
- *         skip()
+ *         commitNoop()
  *       }
  *     },
  *     didSet(payload) {

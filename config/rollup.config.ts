@@ -1,8 +1,8 @@
-import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
+import nodeResolve from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import { execSync } from 'child_process'
-import { Plugin as RollupPlugin, RollupOptions } from 'rollup'
+import { RollupOptions, Plugin as RollupPlugin } from 'rollup'
 import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
 import pkg from '../package.json'
@@ -27,13 +27,13 @@ const REACT_NATIVE_EXTERNAL_LIBS = [
   'react-native',
 ].filter((item) => item !== 'react-dom')
 
-interface PluginConfigSchema {
+interface IPluginConfig {
   overrides?: Record<string, unknown>
   mode?: 'development' | 'production'
   buildType: RelinkBuildType
 }
 
-function getPlugins(config: PluginConfigSchema): Array<RollupPlugin> {
+function getPlugins(config: IPluginConfig): Array<RollupPlugin> {
   const { overrides = {}, mode, buildType } = config
   const basePlugins = {
     nodeResolve: nodeResolve(BASE_NODE_RESOLVE_CONFIG),

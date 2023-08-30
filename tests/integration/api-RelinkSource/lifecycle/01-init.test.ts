@@ -58,15 +58,15 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   })
 
-  test('Synchronous skip', async () => {
+  test('Synchronous commitNoop', async () => {
 
     Source = new RelinkSource({
-      key: 'test/RelinkSource/lifecycle.init/sync/skip',
+      key: 'test/RelinkSource/lifecycle.init/sync/commitNoop',
       default: null,
       lifecycle: {
-        init({ skip }) {
+        init({ commitNoop }) {
           act(() => {
-            skip()
+            commitNoop()
           })
         },
       },
@@ -128,16 +128,16 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   })
 
-  test('Asynchronous skip', async () => {
+  test('Asynchronous commitNoop', async () => {
 
     Source = new RelinkSource({
-      key: 'test/Source/lifecycle.init/async/commit',
+      key: 'test/Source/lifecycle.init/async/commitNoop',
       default: null,
       lifecycle: {
-        async init({ skip }) {
+        async init({ commitNoop }) {
           await act(async () => {
             await delay(TIME_GAP(1))
-            skip()
+            commitNoop()
           })
         },
       },

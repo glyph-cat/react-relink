@@ -17,7 +17,7 @@ wrapper(({ loadSandbox }) => {
         }
         return null
       }, testId)
-      return evaluation.jsonValue()
+      return (await evaluation.jsonValue()) as string
     }
 
     let MainThemeSourceColor: CSSProperties['color'] = null

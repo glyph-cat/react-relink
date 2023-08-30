@@ -1,5 +1,5 @@
-import { delay, TIME_GAP } from '../../../../debugging-utils'
 import { GatedFlow } from '..'
+import { delay, TIME_GAP } from '../../../../debugging-utils'
 
 // NOTE: Every time `M$exec` is called, so is `M$flush`, but the callbacks
 // are not invoked because the gate is not opened, making the while-loop in

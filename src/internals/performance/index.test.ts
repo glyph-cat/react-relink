@@ -1,11 +1,11 @@
-import { TIME_GAP } from '../../../debugging-utils'
 import {
+  PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS,
+  PERFORMANCE_SLOW_THRESHOLD_MS,
   formatReducerNotRespondingWarning,
   formatReducerSlowWarning,
-  PERFORMANCE_SLOW_THRESHOLD_MS,
-  PERFORMANCE_NOT_RESPONDING_THRESHOLD_MS,
   startMeasuringReducerPerformance,
 } from '.'
+import { TIME_GAP } from '../../../debugging-utils'
 
 // NOTE: Time gaps are added for extra time padding
 

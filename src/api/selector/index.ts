@@ -20,6 +20,18 @@ export interface RelinkAdvancedSelectorConfig<State, SelectedState> {
    * Also see {@link RELINK_COMPARE_FN_PRESET}
    */
   compareFn?(prevState: SelectedState, nextState: SelectedState): boolean
+  /**
+   * Reactive values refers to changes in values that cause component updates,
+   * such as props and state values. They are the values that would normally be
+   * included the dependency array of [`useEffect`](https://react.dev/reference/react/useEffect)
+   * and [`useCallback`](https://react.dev/reference/react/useCallback).
+   *
+   * By default, including these values in the selector will not cause {:PACKAGE_NAME_SHORT:}
+   * to return the correct values in the next render because it does not treat
+   * the selector as a dependency.
+   * @defaultValue `false`
+   */
+  allowReactiveValues?: boolean
 }
 
 /**
@@ -33,6 +45,7 @@ export class RelinkAdvancedSelector<State, SelectedState> {
   [$$INTERNALS]: {
     M$get(state: State): SelectedState
     M$compareFn?(prevState: SelectedState, nextState: SelectedState): boolean
+    M$allowReactiveValues: boolean
   }
 
   /**
@@ -75,10 +88,12 @@ export class RelinkAdvancedSelector<State, SelectedState> {
   constructor({
     get,
     compareFn,
+    allowReactiveValues,
   }: RelinkAdvancedSelectorConfig<State, SelectedState>) {
     this[$$INTERNALS] = {
       M$get: get,
       M$compareFn: compareFn || Object.is,
+      M$allowReactiveValues: allowReactiveValues,
     }
   }
 

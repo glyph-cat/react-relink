@@ -1,11 +1,12 @@
+import type { ElementHandle, Page } from 'expect-puppeteer/node_modules/@types/puppeteer'
 import * as fs from 'fs'
-import { ElementHandle, NodeFor, Page, WaitForSelectorOptions } from 'puppeteer'
-import { MutableRefObject } from 'react'
+import { NodeFor, WaitForSelectorOptions } from 'puppeteer'
 import { stringifyUrl } from 'query-string'
+import { MutableRefObject } from 'react'
 import { createRef } from '../../debugging-utils'
-import { E2ETestConfig, ISandbox, E2EWrapperObject } from '../helpers'
-import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
 import { COUNTER_VALUE_TEST_ID } from '../../playground/web/components/counter-value/constants'
+import { StatusBarTestId } from '../../playground/web/components/debug-frame/status-bar/constants'
+import { E2ETestConfig, E2EWrapperObject, ISandbox } from '../helpers'
 
 // NOTE:
 // Tests used to fail inconsistently due to Error Code 5 (Out of memory?)
@@ -148,7 +149,7 @@ export function wrapper(
               const element = document.querySelector(`span[data-test-id="${$targetTestId}"]`)
               return Number(element.textContent)
             }, targetTestId)
-            return evaluation.jsonValue()
+            return (await evaluation.jsonValue()) as number
           },
           screenshot: {
             async snap(name: string): Promise<void> {
@@ -171,7 +172,7 @@ export function wrapper(
               const evaluation = await pageInstance.evaluateHandle(($key) => {
                 return sessionStorage.getItem($key)
               }, key)
-              return evaluation.jsonValue()
+              return (await evaluation.jsonValue()) as string
             }
           },
           localStorage: {
@@ -179,7 +180,7 @@ export function wrapper(
               const evaluation = await pageInstance.evaluateHandle(($key) => {
                 return localStorage.getItem($key)
               }, key)
-              return evaluation.jsonValue()
+              return (await evaluation.jsonValue()) as string
             }
           },
           async concludeTest() {
@@ -192,7 +193,7 @@ export function wrapper(
                 const element = document.querySelector(`h1[data-test-id='${$testId}']`)
                 return Number(element.innerHTML)
               }, COUNTER_VALUE_TEST_ID)
-              return evaluation.jsonValue()
+              return (await evaluation.jsonValue()) as number
             },
           },
         }

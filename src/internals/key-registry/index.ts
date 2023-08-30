@@ -1,5 +1,5 @@
+import { RelinkSourceKey } from '../../abstractions'
 import { IS_CLIENT_ENV, IS_DEV_ENV } from '../../constants'
-import { RelinkSourceKey } from '../../schema'
 import { warnDuplicateKey } from './warn-duplicate-key'
 
 export const KEY_REGISTRY: Record<RelinkSourceKey, true> = {}

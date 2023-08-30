@@ -1,5 +1,5 @@
-import { RelinkEvent, RelinkEventType } from '../../schema'
 import { EndHydrationMarker, RelinkCore } from '.'
+import { RelinkEvent, RelinkEventType } from '../../abstractions'
 
 // NOTE: This test covers the following aspects:
 // * Testing for mutability - so that we don't have to worry about it anywhere
@@ -131,41 +131,6 @@ describe(RelinkCore.name, () => {
 
     })
 
-    test('Strategy: Skip', () => {
-
-      const core = new RelinkCore({ value: 1 })
-      const capturedEventStack: Array<RelinkEvent<TestState>> = []
-      const unwatchStateChange = core.M$watcher.M$watch((event) => {
-        capturedEventStack.push(event)
-      })
-
-      core.M$beginHydration()
-      expect(core.M$currentState).toStrictEqual({ value: 1 })
-      expect(core.M$isHydrating).toBe(true)
-      expect(capturedEventStack).toStrictEqual([{
-        type: RelinkEventType.hydrate,
-        isHydrating: true,
-        state: { value: 1 },
-      }])
-
-      core.M$endHydration(EndHydrationMarker.S)
-      expect(core.M$currentState).toStrictEqual({ value: 1 })
-      expect(core.M$isHydrating).toBe(false)
-      expect(capturedEventStack).toStrictEqual([{
-        type: RelinkEventType.hydrate,
-        isHydrating: true,
-        state: { value: 1 },
-      }, {
-        type: RelinkEventType.hydrate,
-        isHydrating: false,
-        state: { value: 1 },
-      }])
-
-      // Cleanup
-      unwatchStateChange()
-
-    })
-
     describe('Mutation count', () => {
 
       const defaultState = { value: 1 }
@@ -207,30 +172,6 @@ describe(RelinkCore.name, () => {
           core.M$endHydration(EndHydrationMarker.D)
           core.M$beginHydration()
           core.M$endHydration(EndHydrationMarker.D)
-          expect(core.M$mutationCount).toBe(2)
-        })
-
-      })
-
-
-      describe('Strategy: Skip', () => {
-
-        test('When state is already default)', () => {
-          const core = new RelinkCore(defaultState)
-          core.M$beginHydration()
-          core.M$endHydration(EndHydrationMarker.S)
-          core.M$beginHydration()
-          core.M$endHydration(EndHydrationMarker.S)
-          expect(core.M$mutationCount).toBe(0)
-        })
-
-        test('When state is not default)', () => {
-          const core = new RelinkCore(defaultState)
-          core.M$set({ value: 5 })
-          core.M$beginHydration()
-          core.M$endHydration(EndHydrationMarker.S)
-          core.M$beginHydration()
-          core.M$endHydration(EndHydrationMarker.S)
           expect(core.M$mutationCount).toBe(2)
         })
 

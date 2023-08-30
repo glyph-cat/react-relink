@@ -1,4 +1,4 @@
-import { RelinkEventType, RelinkSourceKey } from '../../schema'
+import { RelinkEventType, RelinkSourceKey } from '../../abstractions'
 import { RelinkSource } from '../source'
 
 /**

@@ -1,7 +1,7 @@
 import { MutableRefObject } from 'react'
+import { RelinkSourceKey } from '../../abstractions'
 import { RELINK_CONFIG } from '../../api/config'
 import { IS_DEV_ENV, IS_INTERNAL_DEBUG_ENV } from '../../constants'
-import { RelinkSourceKey } from '../../schema'
 
 // NOTE: The code in this file should not be included in minified builds because
 // the code is conditionally with `IS_INTERNAL_DEBUG_ENV`. A check was made on 5 Oct 2021

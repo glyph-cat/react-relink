@@ -1,4 +1,4 @@
-export interface TestDataUserSchema {
+export interface ITestDataUser {
   username: string
   dob: Date
   address: {
@@ -11,14 +11,14 @@ export interface TestDataUserSchema {
   },
 }
 
-export interface TestDataSchema {
-  userStack: Array<TestDataUserSchema>
+export interface ITestData {
+  userStack: Array<ITestDataUser>
 }
 
 /**
  * Data generated from https://www.bestrandoms.com/random-address-in-my
  */
-export function getFreshTestData(): TestDataSchema {
+export function getFreshTestData(): ITestData {
   return {
     userStack: [
       {

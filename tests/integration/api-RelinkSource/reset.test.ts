@@ -1,13 +1,13 @@
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
 import { createEventLogPromise } from '../../../debugging-utils'
-import { IntegrationTestConfig, SampleSchema } from '../../helpers'
+import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import { IntegrationTestConfig, ISampleState } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, RelinkEventType } = Relink
 
-  let Source: $RelinkSource<SampleSchema>
+  let Source: $RelinkSource<ISampleState>
   beforeEach(async () => {
     Source = new RelinkSource({
       key: 'test/Source.reset()',

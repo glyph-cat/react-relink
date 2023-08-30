@@ -5,7 +5,7 @@ import {
 import { useState } from 'react'
 import { act } from 'react-test-renderer'
 import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { IntegrationTestConfig, SampleSchema } from '../../helpers'
+import { IntegrationTestConfig, ISampleState } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objective: Check if state values are returned as expected
@@ -14,7 +14,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
-  let Source: $RelinkSource<SampleSchema>
+  let Source: $RelinkSource<ISampleState>
   const cleanupRef = createCleanupRef()
   afterEach(async () => {
     await Source.dispose()
@@ -23,7 +23,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   test('Main', async () => {
 
-    Source = new RelinkSource<SampleSchema>({
+    Source = new RelinkSource<ISampleState>({
       key: 'test/api-useRelinkValue/basic-usage',
       default: {
         foo: 1,
@@ -74,7 +74,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   test('`active` parameter', async () => {
 
-    Source = new RelinkSource<SampleSchema>({
+    Source = new RelinkSource<ISampleState>({
       key: 'test/api-useRelinkValue/active-parameter',
       default: {
         foo: 1,
@@ -146,7 +146,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   test('`active = false` at first', async () => {
 
-    Source = new RelinkSource<SampleSchema>({
+    Source = new RelinkSource<ISampleState>({
       key: 'test/api-useRelinkValue/active-parameter=false',
       default: {
         foo: 1,

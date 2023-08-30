@@ -1,6 +1,6 @@
+import { RelinkSelector } from '../../abstractions'
 import { DEFAULT_HOOK_ACTIVE_STATE } from '../../constants'
 import { useSuspenseForDataFetching } from '../../internals/suspense-waiter'
-import { RelinkSelector } from '../../schema'
 import { useScopedRelinkSource } from '../scope'
 import { RelinkSource } from '../source'
 import { useRelinkValue_BASE } from '../use-relink-value'

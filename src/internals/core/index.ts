@@ -1,4 +1,4 @@
-import { RelinkEvent, RelinkEventType } from '../../schema'
+import { RelinkEvent, RelinkEventType } from '../../abstractions'
 import { Watcher } from '../../internals/watcher'
 import { THROW_INTERNAL_ERROR_MALFORMED_HYDRATION_MARKER } from '../errors'
 
@@ -9,7 +9,6 @@ export enum EndHydrationMarker {
   /** `commit`        */ C = 1,
   /** `commitDefault` */ D,
   /** `commitNoop`    */ N,
-  /** `skip`          */ S,
 }
 
 // Because TypeScript throws error when declaring overrides but implementing it
@@ -17,9 +16,7 @@ export enum EndHydrationMarker {
 interface MethodImplementatinoEndHydration<State> {
   (marker: EndHydrationMarker.C, incomingState: State): void
   (
-    marker: EndHydrationMarker.D |
-      EndHydrationMarker.N |
-      EndHydrationMarker.S,
+    marker: EndHydrationMarker.D | EndHydrationMarker.N,
     incomingState?: never
   ): void
 }
@@ -87,10 +84,7 @@ export class RelinkCore<State> {
         this.M$currentState = incomingState
       } else if (marker === EndHydrationMarker.N) {
         // Nothing needs to be done here.
-      } else if (
-        marker === EndHydrationMarker.D ||
-        marker === EndHydrationMarker.S
-      ) {
+      } else if (marker === EndHydrationMarker.D) {
         // Use the initial state.
         this.M$bumpMutationCount(this.M$currentState, this.M$defaultState)
         this.M$currentState = this.M$defaultState
