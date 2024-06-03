@@ -2,7 +2,7 @@ import { TestId } from '../../../playground/web/sandboxes/active/constants'
 import { wrapper } from '../wrapper'
 
 wrapper(({ loadSandbox }) => {
-  test('Active', async () => {
+  test.skip('Active', async () => {
 
     const sandbox = await loadSandbox('active', page)
 

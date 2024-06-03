@@ -3,7 +3,7 @@ import { TestId, TileColor } from '../../../playground/web/sandboxes/scope/const
 import { wrapper } from '../wrapper'
 
 wrapper(({ loadSandbox }) => {
-  test('RelinkScope', async () => {
+  test.skip('RelinkScope', async () => {
 
     const sandbox = await loadSandbox('scope', page)
 

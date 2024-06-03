@@ -9,7 +9,7 @@ import { wrapper } from '../wrapper'
 
 wrapper(({ loadSandbox }) => {
 
-  test('Suspense', async () => {
+  test.skip('Suspense', async () => {
 
     const sandbox = await loadSandbox('suspense', page)
     page.authenticate

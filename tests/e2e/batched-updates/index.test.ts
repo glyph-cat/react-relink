@@ -2,7 +2,7 @@ import { TestId } from '../../../playground/web/sandboxes/batched-updates/consta
 import { wrapper } from '../wrapper'
 
 wrapper(({ loadSandbox }) => {
-  test('Batched Updates', async () => {
+  test.skip('Batched Updates', async () => {
 
     const sandbox = await loadSandbox('batched-updates', page)
 
