@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -25,7 +25,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
         },
       },
     }, cleanupRef)
-    const source = hookInterface.get('main') as $RelinkSource<number>
+    const source = hookInterface.get('main') as RelinkSource<number>
     expect(source instanceof RelinkSource).toBe(true)
     await expect(source.getAsync()).resolves.toBe(42)
     expect(hookInterface.getRenderCount()).toBe(1)

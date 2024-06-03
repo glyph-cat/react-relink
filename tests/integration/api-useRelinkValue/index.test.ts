@@ -4,8 +4,8 @@ import {
 } from '@glyph-cat/react-test-utils'
 import { useState } from 'react'
 import { act } from 'react-test-renderer'
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
-import { IntegrationTestConfig, ISampleState } from '../../helpers'
+import type { RelinkSource } from '../../../src/bundle'
+import { ISampleState, IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objective: Check if state values are returned as expected
@@ -14,7 +14,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
-  let Source: $RelinkSource<ISampleState>
+  let Source: RelinkSource<ISampleState>
   const cleanupRef = createCleanupRef()
   afterEach(async () => {
     await Source.dispose()

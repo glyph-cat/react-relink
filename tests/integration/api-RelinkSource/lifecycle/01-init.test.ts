@@ -1,14 +1,14 @@
 import {
-  createHookInterface,
   createCleanupRef,
+  createHookInterface,
 } from '@glyph-cat/react-test-utils'
+import { act } from 'react-test-renderer'
 import {
+  TIME_GAP,
   createEventLogPromise,
   delay,
-  TIME_GAP,
 } from '../../../../debugging-utils'
-import { act } from 'react-test-renderer'
-import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
+import type { RelinkSource } from '../../../../src/bundle'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
@@ -18,7 +18,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   jest.useRealTimers()
 
-  let Source: $RelinkSource<number> = null
+  let Source: RelinkSource<number> = null
   const cleanupRef = createCleanupRef()
   afterEach(async () => {
     await Source.dispose()

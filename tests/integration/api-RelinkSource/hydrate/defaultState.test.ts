@@ -1,5 +1,5 @@
 import { MutableRefObject } from 'react'
-import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
+import type { RelinkSource } from '../../../../src/bundle'
 import { IntegrationTestConfig, ISampleState } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
@@ -9,7 +9,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   jest.useRealTimers()
 
-  let Source: $RelinkSource<ISampleState> = null
+  let Source: RelinkSource<ISampleState> = null
   afterEach(async () => {
     await Source.dispose()
     Source = null

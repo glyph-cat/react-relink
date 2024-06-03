@@ -1,4 +1,4 @@
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -9,7 +9,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
   describe('.key', () => {
 
     const SOURCE_KEY = 'test/public-properties/key'
-    let Source: $RelinkSource<number>
+    let Source: RelinkSource<number>
     beforeEach(async () => {
       Source = new RelinkSource({
         key: SOURCE_KEY,
@@ -39,7 +39,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   describe('.default', () => {
 
-    let Source: $RelinkSource<number>
+    let Source: RelinkSource<number>
     beforeEach(async () => {
       Source = new RelinkSource({
         key: 'test/public-properties/default',

@@ -1,4 +1,4 @@
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -12,7 +12,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   describe('Error handling in reducers', () => {
 
-    let Source: $RelinkSource<number>
+    let Source: RelinkSource<number>
     beforeEach(() => {
       Source = new RelinkSource({
         key: 'test/error-handling-in-reducers',

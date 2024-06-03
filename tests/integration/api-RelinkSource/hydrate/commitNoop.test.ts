@@ -1,11 +1,11 @@
 import {
-  createRef,
-  createEventLogStackPromise,
-  delay,
   TIME_GAP,
+  createEventLogStackPromise,
+  createRef,
+  delay,
 } from '../../../../debugging-utils'
-import { RelinkSource as $RelinkSource } from '../../../../src/bundle'
-import { IntegrationTestConfig, ISampleState } from '../../../helpers'
+import type { RelinkSource } from '../../../../src/bundle'
+import { ISampleState, IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig) => {
@@ -14,7 +14,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   jest.useRealTimers()
 
-  let Source: $RelinkSource<ISampleState> = null
+  let Source: RelinkSource<ISampleState> = null
   afterEach(async () => {
     await Source.dispose()
     Source = null

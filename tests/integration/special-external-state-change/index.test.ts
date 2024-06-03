@@ -3,9 +3,9 @@ import {
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
 import { useCallback, useReducer } from 'react'
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { forceUpdateReducer } from '../../../src/internals/custom-hooks'
-import { IntegrationTestConfig, ISampleState } from '../../helpers'
+import { ISampleState, IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
 // Test objective: Check if state values reference to the same object if
@@ -15,7 +15,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue } = Relink
 
-  let Source: $RelinkSource<ISampleState>
+  let Source: RelinkSource<ISampleState>
   const cleanupRef = createCleanupRef()
   afterEach(async () => {
     await Source.dispose()

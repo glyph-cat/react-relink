@@ -1,5 +1,5 @@
 import { delay, TIME_GAP } from '../../../debugging-utils'
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -9,7 +9,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   jest.useRealTimers()
 
-  let Source: $RelinkSource<number>
+  let Source: RelinkSource<number>
   afterEach(async () => {
     await Source.dispose()
   })

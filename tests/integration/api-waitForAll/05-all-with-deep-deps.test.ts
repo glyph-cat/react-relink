@@ -1,5 +1,5 @@
 import { attachRef, createRef, delay, TIME_GAP } from '../../../debugging-utils'
-import type { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -25,12 +25,12 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
     //   ├─── Source C1 ······· (mimics fetch from localStorage)
     //   └─── Source C2 ······· (mimics fetch from server)
 
-    const SourceB1_ref = createRef<$RelinkSource<number>>()
-    const SourceB1a_ref = createRef<$RelinkSource<number>>()
-    const SourceB1b_ref = createRef<$RelinkSource<number>>()
-    const SourceB2_ref = createRef<$RelinkSource<number>>()
-    const SourceC1_ref = createRef<$RelinkSource<number>>()
-    const SourceC2_ref = createRef<$RelinkSource<number>>()
+    const SourceB1_ref = createRef<RelinkSource<number>>()
+    const SourceB1a_ref = createRef<RelinkSource<number>>()
+    const SourceB1b_ref = createRef<RelinkSource<number>>()
+    const SourceB2_ref = createRef<RelinkSource<number>>()
+    const SourceC1_ref = createRef<RelinkSource<number>>()
+    const SourceC2_ref = createRef<RelinkSource<number>>()
 
     const SourceA = new RelinkSource({
       key: `test/${sharedTestKeyFragment}/A`,

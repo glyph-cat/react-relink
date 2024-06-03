@@ -4,17 +4,17 @@ import {
 } from '@glyph-cat/react-test-utils'
 import { act } from 'react-test-renderer'
 import {
-  RelinkSource as $RelinkSource,
   RELINK_COMPARE_FN_PRESET,
+  type RelinkSource,
 } from '../../../../src/bundle'
-import { IntegrationTestConfig, ISampleState } from '../../../helpers'
+import { ISampleState, IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
 wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useRelinkValue, RelinkAdvancedSelector } = Relink
 
-  let Source: $RelinkSource<ISampleState>
+  let Source: RelinkSource<ISampleState>
   const cleanupRef = createCleanupRef()
   beforeEach(() => {
     Source = new RelinkSource<ISampleState>({

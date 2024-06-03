@@ -21,10 +21,4 @@
     "body": "import styles from './index.module.css'",
     "description": "Import scoped CSS"
   },
-  "TS expect error on purpose": {
-    "scope": "typescript,typescriptreact",
-    "prefix": "@ts-expect-error",
-    "body": "// @ts-expect-error: Done on purpose to test the error.",
-    "description": "TS expect error to test error on purpose"
-  },
 }

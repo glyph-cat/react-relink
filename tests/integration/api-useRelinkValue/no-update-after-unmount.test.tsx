@@ -1,6 +1,6 @@
 import { StrictMode, useEffect } from 'react'
-import { act, create, ReactTestRenderer } from 'react-test-renderer'
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import { ReactTestRenderer, act, create } from 'react-test-renderer'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -13,7 +13,7 @@ wrapper(({ Relink }: IntegrationTestConfig): void => {
     isInnermostVisible: boolean
   }
 
-  let Source: $RelinkSource<IState>
+  let Source: RelinkSource<IState>
   let root: ReactTestRenderer
   afterEach(async () => {
     await Source.dispose()

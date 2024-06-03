@@ -1,4 +1,4 @@
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -6,9 +6,9 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource } = Relink
 
-  let SourceA: $RelinkSource<number> = null
-  let SourceB: $RelinkSource<number> = null
-  let SourceC: $RelinkSource<number> = null
+  let SourceA: RelinkSource<number> = null
+  let SourceB: RelinkSource<number> = null
+  let SourceC: RelinkSource<number> = null
   afterEach(async () => {
     if (SourceA instanceof RelinkSource) {
       await SourceA.dispose({ force: true })

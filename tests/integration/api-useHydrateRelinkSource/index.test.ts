@@ -2,7 +2,7 @@ import {
   createCleanupRef,
   createHookInterface,
 } from '@glyph-cat/react-test-utils'
-import { RelinkSource as $RelinkSource } from '../../../src/bundle'
+import type { RelinkSource } from '../../../src/bundle'
 import { IntegrationTestConfig } from '../../helpers'
 import { wrapper } from '../wrapper'
 
@@ -15,7 +15,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, useHydrateRelinkSource } = Relink
 
-  let Source: $RelinkSource<number>
+  let Source: RelinkSource<number>
   const cleanupRef = createCleanupRef()
   afterEach(async () => {
     await Source.dispose()

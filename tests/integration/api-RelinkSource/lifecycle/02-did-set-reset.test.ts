@@ -1,7 +1,4 @@
-import {
-  RelinkEvent,
-  RelinkSource as $RelinkSource,
-} from '../../../../src/bundle'
+import type { RelinkEvent, RelinkSource } from '../../../../src/bundle'
 import { IntegrationTestConfig } from '../../../helpers'
 import { wrapper } from '../../wrapper'
 
@@ -13,7 +10,7 @@ wrapper(({ Relink }: IntegrationTestConfig) => {
 
   const { RelinkSource, RelinkEventType } = Relink
 
-  let Source: $RelinkSource<number> = null
+  let Source: RelinkSource<number> = null
   afterEach(async () => {
     await Source.dispose()
     Source = null
