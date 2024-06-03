@@ -1,3 +1,5 @@
+## *IMPORTANT: This package has been deprecated in favor of [cotton-box](https://glyph-cat.github.io/cotton-box).*
+
 <div align="center">
 
 [![React Relink Banner](https://raw.githubusercontent.com/glyph-cat/react-relink/main/assets/react-relink-wording.svg)](https://github.com/glyph-cat/react-relink)
